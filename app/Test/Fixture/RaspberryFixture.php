@@ -34,8 +34,8 @@ class RaspberryFixture extends CakeTestFixture {
 			'name' => 'Lorem ipsum dolor sit amet',
 			'address' => 'Lorem ipsum dolor sit amet',
 			'overcloking' => 'Lorem ipsum dolor sit amet',
-			'created' => '2015-02-24 15:42:01',
-			'last_update' => '2015-02-24 15:42:01'
+			'created' => '2015-02-24 18:44:25',
+			'last_update' => '2015-02-24 18:44:25'
 		),
 	);
 

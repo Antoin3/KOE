@@ -22,7 +22,7 @@ class RaspberriesController extends AppController {
  */
 	public function index() {
 		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->Paginator->paginate());
+		$this->set('raspberries', $this->paginate());
 	}
 
 /**
@@ -49,10 +49,10 @@ class RaspberriesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
 		}
 	}
@@ -65,15 +65,16 @@ class RaspberriesController extends AppController {
  * @return void
  */
 	public function edit($id = null) {
+        $this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		if ($this->request->is(array('post', 'put'))) {
+		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
 		} else {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
@@ -85,23 +86,25 @@ class RaspberriesController extends AppController {
  * delete method
  *
  * @throws NotFoundException
+ * @throws MethodNotAllowedException
  * @param string $id
  * @return void
  */
 	public function delete($id = null) {
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
 		$this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists()) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		$this->request->allowMethod('post', 'delete');
 		if ($this->Raspberry->delete()) {
-			$this->Session->setFlash(__('The raspberry has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The raspberry could not be deleted. Please, try again.'));
+			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
+			$this->redirect(array('action' => 'index'));
 		}
-		return $this->redirect(array('action' => 'index'));
+		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
+		$this->redirect(array('action' => 'index'));
 	}
-
 /**
  * admin_index method
  *
@@ -109,7 +112,7 @@ class RaspberriesController extends AppController {
  */
 	public function admin_index() {
 		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->Paginator->paginate());
+		$this->set('raspberries', $this->paginate());
 	}
 
 /**
@@ -136,10 +139,10 @@ class RaspberriesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
 		}
 	}
@@ -152,15 +155,16 @@ class RaspberriesController extends AppController {
  * @return void
  */
 	public function admin_edit($id = null) {
+        $this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		if ($this->request->is(array('post', 'put'))) {
+		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
 		} else {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
@@ -172,20 +176,23 @@ class RaspberriesController extends AppController {
  * admin_delete method
  *
  * @throws NotFoundException
+ * @throws MethodNotAllowedException
  * @param string $id
  * @return void
  */
 	public function admin_delete($id = null) {
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
 		$this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists()) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		$this->request->allowMethod('post', 'delete');
 		if ($this->Raspberry->delete()) {
-			$this->Session->setFlash(__('The raspberry has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The raspberry could not be deleted. Please, try again.'));
+			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
+			$this->redirect(array('action' => 'index'));
 		}
-		return $this->redirect(array('action' => 'index'));
+		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
+		$this->redirect(array('action' => 'index'));
 	}
 }
