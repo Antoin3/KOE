@@ -1,44 +1,73 @@
-<div class="raspberries view">
-<h2><?php echo __('Raspberry'); ?></h2>
-	<dl>
-		<dt><?php echo __('Id'); ?></dt>
-		<dd>
+
+<div id="page-container" class="row">
+
+	<div id="sidebar" class="col-sm-3">
+		
+		<div class="actions">
+			
+			<ul class="list-group">			
+						<li class="list-group-item"><?php echo $this->Html->link(__('Edit Raspberry'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => '')); ?> </li>
+		<li class="list-group-item"><?php echo $this->Form->postLink(__('Delete Raspberry'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => ''), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?> </li>
+		<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index'), array('class' => '')); ?> </li>
+		<li class="list-group-item"><?php echo $this->Html->link(__('New Raspberry'), array('action' => 'add'), array('class' => '')); ?> </li>
+				
+			</ul><!-- /.list-group -->
+			
+		</div><!-- /.actions -->
+		
+	</div><!-- /#sidebar .span3 -->
+	
+	<div id="page-content" class="col-sm-9">
+		
+		<div class="raspberries view">
+
+			<h2><?php  echo __('Raspberry'); ?></h2>
+			
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered">
+					<tbody>
+						<tr>		<td><strong><?php echo __('Id'); ?></strong></td>
+		<td>
 			<?php echo h($raspberry['Raspberry']['id']); ?>
 			&nbsp;
-		</dd>
-		<dt><?php echo __('Name'); ?></dt>
-		<dd>
+		</td>
+</tr><tr>		<td><strong><?php echo __('Name'); ?></strong></td>
+		<td>
 			<?php echo h($raspberry['Raspberry']['name']); ?>
 			&nbsp;
-		</dd>
-		<dt><?php echo __('Address'); ?></dt>
-		<dd>
+		</td>
+</tr><tr>		<td><strong><?php echo __('Version'); ?></strong></td>
+		<td>
+			<?php echo h($raspberry['Raspberry']['version']); ?>
+			&nbsp;
+		</td>
+</tr><tr>		<td><strong><?php echo __('Address'); ?></strong></td>
+		<td>
 			<?php echo h($raspberry['Raspberry']['address']); ?>
 			&nbsp;
-		</dd>
-		<dt><?php echo __('Overcloking'); ?></dt>
-		<dd>
+		</td>
+</tr><tr>		<td><strong><?php echo __('Overcloking'); ?></strong></td>
+		<td>
 			<?php echo h($raspberry['Raspberry']['overcloking']); ?>
 			&nbsp;
-		</dd>
-		<dt><?php echo __('Created'); ?></dt>
-		<dd>
+		</td>
+</tr><tr>		<td><strong><?php echo __('Created'); ?></strong></td>
+		<td>
 			<?php echo h($raspberry['Raspberry']['created']); ?>
 			&nbsp;
-		</dd>
-		<dt><?php echo __('Last Update'); ?></dt>
-		<dd>
-			<?php echo h($raspberry['Raspberry']['last_update']); ?>
+		</td>
+</tr><tr>		<td><strong><?php echo __('Modified'); ?></strong></td>
+		<td>
+			<?php echo h($raspberry['Raspberry']['modified']); ?>
 			&nbsp;
-		</dd>
-	</dl>
-</div>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
-		<li><?php echo $this->Html->link(__('Edit Raspberry'), array('action' => 'edit', $raspberry['Raspberry']['id'])); ?> </li>
-		<li><?php echo $this->Form->postLink(__('Delete Raspberry'), array('action' => 'delete', $raspberry['Raspberry']['id']), array(), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?> </li>
-		<li><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Raspberry'), array('action' => 'add')); ?> </li>
-	</ul>
-</div>
+		</td>
+</tr>					</tbody>
+				</table><!-- /.table table-striped table-bordered -->
+			</div><!-- /.table-responsive -->
+			
+		</div><!-- /.view -->
+
+			
+	</div><!-- /#page-content .span9 -->
+
+</div><!-- /#page-container .row-fluid -->

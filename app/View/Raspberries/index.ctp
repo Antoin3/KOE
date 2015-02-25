@@ -25,10 +25,11 @@
 						<tr>
 							<th><?php echo $this->Paginator->sort('id'); ?></th>
 							<th><?php echo $this->Paginator->sort('name'); ?></th>
+							<th><?php echo $this->Paginator->sort('version'); ?></th>
 							<th><?php echo $this->Paginator->sort('address'); ?></th>
 							<th><?php echo $this->Paginator->sort('overcloking'); ?></th>
 							<th><?php echo $this->Paginator->sort('created'); ?></th>
-							<th><?php echo $this->Paginator->sort('last_update'); ?></th>
+							<th><?php echo $this->Paginator->sort('modified'); ?></th>
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
@@ -37,10 +38,11 @@
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
+		<td><?php echo h($raspberry['Raspberry']['version']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['address']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['overcloking']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['created']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['last_update']); ?>&nbsp;</td>
+		<td><?php echo h($raspberry['Raspberry']['modified']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>

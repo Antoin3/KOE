@@ -1,20 +1,39 @@
-<div class="raspberries form">
-<?php echo $this->Form->create('Raspberry'); ?>
-	<fieldset>
-		<legend><?php echo __('Admin Add Raspberry'); ?></legend>
-	<?php
-		echo $this->Form->input('name');
-		echo $this->Form->input('address');
-		echo $this->Form->input('overcloking');
-		echo $this->Form->input('last_update');
-	?>
-	</fieldset>
-<?php echo $this->Form->end(__('Submit')); ?>
-</div>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
 
-		<li><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?></li>
-	</ul>
-</div>
+<div id="page-container" class="row">
+
+	<div id="sidebar" class="col-sm-3">
+		
+		<div class="actions">
+		
+			<ul class="list-group">
+				<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?></li>
+			</ul><!-- /.list-group -->
+		
+		</div><!-- /.actions -->
+		
+	</div><!-- /#sidebar .col-sm-3 -->
+	
+	<div id="page-content" class="col-sm-9">
+
+		<h2><?php echo __('Add Raspberry'); ?></h2>
+
+		<div class="raspberries form">
+		
+			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+
+				<fieldset>
+					<div class="form-group">
+						<?php echo $this->Form->input('address', array('class' => 'form-control', 'required' => 'required')); ?>
+					</div><!-- .form-group -->
+
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+
+				</fieldset>
+
+			<?php echo $this->Form->end(); ?>
+
+		</div><!-- /.form -->
+			
+	</div><!-- /#page-content .col-sm-9 -->
+
+</div><!-- /#page-container .row-fluid -->

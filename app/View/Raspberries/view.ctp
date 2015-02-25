@@ -36,6 +36,11 @@
 			<?php echo h($raspberry['Raspberry']['name']); ?>
 			&nbsp;
 		</td>
+</tr><tr>		<td><strong><?php echo __('Version'); ?></strong></td>
+		<td>
+			<?php echo h($raspberry['Raspberry']['version']); ?>
+			&nbsp;
+		</td>
 </tr><tr>		<td><strong><?php echo __('Address'); ?></strong></td>
 		<td>
 			<?php echo h($raspberry['Raspberry']['address']); ?>
@@ -51,9 +56,9 @@
 			<?php echo h($raspberry['Raspberry']['created']); ?>
 			&nbsp;
 		</td>
-</tr><tr>		<td><strong><?php echo __('Last Update'); ?></strong></td>
+</tr><tr>		<td><strong><?php echo __('Modified'); ?></strong></td>
 		<td>
-			<?php echo h($raspberry['Raspberry']['last_update']); ?>
+			<?php echo h($raspberry['Raspberry']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>					</tbody>

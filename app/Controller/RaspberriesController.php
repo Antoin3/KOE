@@ -45,7 +45,8 @@ class RaspberriesController extends AppController {
  *
  * @return void
  */
-	public function add() {
+
+public function add() {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
@@ -81,6 +82,7 @@ class RaspberriesController extends AppController {
 			$this->request->data = $this->Raspberry->find('first', $options);
 		}
 	}
+
 
 /**
  * delete method
@@ -136,16 +138,32 @@ class RaspberriesController extends AppController {
  * @return void
  */
 	public function admin_add() {
-		if ($this->request->is('post')) {
+			if ($this->request->is('post')) {
+			$connection = $this->connexionSSH(
+					$this->request->data['Raspberry']['address'],
+					'root','openelec');
+			$name = $this->execSSH($connection,'uname -n');
+			$version = $this->execSSH($connection,'cat /etc/version');
 			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
+			if ($name && $version)
+			{
+					$this->Raspberry->set(
+						array( 
+							'name' => $name,
+							'version' => $version
+							//'overclocking' => $this->execSSH($connection,)
+					));
+					if ($this->Raspberry->save($this->request->data)) {
+						$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+						$this->redirect(array('action' => 'index'));
+					} else {
+						$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+					} 
 			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+					$this->Session->setFlash(__('Bad informations given. Please, try again.'), 'flash/error');
+				}
 			}
 		}
-	}
 
 /**
  * admin_edit method
@@ -194,5 +212,43 @@ class RaspberriesController extends AppController {
 		}
 		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
 		$this->redirect(array('action' => 'index'));
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws NotFoundException
+ * @param string $ip
+ * @param string $username
+ * @param string $pass
+ * @return Ressource
+ */
+	function connexionSSH($ip,$username,$pass)
+	{
+		if (!$connection = ssh2_connect($ip, 22))
+		{
+		    throw new NotFoundException(__('Failed to connect to raspberry'));
+		}
+		ssh2_auth_password($connection,$username,$pass);
+		return $connection;
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws Met
+ * @param string $connection
+ * @param string $cmd
+ * @return string
+ */
+	function execSSH($connection,$cmd)
+	{
+		$query = ssh2_exec($connection,$cmd);
+		if (!$query) {
+		    throw new BadRequestException();
+		}
+		stream_set_blocking($query, true);
+		$result = stream_get_contents($query);
+		return $result;
 	}
 }
