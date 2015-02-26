@@ -223,7 +223,7 @@ public function add() {
  * @param string $pass
  * @return Ressource
  */
-	function connexionSSH($ip,$username,$pass)
+	public function connexionSSH($ip,$username,$pass)
 	{
 		if (!$connection = ssh2_connect($ip, 22))
 		{
@@ -241,7 +241,7 @@ public function add() {
  * @param string $cmd
  * @return string
  */
-	function execSSH($connection,$cmd)
+	public function execSSH($connection,$cmd)
 	{
 		$query = ssh2_exec($connection,$cmd);
 		if (!$query) {
@@ -250,5 +250,41 @@ public function add() {
 		stream_set_blocking($query, true);
 		$result = stream_get_contents($query);
 		return $result;
+	}
+
+/**
+ * settings method
+ *
+ * @throws Met
+ * @param string $connection
+ * @param string $cmd
+ * @return string
+ */
+
+	public function admin_settings($id = null) {
+		$this->Raspberry->id = $id;
+		if (!$this->Raspberry->exists($id)) {
+			throw new NotFoundException(__('Invalid raspberry'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			// $getaddress = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			// $address = $this->Raspberry->address->find('first', $getaddress);
+			debug($file = '\\\\10.10.10.103\Userdata\guisettings.xml');
+			if(file_exists($file)) 
+			{
+				$xml = Xml::toArray(Xml::build($file));
+				if ($xmlarray = array_merge($xml['settings'],$this->request->data)) {
+					$this->request->data = $xmlarray;
+					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+					$this->render('xml');
+				} else {
+					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				}
+			}
+			else $this->Session->setFlash(__('Error'), 'flash/error');
+		} else {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$this->request->data = $this->Raspberry->find('first', $options);
+		}
 	}
 }

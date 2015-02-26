@@ -45,6 +45,7 @@
 		<td><?php echo h($raspberry['Raspberry']['modified']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
+			<?php echo $this->Html->link(__('Settings'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
 			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs'), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?>
 		</td>
