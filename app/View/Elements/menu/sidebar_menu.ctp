@@ -2,39 +2,28 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li class="active">
-                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+                        <?php echo $this->Html->link('<i class="fa fa-fw fa-dashboard"></i> Accueil', array('controller' => 'pages', 'action' => 'home'), array('escape' => false)); ?>
                     </li>
                     <li>
-                        <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
-                    </li>
-                    <li>
-                        <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
-                    </li>
-                    <li>
-                        <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
-                    </li>
-                    <li>
-                        <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
-                    </li>
-                    <li>
-                        <a href="bootstrap-grid.html"><i class="fa fa-fw fa-wrench"></i> Bootstrap Grid</a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
-                        <ul id="demo" class="collapse">
+                        <a href="javascript:;" data-toggle="collapse" data-target="#rasp"><i class="fa fa-fw fa-desktop"></i> OpenELECs <i class="fa fa-fw fa-caret-down"></i>
+                        <ul id="rasp" class="collapse">
                             <li>
-                                <a href="#">Dropdown Item</a>
+                                <?php echo $this->Html->link(__('<i class="fa fa-list"></i> Listes'), array('controller' => 'Raspberries', 'action' => 'index'), array('escape' => false)); ?>
                             </li>
                             <li>
-                                <a href="#">Dropdown Item</a>
+                                <?php echo $this->Html->link(__('<i class="fa fa-plus"></i> Ajouter'), array('controller' => 'Raspberries', 'action' => 'add'), array('escape' => false)); ?>
                             </li>
                         </ul>
-                    </li>
-                    <li>
-                        <a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
-                    </li>
-                    <li>
-                        <a href="index-rtl.html"><i class="fa fa-fw fa-dashboard"></i> RTL Dashboard</a>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#users"><i class="fa fa-users"></i> Utilisateurs <i class="fa fa-fw fa-caret-down"></i>
+                        <ul id="users" class="collapse">
+                            <li>
+                                <?php echo $this->Html->link(__('<i class="fa fa-list"></i> Listes'), array('controller' => 'Users', 'action' => 'index'), array('escape' => false)); ?>
+                            </li>
+                            <li>
+                            <!-- <i class="fa fa-user-plus"></i> ne fonctionne pas ? -->
+                                <?php echo $this->Html->link(__('<i class="fa fa-plus"></i> Ajouter'), array('controller' => 'Users', 'action' => 'add'), array('escape' => false)); ?>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>

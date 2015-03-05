@@ -41,11 +41,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 
 <div id="wrapper">
-
 				<?php echo $this->element('menu/top_menu'); ?>
 				<?php echo $this->element('menu/sidebar_menu'); ?>
-
-
         <div id="page-wrapper">
 
             <div class="container-fluid">
@@ -56,13 +53,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 					<?php echo $this->fetch('content'); ?>
 				</div>
 				<div id="footer">
-					<?php echo "Silence is golden"; ?>
 				</div>
             </div>
             <!-- /.container-fluid -->
         </div>
         <!-- /#page-wrapper -->
-
     </div>
     <!-- /#wrapper -->
 
