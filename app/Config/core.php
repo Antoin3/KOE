@@ -149,7 +149,7 @@
  *	`manager_index()` and `/manager/controller/index`
  *
  */
-Configure::write('Routing.prefixes', array('admin'));
+	//Configure::write('Routing.prefixes', array('admin'));
 
 /**
  * Turn off all caching application-wide.
@@ -222,12 +222,12 @@ Configure::write('Routing.prefixes', array('admin'));
 /**
  * A random string used in security hashing methods.
  */
-	Configure::write('Security.salt', '93b0qyuVfs2gbWwvnDYhGiR2G0FgaoUuJfIxC9mi');
+	Configure::write('Security.salt', 'DYhIxfs2guVoUu3b0qybWG9JfwvniR2G0FgaC9mi');
 
 /**
  * A random numeric string (digits only) used to encrypt/decrypt strings.
  */
-	Configure::write('Security.cipherSeed', '67593053542449689768965743645');
+	Configure::write('Security.cipherSeed', '76853542596574496749309683645');
 
 /**
  * Apply timestamps with the last modified time to static assets (js, css, images).
@@ -267,7 +267,7 @@ Configure::write('Routing.prefixes', array('admin'));
  * Uncomment this line and correct your server timezone to fix
  * any date & time related errors.
  */
-	date_default_timezone_set('UTC');
+	//date_default_timezone_set('UTC');
 
 /**
  * `Config.timezone` is available in which you can set users' timezone string.
