@@ -3,7 +3,7 @@ App::uses('AppModel', 'Model');
 /**
  * Adjustfreshrate Model
  *
- * @property Video $Video
+ * @property AsVideo $AsVideo
  */
 class Adjustfreshrate extends AppModel {
 
@@ -25,14 +25,14 @@ class Adjustfreshrate extends AppModel {
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
 /**
- * belongsTo associations
+ * hasOne associations
  *
  * @var array
  */
-	public $belongsTo = array(
-		'Video' => array(
-			'className' => 'Video',
-			'foreignKey' => 'video_id',
+	public $hasOne = array(
+		'AsVideo' => array(
+			'className' => 'AsVideo',
+			'foreignKey' => 'adjustfreshrate_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

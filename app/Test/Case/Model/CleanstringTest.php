@@ -13,8 +13,7 @@ class CleanstringTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.cleanstring',
-		'app.advancedsettings'
+		'app.cleanstring'
 	);
 
 /**

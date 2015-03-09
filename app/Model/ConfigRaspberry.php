@@ -3,19 +3,12 @@ App::uses('AppModel', 'Model');
 /**
  * ConfigRaspberry Model
  *
- * @property Overscan $Overscan
- * @property Overclocking $Overclocking
- * @property Memory $Memory
- * @property License $License
+ * @property CrOverscan $CrOverscan
+ * @property CrLicense $CrLicense
+ * @property CrOverclocking $CrOverclocking
+ * @property CrMemory $CrMemory
  */
 class ConfigRaspberry extends AppModel {
-
-/**
- * Display field
- *
- * @var string
- */
-	public $displayField = 'id';
 
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -26,30 +19,30 @@ class ConfigRaspberry extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Overscan' => array(
-			'className' => 'Overscan',
-			'foreignKey' => 'overscan_id',
+		'CrOverscan' => array(
+			'className' => 'CrOverscan',
+			'foreignKey' => 'cr_overscan_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
-		'Overclocking' => array(
-			'className' => 'Overclocking',
-			'foreignKey' => 'overclocking_id',
+		'CrLicense' => array(
+			'className' => 'CrLicense',
+			'foreignKey' => 'cr_license_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
-		'Memory' => array(
-			'className' => 'Memory',
-			'foreignKey' => 'memory_id',
+		'CrOverclocking' => array(
+			'className' => 'CrOverclocking',
+			'foreignKey' => 'cr_overclocking_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
-		'License' => array(
-			'className' => 'License',
-			'foreignKey' => 'license_id',
+		'CrMemory' => array(
+			'className' => 'CrMemory',
+			'foreignKey' => 'cr_memory_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

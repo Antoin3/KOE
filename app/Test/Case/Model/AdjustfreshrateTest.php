@@ -13,8 +13,7 @@ class AdjustfreshrateTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.adjustfreshrate',
-		'app.video'
+		'app.adjustfreshrate'
 	);
 
 /**

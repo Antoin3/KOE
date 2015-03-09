@@ -14,10 +14,10 @@ class ConfigRaspberryTest extends CakeTestCase {
  */
 	public $fixtures = array(
 		'app.config_raspberry',
-		'app.overscan',
-		'app.overclocking',
-		'app.memory',
-		'app.license'
+		'app.cr_overscan',
+		'app.cr_license',
+		'app.cr_overclocking',
+		'app.cr_memory'
 	);
 
 /**

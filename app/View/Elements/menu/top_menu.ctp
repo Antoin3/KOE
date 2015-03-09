@@ -6,9 +6,9 @@
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>class="navbar-brand"
                 </button>
-                <a class="navbar-brand" href="index.html">OpenELEC</a>
+                <a class="navbar-brand" href="home">OpenELEC</a>
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">

@@ -19,7 +19,6 @@ class AdjustfreshrateFixture extends CakeTestFixture {
  */
 	public $fields = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'video_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'refresh' => array('type' => 'float', 'null' => true, 'default' => null, 'unsigned' => false),
 		'refreshmin' => array('type' => 'float', 'null' => true, 'default' => null, 'unsigned' => false),
 		'refreshmax' => array('type' => 'float', 'null' => true, 'default' => null, 'unsigned' => false),
@@ -28,8 +27,7 @@ class AdjustfreshrateFixture extends CakeTestFixture {
 		'refreshmin_fps' => array('type' => 'float', 'null' => true, 'default' => null, 'unsigned' => false),
 		'refreshmax_fps' => array('type' => 'float', 'null' => true, 'default' => null, 'unsigned' => false),
 		'indexes' => array(
-			'PRIMARY' => array('column' => array('id', 'video_id'), 'unique' => 1),
-			'fk_adjustfreshrate_video1_idx' => array('column' => 'video_id', 'unique' => 0)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
@@ -42,7 +40,6 @@ class AdjustfreshrateFixture extends CakeTestFixture {
 	public $records = array(
 		array(
 			'id' => 1,
-			'video_id' => 1,
 			'refresh' => 1,
 			'refreshmin' => 1,
 			'refreshmax' => 1,
