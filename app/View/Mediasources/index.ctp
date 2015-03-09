@@ -3,34 +3,30 @@
 	
 	<div id="page-content" class="col-sm-9">
 
-		<div class="raspberries index">
+		<div class="mediasources index">
 		
-			<h2><?php echo __('Raspberries'); ?></h2>
+			<h2><?php echo __('Mediasources'); ?></h2>
 			
 			<div class="table-responsive">
 				<table cellpadding="0" cellspacing="0" class="table table-striped table-bordered">
 					<thead>
 						<tr>
 							<th><?php echo $this->Paginator->sort('id'); ?></th>
-							<th><?php echo $this->Paginator->sort('name'); ?></th>
-							<th><?php echo $this->Paginator->sort('address'); ?></th>
-							<th><?php echo $this->Paginator->sort('created'); ?></th>
-							<th><?php echo $this->Paginator->sort('modified'); ?></th>
+							<th><?php echo $this->Paginator->sort('ms_network_id'); ?></th>
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
 					<tbody>
-<?php foreach ($raspberries as $raspberry): ?>
+<?php foreach ($mediasources as $mediasource): ?>
 	<tr>
-		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['address']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['created']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['modified']); ?>&nbsp;</td>
+		<td><?php echo h($mediasource['Mediasource']['id']); ?>&nbsp;</td>
+		<td>
+			<?php echo $this->Html->link($mediasource['MsNetwork']['id'], array('controller' => 'ms_networks', 'action' => 'view', $mediasource['MsNetwork']['id'])); ?>
+		</td>
 		<td class="actions">
-			<?php echo $this->Html->link(__('View'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
-			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs')); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs'), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?>
+			<?php echo $this->Html->link(__('View'), array('action' => 'view', $mediasource['Mediasource']['id']), array('class' => 'btn btn-default btn-xs')); ?>
+			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $mediasource['Mediasource']['id']), array('class' => 'btn btn-default btn-xs')); ?>
+			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $mediasource['Mediasource']['id']), array('class' => 'btn btn-default btn-xs'), __('Are you sure you want to delete # %s?', $mediasource['Mediasource']['id'])); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>

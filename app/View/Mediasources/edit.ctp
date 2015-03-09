@@ -3,11 +3,11 @@
 	
 	<div id="page-content" class="col-sm-9">
 
-		<h2><?php echo __('Edit Raspberry'); ?></h2>
+		<h2><?php echo __('Edit Mediasource'); ?></h2>
 
-		<div class="raspberries form">
+		<div class="mediasources form">
 		
-			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+			<?php echo $this->Form->create('Mediasource', array('role' => 'form')); ?>
 
 				<fieldset>
 
@@ -15,10 +15,7 @@
 						<?php echo $this->Form->input('id', array('class' => 'form-control')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('name', array('class' => 'form-control')); ?>
-					</div><!-- .form-group -->
-					<div class="form-group">
-						<?php echo $this->Form->input('address', array('class' => 'form-control')); ?>
+						<?php echo $this->Form->input('ms_network_id', array('class' => 'form-control')); ?>
 					</div><!-- .form-group -->
 
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>

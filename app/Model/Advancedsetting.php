@@ -4,7 +4,7 @@ App::uses('AppModel', 'Model');
  * Advancedsetting Model
  *
  * @property AsJsonrpc $AsJsonrpc
- * @property AsVideo $AsVideo
+ * @property AsVideo $AsVideo
  * @property AsAudio $AsAudio
  * @property AsMusicdatabase $AsMusicdatabase
  * @property AsEdl $AsEdl
@@ -39,13 +39,6 @@ App::uses('AppModel', 'Model');
  */
 class Advancedsetting extends AppModel {
 
-/**
- * Display field
- *
- * @var string
- */
-	public $displayField = 'id';
-
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
@@ -62,9 +55,9 @@ class Advancedsetting extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'AsVideo' => array(
-			'className' => 'AsVideo',
-			'foreignKey' => 'as_video_id',
+		'AsVideo' => array(
+			'className' => 'AsVideo',
+			'foreignKey' => 'as_video_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

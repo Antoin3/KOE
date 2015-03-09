@@ -14,6 +14,8 @@
                                 <?php echo $this->Html->link(__('<i class="fa fa-plus"></i> Ajouter'), array('controller' => 'Raspberries', 'action' => 'add'), array('escape' => false)); ?>
                             </li>
                         </ul>
+                    </li>
+                    <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#users"><i class="fa fa-users"></i> Utilisateurs <i class="fa fa-fw fa-caret-down"></i>
                         <ul id="users" class="collapse">
                             <li>

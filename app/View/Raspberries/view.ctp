@@ -35,11 +35,6 @@
 			<?php echo h($raspberry['Raspberry']['modified']); ?>
 			&nbsp;
 		</td>
-</tr><tr>		<td><strong><?php echo __('Master'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['master']); ?>
-			&nbsp;
-		</td>
 </tr>					</tbody>
 				</table><!-- /.table table-striped table-bordered -->
 			</div><!-- /.table-responsive -->

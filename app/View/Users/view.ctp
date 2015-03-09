@@ -1,5 +1,21 @@
 
 <div id="page-container" class="row">
+
+	<div id="sidebar" class="col-sm-3">
+		
+		<div class="actions">
+			
+			<ul class="list-group">			
+						<li class="list-group-item"><?php echo $this->Html->link(__('Edit User'), array('action' => 'edit', $user['User']['id']), array('class' => '')); ?> </li>
+		<li class="list-group-item"><?php echo $this->Form->postLink(__('Delete User'), array('action' => 'delete', $user['User']['id']), array('class' => ''), __('Are you sure you want to delete # %s?', $user['User']['id'])); ?> </li>
+		<li class="list-group-item"><?php echo $this->Html->link(__('List Users'), array('action' => 'index'), array('class' => '')); ?> </li>
+		<li class="list-group-item"><?php echo $this->Html->link(__('New User'), array('action' => 'add'), array('class' => '')); ?> </li>
+				
+			</ul><!-- /.list-group -->
+			
+		</div><!-- /.actions -->
+		
+	</div><!-- /#sidebar .span3 -->
 	
 	<div id="page-content" class="col-sm-9">
 		
@@ -20,19 +36,14 @@
 			<?php echo h($user['User']['username']); ?>
 			&nbsp;
 		</td>
-</tr><tr>		<td><strong><?php echo __('Password'); ?></strong></td>
-		<td>
-			<?php echo h($user['User']['password']); ?>
-			&nbsp;
-		</td>
 </tr><tr>		<td><strong><?php echo __('Email'); ?></strong></td>
 		<td>
 			<?php echo h($user['User']['email']); ?>
 			&nbsp;
 		</td>
-</tr><tr>		<td><strong><?php echo __('Role'); ?></strong></td>
+</tr><tr>		<td><strong><?php echo __('Password'); ?></strong></td>
 		<td>
-			<?php echo h($user['User']['role']); ?>
+			<?php echo h($user['User']['password']); ?>
 			&nbsp;
 		</td>
 </tr><tr>		<td><strong><?php echo __('Created'); ?></strong></td>

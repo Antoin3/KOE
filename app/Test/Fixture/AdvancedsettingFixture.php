@@ -45,7 +45,7 @@ class AdvancedsettingFixture extends CakeTestFixture {
 		'glrectanglehack' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'alwaysontop' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'as_jsonrpc_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
-		'as_video_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
+		'as_video_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
 		'as_audio_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
 		'as_musicdatabase_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
 		'as_edl_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
@@ -80,8 +80,6 @@ class AdvancedsettingFixture extends CakeTestFixture {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'fk_advancedsettings_as_jsonrpc1_idx' => array('column' => 'as_jsonrpc_id', 'unique' => 0),
-			'fk_advancedsettings_as_video1_idx' => array('column' => 'as_video_id', 'unique' => 0),
-			'fk_advancedsettings_as_audio1_idx' => array('column' => 'as_audio_id', 'unique' => 0),
 			'fk_advancedsettings_as_musicdatabase1_idx' => array('column' => 'as_musicdatabase_id', 'unique' => 0),
 			'fk_advancedsettings_as_edl1_idx' => array('column' => 'as_edl_id', 'unique' => 0),
 			'fk_advancedsettings_as_pvr1_idx' => array('column' => 'as_pvr_id', 'unique' => 0),
@@ -111,7 +109,9 @@ class AdvancedsettingFixture extends CakeTestFixture {
 			'fk_advancedsettings_as_tuxbox1_idx' => array('column' => 'as_tuxbox_id', 'unique' => 0),
 			'fk_advancedsettings_as_pathsubstitution1_idx' => array('column' => 'as_pathsubstitution_id', 'unique' => 0),
 			'fk_advancedsettings_as_window1_idx' => array('column' => 'as_window_id', 'unique' => 0),
-			'fk_advancedsettings_as_gui1_idx' => array('column' => 'as_gui_id', 'unique' => 0)
+			'fk_advancedsettings_as_gui1_idx' => array('column' => 'as_gui_id', 'unique' => 0),
+			'fk_advancedsettings_as_video1_idx' => array('column' => 'as_video_id', 'unique' => 0),
+			'fk_advancedsettings_as_audio1_idx' => array('column' => 'as_audio_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
@@ -157,7 +157,7 @@ class AdvancedsettingFixture extends CakeTestFixture {
 			'glrectanglehack' => 'Lorem ipsum dolor sit amet',
 			'alwaysontop' => 'Lorem ipsum dolor sit amet',
 			'as_jsonrpc_id' => 1,
-			'as_video_id' => 1,
+			'as_video_id' => 1,
 			'as_audio_id' => 1,
 			'as_musicdatabase_id' => 1,
 			'as_edl_id' => 1,
