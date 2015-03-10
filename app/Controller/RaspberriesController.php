@@ -47,12 +47,54 @@ class RaspberriesController extends AppController {
  */
 	public function add() {
 		if ($this->request->is('post')) {
-			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
+			$connection = $this->connexionSSH(
+					$this->request->data['Raspberry']['address'],
+					'root','openelec');
+			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+			if(file_exists($file)) {
+				try {
+					//Create new DomDocuemnt
+				    $dom = new DomDocument();
+				    $dom->load($file);
+
+				    // Find the parent node 
+					$xpath = new DomXPath($dom); 
+
+					//Create the new element to insert/replace
+				    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
+
+				    //Parent node
+			    	debug($parent = $xpath->query("/openelec/settings/system/"));
+
+					//Test if node already exists
+				    debug($node = $dom->getElementsByTagName('hostname'));
+
+				    if ($node->length==0) {
+				    	// new node will be inserted before this node 
+						$next = $xpath->query("/openelec/settings/system/wizard_completed")->item(0);
+				    	// Insert the new element 
+						$next->parentNode->insertBefore($newhostname, $next->nextSibling); 
+				    }
+				    else
+				    {
+				    	//Created the old node element
+				    	$oldhostname = $parent->item(0);
+				    	//Replace
+				    	$oldhostname->parentNode->replaceChild($newhostname, $oldhostname);
+				    }
+
+				    $dom->save($file);
+
+				} catch (XmlException $e) {
+				    	throw new InternalErrorException('Error when updating '.$file);
+				}
+				$this->Raspberry->create();
+				if ($this->Raspberry->save($this->request->data)) {
+					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'index'));
+				} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				}
 			}
 		}
 	}
@@ -137,12 +179,20 @@ class RaspberriesController extends AppController {
  */
 	public function admin_add() {
 		if ($this->request->is('post')) {
+			$connection = $this->connexionSSH(
+					$this->request->data['Raspberry']['address'],
+					'root','openelec');
+			$name = $this->request->data['Raspberry']['name'];
 			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
+			if ($this->$execSSH($connection,'echo "'.$name.'" > /etc/hostname')) {
+				if ($this->$execSSH($connection,'reboot')) {
+					if ($this->Raspberry->save($this->request->data)) {
+						$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+						$this->redirect(array('action' => 'index'));
+				} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+					}
+				} 
 			}
 		}
 	}
@@ -194,5 +244,43 @@ class RaspberriesController extends AppController {
 		}
 		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
 		$this->redirect(array('action' => 'index'));
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws NotFoundException
+ * @param string $ip
+ * @param string $username
+ * @param string $pass
+ * @return Ressource
+ */
+	public function connexionSSH($ip,$username,$pass)
+	{
+		if (!$connection = ssh2_connect($ip, 22))
+		{
+		    throw new NotFoundException(__('Failed to connect to raspberry'));
+		}
+		ssh2_auth_password($connection,$username,$pass);
+		return $connection;
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws BadRequestException
+ * @param string $connection
+ * @param string $cmd
+ * @return string
+ */
+	public function execSSH($connection,$cmd)
+	{
+		$query = ssh2_exec($connection,$cmd);
+		if (!$query) {
+		    throw new BadRequestException();
+		}
+		stream_set_blocking($query, true);
+		$result = stream_get_contents($query);
+		return $result;
 	}
 }

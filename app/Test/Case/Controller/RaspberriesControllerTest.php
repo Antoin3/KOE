@@ -106,4 +106,22 @@ class RaspberriesControllerTest extends ControllerTestCase {
 		$this->markTestIncomplete('testAdminDelete not implemented.');
 	}
 
+/**
+ * testConnexionSSH method
+ *
+ * @return void
+ */
+	public function testConnexionSSH() {
+		$this->markTestIncomplete('testConnexionSSH not implemented.');
+	}
+
+/**
+ * testExecSSH method
+ *
+ * @return void
+ */
+	public function testExecSSH() {
+		$this->markTestIncomplete('testExecSSH not implemented.');
+	}
+
 }
