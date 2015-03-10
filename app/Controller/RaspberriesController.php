@@ -52,42 +52,34 @@ class RaspberriesController extends AppController {
 					'root','openelec');
 			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
 			if(file_exists($file)) {
-				try {
-					//Create new DomDocuemnt
-				    $dom = new DomDocument();
-				    $dom->load($file);
+				//Create new DomDocuemnt
+			    $dom = new DomDocument();
+			    $dom->load($file);
 
-				    // Find the parent node 
-					$xpath = new DomXPath($dom); 
+			    // Find the parent node 
+				$xpath = new DomXPath($dom); 
 
-					//Create the new element to insert/replace
-				    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
+				//Create the new element to insert/replace
+			    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
 
-				    //Parent node
-			    	debug($parent = $xpath->query("/openelec/settings/system/"));
+				//Test if node already exists
+			    $node = $dom->getElementsByTagName('hostname');
 
-					//Test if node already exists
-				    debug($node = $dom->getElementsByTagName('hostname'));
+			    if ($node->length==0) {
+			    	// new node will be inserted before this node 
+					$next = $xpath->query("//settings/system/wizard_completed");
+			    	// Insert the new element 
+					$next->item(0)->parentNode->insertBefore($newhostname, $next->nextSibling); 
+			    }
+			    else
+			    {
+			    	//Parent node
+		    		$oldhostname = $xpath->query("//settings/system/hostname");
+			    	//Replace
+			    	$oldhostname->item(0)->parentNode->replaceChild($newhostname, $oldhostname->item(0));
+			    }
 
-				    if ($node->length==0) {
-				    	// new node will be inserted before this node 
-						$next = $xpath->query("/openelec/settings/system/wizard_completed")->item(0);
-				    	// Insert the new element 
-						$next->parentNode->insertBefore($newhostname, $next->nextSibling); 
-				    }
-				    else
-				    {
-				    	//Created the old node element
-				    	$oldhostname = $parent->item(0);
-				    	//Replace
-				    	$oldhostname->parentNode->replaceChild($newhostname, $oldhostname);
-				    }
-
-				    $dom->save($file);
-
-				} catch (XmlException $e) {
-				    	throw new InternalErrorException('Error when updating '.$file);
-				}
+				$dom->save($file);
 				$this->Raspberry->create();
 				if ($this->Raspberry->save($this->request->data)) {
 					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
@@ -96,6 +88,9 @@ class RaspberriesController extends AppController {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 				}
 			}
+			else {
+				$this->Session->setFlash(__('oe_settings.xml not found.'), 'flash/error');
+				}
 		}
 	}
 
