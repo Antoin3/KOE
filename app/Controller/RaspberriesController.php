@@ -45,15 +45,56 @@ class RaspberriesController extends AppController {
  *
  * @return void
  */
-
-public function add() {
+	public function add() {
 		if ($this->request->is('post')) {
-			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
+			$connection = $this->connexionSSH(
+					$this->request->data['Raspberry']['address'],
+					'root','openelec');
+			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+			if(file_exists($file)) {
+				try {
+					//Create new DomDocuemnt
+				    $dom = new DomDocument();
+				    $dom->load($file);
+
+				    // Find the parent node 
+					$xpath = new DomXPath($dom); 
+
+					//Create the new element to insert/replace
+				    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
+
+				    //Parent node
+			    	debug($parent = $xpath->query("/openelec/settings/system/"));
+
+					//Test if node already exists
+				    debug($node = $dom->getElementsByTagName('hostname'));
+
+				    if ($node->length==0) {
+				    	// new node will be inserted before this node 
+						$next = $xpath->query("/openelec/settings/system/wizard_completed")->item(0);
+				    	// Insert the new element 
+						$next->parentNode->insertBefore($newhostname, $next->nextSibling); 
+				    }
+				    else
+				    {
+				    	//Created the old node element
+				    	$oldhostname = $parent->item(0);
+				    	//Replace
+				    	$oldhostname->parentNode->replaceChild($newhostname, $oldhostname);
+				    }
+
+				    $dom->save($file);
+
+				} catch (XmlException $e) {
+				    	throw new InternalErrorException('Error when updating '.$file);
+				}
+				$this->Raspberry->create();
+				if ($this->Raspberry->save($this->request->data)) {
+					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'index'));
+				} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				}
 			}
 		}
 	}
@@ -82,7 +123,6 @@ public function add() {
 			$this->request->data = $this->Raspberry->find('first', $options);
 		}
 	}
-
 
 /**
  * delete method
@@ -138,32 +178,24 @@ public function add() {
  * @return void
  */
 	public function admin_add() {
-			if ($this->request->is('post')) {
+		if ($this->request->is('post')) {
 			$connection = $this->connexionSSH(
 					$this->request->data['Raspberry']['address'],
 					'root','openelec');
-			$name = $this->execSSH($connection,'uname -n');
-			$version = $this->execSSH($connection,'cat /etc/version');
+			$name = $this->request->data['Raspberry']['name'];
 			$this->Raspberry->create();
-			if ($name && $version)
-			{
-					$this->Raspberry->set(
-						array( 
-							'name' => $name,
-							'version' => $version
-							//'overclocking' => $this->execSSH($connection,)
-					));
+			if ($this->$execSSH($connection,'echo "'.$name.'" > /etc/hostname')) {
+				if ($this->$execSSH($connection,'reboot')) {
 					if ($this->Raspberry->save($this->request->data)) {
 						$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
 						$this->redirect(array('action' => 'index'));
-					} else {
-						$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-					} 
-			} else {
-					$this->Session->setFlash(__('Bad informations given. Please, try again.'), 'flash/error');
-				}
+				} else {
+				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+					}
+				} 
 			}
 		}
+	}
 
 /**
  * admin_edit method
@@ -236,7 +268,7 @@ public function add() {
 /**
  * connexion SSH method
  *
- * @throws Met
+ * @throws BadRequestException
  * @param string $connection
  * @param string $cmd
  * @return string
@@ -250,41 +282,5 @@ public function add() {
 		stream_set_blocking($query, true);
 		$result = stream_get_contents($query);
 		return $result;
-	}
-
-/**
- * settings method
- *
- * @throws Met
- * @param string $connection
- * @param string $cmd
- * @return string
- */
-
-	public function admin_settings($id = null) {
-		$this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			// $getaddress = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			// $address = $this->Raspberry->address->find('first', $getaddress);
-			debug($file = '\\\\10.10.10.103\Userdata\guisettings.xml');
-			if(file_exists($file)) 
-			{
-				$xml = Xml::toArray(Xml::build($file));
-				if ($xmlarray = array_merge($xml['settings'],$this->request->data)) {
-					$this->request->data = $xmlarray;
-					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-					$this->render('xml');
-				} else {
-					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-				}
-			}
-			else $this->Session->setFlash(__('Error'), 'flash/error');
-		} else {
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->request->data = $this->Raspberry->find('first', $options);
-		}
 	}
 }

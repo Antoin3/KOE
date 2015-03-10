@@ -31,5 +31,26 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	public $theme = "Cakestrap";
+	public $components = array('Session','DebugKit.Toolbar');
+
+/**
+ * @param Array $array
+ * @param String $root
+ * @return SimpleXMLElement $xml
+ */
+
+	public function arraytoxml($array,$root,$xml = false) {
+	    if($xml === false){
+	        $xml = new SimpleXMLElement($root);
+	    }
+	    foreach($array as $key) 
+	    	foreach ($key as $param => $value){
+	        if(is_array($value)){
+	            $this->arraytoxml($value, $xml->addChild($param));
+	        }else{
+	            $xml->addChild($param, $value);
+	        }
+	    }
+	    return $xml;
+	}
 }

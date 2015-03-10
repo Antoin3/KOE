@@ -1,17 +1,5 @@
 
 <div id="page-container" class="row">
-
-	<div id="sidebar" class="col-sm-3">
-		
-		<div class="actions">
-		
-			<ul class="list-group">
-				<li class="list-group-item"><?php echo $this->Html->link(__('New Raspberry'), array('action' => 'add'), array('class' => '')); ?></li>
-			</ul><!-- /.list-group -->
-			
-		</div><!-- /.actions -->
-		
-	</div><!-- /#sidebar .col-sm-3 -->
 	
 	<div id="page-content" class="col-sm-9">
 
@@ -25,9 +13,7 @@
 						<tr>
 							<th><?php echo $this->Paginator->sort('id'); ?></th>
 							<th><?php echo $this->Paginator->sort('name'); ?></th>
-							<th><?php echo $this->Paginator->sort('version'); ?></th>
 							<th><?php echo $this->Paginator->sort('address'); ?></th>
-							<th><?php echo $this->Paginator->sort('overcloking'); ?></th>
 							<th><?php echo $this->Paginator->sort('created'); ?></th>
 							<th><?php echo $this->Paginator->sort('modified'); ?></th>
 							<th class="actions"><?php echo __('Actions'); ?></th>
@@ -38,9 +24,7 @@
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['version']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['address']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['overcloking']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['created']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['modified']); ?>&nbsp;</td>
 		<td class="actions">

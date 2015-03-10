@@ -4,72 +4,83 @@
  * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
- * @package       Cake.View.Layouts
+ * @package       app.View.Layouts
  * @since         CakePHP(tm) v 0.10.0.1076
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+$cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 ?>
-<?php echo $this->Html->docType('html5'); ?> 
+<!DOCTYPE html>
 <html>
-	<head>
-		<?php echo $this->Html->charset(); ?>
-		<title>
-			<?php echo $cakeDescription ?>:
-			<?php echo $title_for_layout; ?>
-		</title>
-		<?php
-			echo $this->Html->meta('icon');
-			
-			echo $this->fetch('meta');
+<head>
+	<?php echo $this->Html->charset(); ?>
+	<title>
+		<?php echo $cakeDescription ?>:
+		<?php echo $title_for_layout; ?>
+	</title>
+	<?php
 
 			echo $this->Html->css('bootstrap');
-			echo $this->Html->css('main');
+			echo $this->Html->css('sb-admin');
+			echo $this->Html->css('plugins/morris');
+			echo $this->Html->css('../font-awesome/css/font-awesome');
 
 			echo $this->fetch('css');
-			
-			echo $this->Html->script('libs/jquery-1.10.2.min');
-			echo $this->Html->script('libs/bootstrap.min');
+	?>
+</head>
+<body>
+
+<div id="wrapper">
+
+				<?php echo $this->element('menu/top_menu'); ?>
+				<?php echo $this->element('menu/sidebar_menu'); ?>
+
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+				<div id="header">
+				</div>
+	           	<div id="content">
+					<?php echo $this->Session->flash(); ?>
+					<?php echo $this->fetch('content'); ?>
+				</div>
+				<div id="footer">
+					<?php echo "Silence is golden"; ?>
+				</div>
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+<?php
+			//jQuery
+			echo $this->Html->script('jquery.js');
+
+			//Bootstrap Core JavaScript
+			echo $this->Html->script('bootstrap');
+
+			//Morris Charts JavaScript
+			echo $this->Html->script('plugins/morris/raphael.min');
+			echo $this->Html->script('plugins/morris/morris');
+			echo $this->Html->script('plugins/morris/morris-data');
 			
 			echo $this->fetch('script');
-		?>
-	</head>
+?>
 
-	<body>
 
-		<div id="main-container">
-		
-			<div id="header" class="container">
-				<?php echo $this->element('menu/top_menu'); ?>
-			</div><!-- /#header .container -->
-			
-			<div id="content" class="container">
-				<?php echo $this->Session->flash(); ?>
-				<?php echo $this->fetch('content'); ?>
-			</div><!-- /#content .container -->
-			
-			<div id="footer" class="container">
-				<?php //Silence is golden ?>
-			</div><!-- /#footer .container -->
-			
-		</div><!-- /#main-container -->
-		
-		<div class="container">
-			<div class="well well-sm">
-				<small>
-					<?php echo $this->element('sql_dump'); ?>
-				</small>
-			</div><!-- /.well well-sm -->
-		</div><!-- /.container -->
-		
-	</body>
-
+</body>
 </html>
