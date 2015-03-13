@@ -1,12 +1,13 @@
 <?php
 App::uses('AppController', 'Controller');
+
 /**
  * Guisettings Controller
  *
  * @property Guisetting $Guisetting
  * @property PaginatorComponent $Paginator
- * @property SessionComponent $Session
  */
+
 class GuisettingsController extends AppController {
 
 /**
@@ -14,7 +15,7 @@ class GuisettingsController extends AppController {
  *
  * @var array
  */
-	public $components = array('Paginator', 'Session');
+	public $components = array('Paginator');
 
 /**
  * index method
@@ -48,63 +49,33 @@ class GuisettingsController extends AppController {
  */
 	public function add() {
 		if ($this->request->is('post')) {
-			$this->Guisetting->create();
-			if ($this->Guisetting->save($this->request->data)) {
-				$this->Session->setFlash(__('The guisetting has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
+			$filename = '\\\\10.10.10.103\Userdata\guisettings.xml';
+			if(file_exists($filename))
+			{
+				//Génération du futur ancien XML en DOMDocument
+				$olddom = new XmlDOM();
+				$olddom->preserveWhiteSpace = FALSE;
+				$olddom->load($filename);
+
+				//Génération du XML dont les valeurs remplaceront les nouvelles
+				$newdom = new XmlDOM();
+				$newdom->chargeXML($this->request->data);
+
+				//On remplace les valeurs de $olddom par celles de $newdom
+				$olddom->replaceDOM($newdom);
+
+				if ($olddom->save($filename))
+				{ 
+					$this->Session->setFlash(__('The new guisetting has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'index'));
+				}
+				else {
+					$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
+				}
 			} else {
-				$this->Session->setFlash(__('The guisetting could not be saved. Please, try again.'), 'flash/error');
+				$this->Session->setFlash(__($filename.' not exists'), 'flash/error');
 			}
 		}
-				$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
-		$gsAudiooutput = $this->Guisetting->GsAudiooutput->find('list');
-		$gsCache = $this->Guisetting->GsCache->find('list');
-		$gsCacheaudio = $this->Guisetting->GsCacheaudio->find('list');
-		$gsCachedvd = $this->Guisetting->GsCachedvd->find('list');
-		$gsCacheunknown = $this->Guisetting->GsCacheunknown->find('list');
-		$gsCachevideo = $this->Guisetting->GsCachevideo->find('list');
-		$gsDebug = $this->Guisetting->GsDebug->find('list');
-		$gsDisc = $this->Guisetting->GsDisc->find('list');
-		$gsDvds = $this->Guisetting->GsDvds->find('list');
-		$gsEpg = $this->Guisetting->GsEpg->find('list');
-		$gsFilelists = $this->Guisetting->GsFilelists->find('list');
-		$gsGeneral = $this->Guisetting->GsGeneral->find('list');
-		$gsInput = $this->Guisetting->GsInput->find('list');
-		$gsKaraoke = $this->Guisetting->GsKaraoke->find('list');
-		$gsLocale = $this->Guisetting->GsLocale->find('list');
-		$gsLookandfeel = $this->Guisetting->GsLookandfeel->find('list');
-		$gsMasterlock = $this->Guisetting->GsMasterlock->find('list');
-		$gsMusicfiles = $this->Guisetting->GsMusicfiles->find('list');
-		$gsMusiclibrary = $this->Guisetting->GsMusiclibrary->find('list');
-		$gsMusicplayer = $this->Guisetting->GsMusicplayer->find('list');
-		$gsMymusic = $this->Guisetting->GsMymusic->find('list');
-		$gsMyvideo = $this->Guisetting->GsMyvideo->find('list');
-		$gsNetwork = $this->Guisetting->GsNetwork->find('list');
-		$gsPicture = $this->Guisetting->GsPicture->find('list');
-		$gsPowermanagement = $this->Guisetting->GsPowermanagement->find('list');
-		$gsPvrmanager = $this->Guisetting->GsPvrmanager->find('list');
-		$gsPvrmenu = $this->Guisetting->GsPvrmenu->find('list');
-		$gsPvrparental = $this->Guisetting->GsPvrparental->find('list');
-		$gsPvrplayback = $this->Guisetting->GsPvrplayback->find('list');
-		$gsPvrpowermanagement = $this->Guisetting->GsPvrpowermanagement->find('list');
-		$gsPvrrecord = $this->Guisetting->GsPvrrecord->find('list');
-		$gsServices = $this->Guisetting->GsServices->find('list');
-		$gsScraper = $this->Guisetting->GsScrapers->find('list');
-		$gsScreensaver = $this->Guisetting->GsScreensaver->find('list');
-		$gsSlideshow = $this->Guisetting->GsSlideshow->find('list');
-		$gsSmb = $this->Guisetting->GsSmb->find('list');
-		$gsSubtitles = $this->Guisetting->GsSubtitles->find('list');
-		$gsSystem = $this->Guisetting->GsSystem->find('list');
-		$gsVideolibrary = $this->Guisetting->GsVideolibrary->find('list');
-		$gsVideoplayer = $this->Guisetting->GsVideoplayer->find('list');
-		$gsVideoscreen = $this->Guisetting->GsVideoscreen->find('list');
-		$gsWeather = $this->Guisetting->GsWeather->find('list');
-		$gsWindow = $this->Guisetting->GsWindow->find('list');
-		$gsSkinsettings = $this->Guisetting->GsSkinsettings->find('list');
-		$gsDefaultvideosettings = $this->Guisetting->GsDefaultvideosettings->find('list');
-		$gsViewstates = $this->Guisetting->GsViewstates->find('list');
-		$gsAudio = $this->Guisetting->GsAudio->find('list');
-		$this->set(compact('gsAudiocds', 'gsAudiooutput', 'gsCache', 'gsCacheaudio', 'gsCachedvd', 'gsCacheunknown', 'gsCachevideo', 'gsDebug', 'gsDisc', 'gsDvds', 'gsEpg', 'gsFilelists', 'gsGeneral', 'gsInput', 'gsKaraoke', 'gsLocale', 'gsLookandfeel', 'gsMasterlock', 'gsMusicfiles', 'gsMusiclibrary', 'gsMusicplayer', 'gsMymusic', 'gsMyvideo', 'gsNetwork', 'gsPicture', 'gsPowermanagement', 'gsPvrmanager', 'gsPvrmenu', 'gsPvrparental', 'gsPvrplayback', 'gsPvrpowermanagement', 'gsPvrrecord', 'gsServices', 'gsScrapers', 'gsScreensaver', 'gsSlideshow', 'gsSmb', 'gsSubtitles', 'gsSystem', 'gsVideolibrary', 'gsVideoplayer', 'gsVideoscreen', 'gsWeather', 'gsWindow', 'gsSkinsettings', 'gsDefaultvideosettings', 'gsViewstates', 'gsAudio'));
 	}
 
 /**
@@ -130,7 +101,7 @@ class GuisettingsController extends AppController {
 			$options = array('conditions' => array('Guisetting.' . $this->Guisetting->primaryKey => $id));
 			$this->request->data = $this->Guisetting->find('first', $options);
 		}
-				$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
+		$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
 		$gsAudiooutput = $this->Guisetting->GsAudiooutput->find('list');
 		$gsCache = $this->Guisetting->GsCache->find('list');
 		$gsCacheaudio = $this->Guisetting->GsCacheaudio->find('list');
@@ -154,7 +125,7 @@ class GuisettingsController extends AppController {
 		$gsMymusic = $this->Guisetting->GsMymusic->find('list');
 		$gsMyvideo = $this->Guisetting->GsMyvideo->find('list');
 		$gsNetwork = $this->Guisetting->GsNetwork->find('list');
-		$gsPicture = $this->Guisetting->GsPicture->find('list');
+		$gsPictures = $this->Guisetting->GsPictures->find('list');
 		$gsPowermanagement = $this->Guisetting->GsPowermanagement->find('list');
 		$gsPvrmanager = $this->Guisetting->GsPvrmanager->find('list');
 		$gsPvrmenu = $this->Guisetting->GsPvrmenu->find('list');
@@ -244,7 +215,7 @@ class GuisettingsController extends AppController {
 				$this->Session->setFlash(__('The guisetting could not be saved. Please, try again.'), 'flash/error');
 			}
 		}
-				$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
+		$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
 		$gsAudiooutput = $this->Guisetting->GsAudiooutput->find('list');
 		$gsCache = $this->Guisetting->GsCache->find('list');
 		$gsCacheaudio = $this->Guisetting->GsCacheaudio->find('list');
@@ -268,7 +239,7 @@ class GuisettingsController extends AppController {
 		$gsMymusic = $this->Guisetting->GsMymusic->find('list');
 		$gsMyvideo = $this->Guisetting->GsMyvideo->find('list');
 		$gsNetwork = $this->Guisetting->GsNetwork->find('list');
-		$gsPicture = $this->Guisetting->GsPicture->find('list');
+		$gsPictures = $this->Guisetting->GsPictures->find('list');
 		$gsPowermanagement = $this->Guisetting->GsPowermanagement->find('list');
 		$gsPvrmanager = $this->Guisetting->GsPvrmanager->find('list');
 		$gsPvrmenu = $this->Guisetting->GsPvrmenu->find('list');
@@ -318,7 +289,7 @@ class GuisettingsController extends AppController {
 			$options = array('conditions' => array('Guisetting.' . $this->Guisetting->primaryKey => $id));
 			$this->request->data = $this->Guisetting->find('first', $options);
 		}
-				$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
+		$gsAudiocds = $this->Guisetting->GsAudiocds->find('list');
 		$gsAudiooutput = $this->Guisetting->GsAudiooutput->find('list');
 		$gsCache = $this->Guisetting->GsCache->find('list');
 		$gsCacheaudio = $this->Guisetting->GsCacheaudio->find('list');
@@ -342,7 +313,7 @@ class GuisettingsController extends AppController {
 		$gsMymusic = $this->Guisetting->GsMymusic->find('list');
 		$gsMyvideo = $this->Guisetting->GsMyvideo->find('list');
 		$gsNetwork = $this->Guisetting->GsNetwork->find('list');
-		$gsPicture = $this->Guisetting->GsPicture->find('list');
+		$gsPictures = $this->Guisetting->GsPictures->find('list');
 		$gsPowermanagement = $this->Guisetting->GsPowermanagement->find('list');
 		$gsPvrmanager = $this->Guisetting->GsPvrmanager->find('list');
 		$gsPvrmenu = $this->Guisetting->GsPvrmenu->find('list');

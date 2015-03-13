@@ -1,5 +1,17 @@
 
 <div id="page-container" class="row">
+
+	<div id="sidebar" class="col-sm-3">
+		
+		<div class="actions">
+		
+			<ul class="list-group">
+				<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?></li>
+			</ul><!-- /.list-group -->
+		
+		</div><!-- /.actions -->
+		
+	</div><!-- /#sidebar .col-sm-3 -->
 	
 	<div id="page-content" class="col-sm-9">
 
@@ -16,6 +28,15 @@
 					</div><!-- .form-group -->
 					<div class="form-group">
 						<?php echo $this->Form->input('address', array('class' => 'form-control')); ?>
+					</div><!-- .form-group -->
+					<div class="form-group">
+						<?php echo $this->Form->input('description', array('class' => 'form-control')); ?>
+					</div><!-- .form-group -->
+					<div class="form-group">
+						<?php echo $this->Form->input('image', array('class' => 'form-control')); ?>
+					</div><!-- .form-group -->
+					<div class="form-group">
+						<?php echo $this->Form->input('master', array('class' => 'form-control')); ?>
 					</div><!-- .form-group -->
 
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>

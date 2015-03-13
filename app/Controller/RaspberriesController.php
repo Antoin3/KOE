@@ -47,50 +47,13 @@ class RaspberriesController extends AppController {
  */
 	public function add() {
 		if ($this->request->is('post')) {
-			$connection = $this->connexionSSH(
-					$this->request->data['Raspberry']['address'],
-					'root','openelec');
-			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
-			if(file_exists($file)) {
-				//Create new DomDocuemnt
-			    $dom = new DomDocument();
-			    $dom->load($file);
-
-			    // Find the parent node 
-				$xpath = new DomXPath($dom); 
-
-				//Create the new element to insert/replace
-			    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
-
-				//Test if node already exists
-			    $node = $dom->getElementsByTagName('hostname');
-
-			    if ($node->length==0) {
-			    	// new node will be inserted before this node 
-					$next = $xpath->query("//settings/system/wizard_completed");
-			    	// Insert the new element 
-					$next->item(0)->parentNode->insertBefore($newhostname, $next->nextSibling); 
-			    }
-			    else
-			    {
-			    	//Parent node
-		    		$oldhostname = $xpath->query("//settings/system/hostname");
-			    	//Replace
-			    	$oldhostname->item(0)->parentNode->replaceChild($newhostname, $oldhostname->item(0));
-			    }
-
-				$dom->save($file);
-				$this->Raspberry->create();
-				if ($this->Raspberry->save($this->request->data)) {
-					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'index'));
-				} else {
+			$this->Raspberry->create();
+			if ($this->Raspberry->save($this->request->data)) {
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
+			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-				}
 			}
-			else {
-				$this->Session->setFlash(__('oe_settings.xml not found.'), 'flash/error');
-				}
 		}
 	}
 
@@ -174,20 +137,12 @@ class RaspberriesController extends AppController {
  */
 	public function admin_add() {
 		if ($this->request->is('post')) {
-			$connection = $this->connexionSSH(
-					$this->request->data['Raspberry']['address'],
-					'root','openelec');
-			$name = $this->request->data['Raspberry']['name'];
 			$this->Raspberry->create();
-			if ($this->$execSSH($connection,'echo "'.$name.'" > /etc/hostname')) {
-				if ($this->$execSSH($connection,'reboot')) {
-					if ($this->Raspberry->save($this->request->data)) {
-						$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-						$this->redirect(array('action' => 'index'));
-				} else {
+			if ($this->Raspberry->save($this->request->data)) {
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
+			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-					}
-				} 
 			}
 		}
 	}
@@ -242,40 +197,79 @@ class RaspberriesController extends AppController {
 	}
 
 /**
- * connexion SSH method
+ *settings method
  *
  * @throws NotFoundException
- * @param string $ip
- * @param string $username
- * @param string $pass
- * @return Ressource
+ * @param string $id
+ * @return void
  */
-	public function connexionSSH($ip,$username,$pass)
-	{
-		if (!$connection = ssh2_connect($ip, 22))
-		{
-		    throw new NotFoundException(__('Failed to connect to raspberry'));
+	public function settings($id = null) {
+		if (!$this->Raspberry->exists($id)) {
+			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		ssh2_auth_password($connection,$username,$pass);
-		return $connection;
+		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+		$this->set('raspberry', $this->Raspberry->find('first', $options));
 	}
 
 /**
- * connexion SSH method
+ *gs form method
  *
- * @throws BadRequestException
- * @param string $connection
- * @param string $cmd
- * @return string
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
  */
-	public function execSSH($connection,$cmd)
-	{
-		$query = ssh2_exec($connection,$cmd);
-		if (!$query) {
-		    throw new BadRequestException();
+	public function gs_form($id = null) {
+		if (!$this->Raspberry->exists($id)) {
+			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		stream_set_blocking($query, true);
-		$result = stream_get_contents($query);
-		return $result;
+		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+		$this->set('raspberry', $this->Raspberry->find('first', $options));
 	}
+
+	/**
+ * gs_edit method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */
+	public function gs_edit($id = null) {
+	$this->Raspberry->id = $id;
+		if (!$this->Raspberry->exists($id)) {
+			throw new NotFoundException(__('Invalid raspberry'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			//Récupération de l'address
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\guisettings.xml';
+			if(file_exists($filename))
+			{
+				//Génération du futur ancien XML en DOMDocument
+				$olddom = new XmlDOM();
+				$olddom->preserveWhiteSpace = FALSE;
+				$olddom->load($filename);
+
+				//Génération du XML dont les valeurs remplaceront les nouvelles
+				$newdom = new XmlDOM();
+				$newdom->chargeXML($this->request->data);
+
+				//On remplace les valeurs de $olddom par celles de $newdom
+				$olddom->replaceDOM($newdom);
+
+				if ($olddom->save($filename))
+				{ 
+					$this->Session->setFlash(__('The new guisetting has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'index'));
+				}
+				else {
+					$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
+				}
+			} else {
+				$this->Session->setFlash(__($filename.' not exists'), 'flash/error');
+			}
+		}
+	}
+
 }
