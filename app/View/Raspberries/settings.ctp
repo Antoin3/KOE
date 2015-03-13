@@ -43,7 +43,7 @@
 					 
 			        </div>
 			        <div class="col-md-5">
-			        <?php echo $displaygs.'<p>'.$this->Form->postLink(__($labelgs), array('action' => 'gs_form', $raspberry['Raspberry']['id']),array('class' => 'btn btn-default')).'</p>'; ?>
+			        <?php echo $displaygs.'<p>'.$this->Html->link(__($labelgs), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'guisettings'),array('class' => 'btn btn-default')).'</p>'; ?>
 			        </div>
 			      </div>
 
@@ -66,7 +66,7 @@
 
 			        </div>
 			        <div class="col-md-5">
-			        <?php echo $displayas.'<p>'.$this->Form->postLink(__($labelas), array('action' => 'as_form', $raspberry['Raspberry']['id']),array('class' => 'btn btn-default')).'</p>'; ?>
+			        <?php echo $displayas.'<p>'.$this->Html->link(__($labelas), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'advancedsettings'),array('class' => 'btn btn-default')).'</p>'; ?>
 			        </div>
 			      </div>
 
@@ -89,7 +89,7 @@
 					 
 			        </div>
 			        <div class="col-md-5">
-			        <?php echo $displayoes.'<p>'.$this->Form->postLink(__($labeloes), array('action' => 'oes_form', $raspberry['Raspberry']['id']),array('class' => 'btn btn-default')).'</p>'; ?>
+			        <?php echo $displayoes.'<p>'.$this->Html->link(__($labeloes), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'oe_settings'),array('class' => 'btn btn-default')).'</p>'; ?>
 			    </div>
 			</div>
 			

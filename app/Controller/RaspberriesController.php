@@ -212,63 +212,60 @@ class RaspberriesController extends AppController {
 	}
 
 /**
- *gs form method
+ *form method
  *
  * @throws NotFoundException
  * @param string $id
+ * @param string $xml
  * @return void
  */
-	public function gs_form($id = null) {
+	public function form($id = null, $xml = null) {
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
 		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 		$this->set('raspberry', $this->Raspberry->find('first', $options));
-	}
-
-	/**
- * gs_edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function gs_edit($id = null) {
-	$this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
+		$this->set('xml',$xml);
 		if ($this->request->is('post') || $this->request->is('put')) {
-			//Récupération de l'address
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$raspberry = $this->Raspberry->find('first', $options);
+			if ($xml != 'oe_settings') {
+                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\''.$xml.'.xml';
+            }
+            else {
+                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\''.$xml.'.xml';
+            }
+            
+            if(file_exists($filename)) 
+                {
+                	debug($this->request->data);
+					//Génération du XML dont les valeurs remplaceront les nouvelles
+					$newdom = new XmlDOM();
+					$newdom->chargeXML($this->request->data);
 
-			$filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\guisettings.xml';
-			if(file_exists($filename))
-			{
-				//Génération du futur ancien XML en DOMDocument
-				$olddom = new XmlDOM();
-				$olddom->preserveWhiteSpace = FALSE;
-				$olddom->load($filename);
+					//On remplace les valeurs de $olddom par celles de $newdom
+					$dom->replaceDOM($newdom);
 
-				//Génération du XML dont les valeurs remplaceront les nouvelles
-				$newdom = new XmlDOM();
-				$newdom->chargeXML($this->request->data);
-
-				//On remplace les valeurs de $olddom par celles de $newdom
-				$olddom->replaceDOM($newdom);
-
-				if ($olddom->save($filename))
-				{ 
-					$this->Session->setFlash(__('The new guisetting has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'index'));
+					if ($dom->save($filename))
+					{ 
+						$this->Session->setFlash(__('The new '.$xml.' has been saved'), 'flash/success');
+						$this->redirect(array('action' => 'index'));
+					}
+					else {
+						$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
+					}
+				} else {
+						//Génération du futur XML en DOMDocument
+						$dom = new XmlDOM();
+						$dom->chargeXML($this->request->data);
+						if ($dom->save($filename))
+						{ 
+							$this->Session->setFlash(__('The '.$xml.' has been created'), 'flash/success');
+							$this->redirect(array('action' => 'index'));
+						}
+						else {
+						$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
+						}
 				}
-				else {
-					$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
-				}
-			} else {
-				$this->Session->setFlash(__($filename.' not exists'), 'flash/error');
-			}
 		}
 	}
 

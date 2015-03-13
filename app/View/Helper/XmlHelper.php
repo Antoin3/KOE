@@ -16,19 +16,22 @@ public $helpers = array('Form');
 		$hval += 1;
 	    foreach ($dom->childNodes as $node)
 	    {
-	    	$nodeattributes = '';
-	    	if ($node->hasAttributes()) {
-	    		foreach ($node->attributes as $attr) {
-				    $name = $attr->nodeName;
-				    $value = $attr->nodeValue;
-				    $nodeattributes .= $name.'='.$value;
-				 }
-			}
 	        if($node->hasChildNodes()) {
-	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$node->nodeName.'"><p><button type="button" class="btn btn-xs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'</h'.$hval.'></button></p>';
-	        	echo '<ul id="'.$node->nodeName.'" class="collapse"><li>';
+	        	$nodeattributes = '';
+	        	$datatargetattr = '';
+		    	if ($node->hasAttributes()) {
+		    		foreach ($node->attributes as $attr) {
+					    $name = $attr->nodeName;
+					    $value = $attr->nodeValue;
+					    $nodeattributes .= $name.'='.$value.' ';
+					    $datatargetattr .= $name.$value;
+					 }
+				}
+	        	$datatarget = is_null($inputval) ? $node->nodeName : str_replace('.','-',$inputval).$node->nodeName.'-'.str_replace('.','-',$datatargetattr);
+	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$datatarget.'"><p><button type="button" class="btn btn-xs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'<i class="fa fa-fw fa-caret-down"></i></h'.$hval.'></button></p>';
+	        	echo '<ul id="'.$datatarget.'" class="collapse">';
 	            $this->inputXML($node,$inputval.$node->nodeName.'.',$hval);
-	            echo '</li></ul>';
+	            echo '</ul>';
 	        }
 	        else {
 		        substr($inputval,0,-1);
