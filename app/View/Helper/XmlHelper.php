@@ -20,15 +20,17 @@ public $helpers = array('Form');
 	        	$nodeattributes = '';
 	        	$datatargetattr = '';
 		    	if ($node->hasAttributes()) {
+		    		$nodeattributes = '(';
 		    		foreach ($node->attributes as $attr) {
 					    $name = $attr->nodeName;
 					    $value = $attr->nodeValue;
 					    $nodeattributes .= $name.'='.$value.' ';
 					    $datatargetattr .= $name.$value;
 					 }
+					 $nodeattributes .= ')';
 				}
 	        	$datatarget = is_null($inputval) ? $node->nodeName : str_replace('.','-',$inputval).$node->nodeName.'-'.str_replace('.','-',$datatargetattr);
-	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$datatarget.'"><p><button type="button" class="btn btn-xs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'<i class="fa fa-fw fa-caret-down"></i></h'.$hval.'></button></p>';
+	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$datatarget.'"><p><button type="button" class="btn btn-xxs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'<i class="fa fa-fw fa-caret-down"></i></h'.$hval.'></button></p>';
 	        	echo '<ul id="'.$datatarget.'" class="collapse">';
 	            $this->inputXML($node,$inputval.$node->nodeName.'.',$hval);
 	            echo '</ul>';
@@ -36,7 +38,7 @@ public $helpers = array('Form');
 	        else {
 		        substr($inputval,0,-1);
 	        	if ($node->nodeValue != '') {
-	        		echo $this->Form->input($inputval, array('class' => 'form-control','value' => $node->nodeValue));
+	        		echo '</a><div class="form-group">'.$this->Form->input($inputval, array('class' => 'form-control','value' => $node->nodeValue)).'</div>';
 	        	}
 	       	}
 	    }

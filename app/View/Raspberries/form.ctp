@@ -6,13 +6,15 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                                <i class="fa fa-fw fa-desktop"></i>  
+                                <?php $id = is_null($raspberry['Raspberry']['id']) ? '' : $raspberry['Raspberry']['id'];
+                                 echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index', $id)); ?>
                             </li>
                             <li>
-                                <i class="fa fa-list-ul"></i> Parametres
+                                <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings')); ?>
                             </li>
                             <li class="active">
-                                <i class="fa fa-list-ul"></i> Modification de <?php echo $xml; ?>.xml
+                                <i class="fa fa-pencil-square-o"></i> Modification de <?php echo $xml; ?>.xml
                             </li>
                         </ol>
                     </div>

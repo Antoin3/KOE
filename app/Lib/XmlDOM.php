@@ -46,7 +46,7 @@ class XmlDOM extends DomDocument {
 	 * 
 	 */
 
-		public function chargeXML($dom,$data) {
+		public function chargeXML($data, DOMElement $dom = null) {
 			//Dans le cas de la récursivité, soit on prend l'objet appelant ($this) soit l'élément suivant de l'array
 			$dom = is_null($dom) ? $this : $dom;
 	 
@@ -67,11 +67,39 @@ class XmlDOM extends DomDocument {
 	                    $dom->appendChild($node);
 	                }
 	                 
-	                $this->changeXML($dataElement, $node);
+	                $this->chargeXML($dataElement, $node);
 	                 
 	            }
 	        } else {
 	            $dom->appendChild($this->createTextNode($data));
 	        }
 		}
+
+/**
+*
+* @param DOMElement $newdom
+* 
+* @param DOMElement[optional] $olddom
+* 
+*/
+
+	public function replaceDOM($newdom, DOMElement $olddom = null) {
+		$olddom = is_null($olddom) ? $this : $olddom;
+		foreach ($newdom->childNodes as $newnode) {
+			foreach ($olddom->childNodes as $node) {
+				if (($node->hasChildNodes()) && ($newnode->hasChildNodes())) {
+		            $this->replaceDOM($newnode, $node);
+		        }
+		        else {
+		        	if (($node->nodeValue != '') && ($newnode->nodeValue != ''))
+		        		{	
+		        			$node->nodeValue = $newnode->nodeValue;
+		        			if ($node->parentNode->hasAttribute('default')) $node->parentNode->removeAttribute('default');
+		        		}
+		    	}
+		    	$newnode = is_null($newnode->nextSibling) ? $newnode : $newnode->nextSibling;
+			}
+			if ($newdom->firstChild == $newnode) break;
 		}
+	}
+}

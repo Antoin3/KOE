@@ -42,8 +42,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 
 <div id="wrapper">
-				<!--<?php echo $this->element(menu/top_menu); ?>
-				<?php echo $this->element(menu/sidebar_menu); ?> -->
+				<?php //echo $this->element('menu/top_menu'); ?>
+				<?php //echo $this->element('menu/sidebar_menu'); ?>
         <div id="page-wrapper">
 
             <div class="container-fluid">

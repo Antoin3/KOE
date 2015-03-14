@@ -10,7 +10,7 @@
                                 <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                             </li>
                             <li class="active">
-                                <i class="fa fa-list-ul"></i> Parametres 
+                                <i class="fa fa-cogs"></i> Parametres 
                             </li>
                         </ol>
                     </div>

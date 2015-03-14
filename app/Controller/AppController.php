@@ -32,5 +32,43 @@ App::uses('XmlDOM', 'Lib');
  */
 class AppController extends Controller {
 	public $components = array('Session','DebugKit.Toolbar');
+
+	/**
+ * connexion SSH method
+ *
+ * @throws NotFoundException
+ * @param string $ip
+ * @param string $username
+ * @param string $pass
+ * @return Ressource
+ */
+	public function connexionSSH($ip,$username,$pass)
+	{
+		if (!$connection = ssh2_connect($ip, 22))
+		{
+		    throw new NotFoundException(__('Failed to connect to raspberry'));
+		}
+		ssh2_auth_password($connection,$username,$pass);
+		return $connection;
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws BadRequestException
+ * @param string $connection
+ * @param string $cmd
+ * @return string
+ */
+	public function execSSH($connection,$cmd)
+	{
+		$query = ssh2_exec($connection,$cmd);
+		if (!$query) {
+		    throw new BadRequestException();
+		}
+		stream_set_blocking($query, true);
+		$result = stream_get_contents($query);
+		return $result;
+	}
 	}
 

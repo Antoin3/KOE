@@ -228,45 +228,45 @@ class RaspberriesController extends AppController {
 		$this->set('xml',$xml);
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$raspberry = $this->Raspberry->find('first', $options);
+
 			if ($xml != 'oe_settings') {
-                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\''.$xml.'.xml';
+                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\'.$xml.'.xml';
             }
             else {
-                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\''.$xml.'.xml';
+                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\\'.$xml.'.xml';
             }
-            
+            $dom = new XmlDOM();
+            $dom->preserveWhiteSpace = false;
             if(file_exists($filename)) 
                 {
-                	debug($this->request->data);
 					//Génération du XML dont les valeurs remplaceront les nouvelles
 					$newdom = new XmlDOM();
 					$newdom->chargeXML($this->request->data);
 
+					$dom->load($filename);
+
 					//On remplace les valeurs de $olddom par celles de $newdom
 					$dom->replaceDOM($newdom);
 
-					if ($dom->save($filename))
-					{ 
-						$this->Session->setFlash(__('The new '.$xml.' has been saved'), 'flash/success');
-						$this->redirect(array('action' => 'index'));
-					}
-					else {
-						$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
-					}
 				} else {
-						//Génération du futur XML en DOMDocument
-						$dom = new XmlDOM();
-						$dom->chargeXML($this->request->data);
-						if ($dom->save($filename))
-						{ 
-							$this->Session->setFlash(__('The '.$xml.' has been created'), 'flash/success');
-							$this->redirect(array('action' => 'index'));
-						}
-						else {
-						$this->Session->setFlash(__('Error when modifying '.$filename), 'flash/error');
-						}
+					//Génération du futur XML en DOMDocument
+					$dom->chargeXML($this->request->data);
+				}
+
+				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
+				$this->execSSH($connection,'systemctl stop kodi');
+				sleep(2);
+				if ($dom->save($filename))
+				{
+					$this->execSSH($connection,'systemctl start kodi');
+					sleep(1);
+					$this->execSSH($connection,'systemctl restart kodi');
+					sleep(1);
+					$this->Session->setFlash(__('The new '.$xml.' has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'settings', $raspberry['Raspberry']['id'],'guisettings'));
+				} else {
+					$this->Session->setFlash(__('Error when saving '.$xml), 'flash/error');
 				}
 		}
 	}
-
 }
