@@ -2,7 +2,7 @@
 <div id="page-container" class="row">
 	
 	<div id="page-content" class="col-sm-9">
-
+	<div></div>
 		<h2><?php echo __('Add Raspberry'); ?></h2>
 
 		<div class="raspberries form">

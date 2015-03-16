@@ -14,27 +14,34 @@
 							<th><?php echo $this->Paginator->sort('id'); ?></th>
 							<th><?php echo $this->Paginator->sort('name'); ?></th>
 							<th><?php echo $this->Paginator->sort('address'); ?></th>
-							<th><?php echo $this->Paginator->sort('created'); ?></th>
-							<th><?php echo $this->Paginator->sort('modified'); ?></th>
+							<th><?php echo $this->Paginator->sort('BDD'); ?></th>
+							<th><?php echo $this->Paginator->sort('NAS'); ?></th>
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
+					<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
 					<tbody>
 <?php foreach ($raspberries as $raspberry): ?>
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['address']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['created']); ?>&nbsp;</td>
-		<td><?php echo h($raspberry['Raspberry']['modified']); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('BDD', array('class' => 'form-control', 'label' => 'adresse BDD')); ?>&nbsp;
+		<?php echo $this->Form->input('loginBDD', array('class' => 'form-control', 'label' => 'login')); ?>&nbsp;
+		<?php echo $this->Form->input('mdpBDD', array('class' => 'form-control', 'label' => 'mdp')); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('NAS', array('class' => 'form-control', 'label' => 'adresse NAS')); ?>&nbsp;
+		<?php echo $this->Form->input('cheminMusic', array('class' => 'form-control', 'label' => 'dossier music')); ?>&nbsp;
+		<?php echo $this->Form->input('cheminVideo', array('class' => 'form-control', 'label' => 'dossier video')); ?>&nbsp;
+		<?php echo $this->Form->input('cheminTVShow', array('class' => 'form-control', 'label' => 'dossier TVShow')); ?>&nbsp;
+		<?php echo $this->Form->input('loginNAS', array('class' => 'form-control', 'label' => 'login')); ?>&nbsp;
+		<?php echo $this->Form->input('mdpNAS', array('class' => 'form-control', 'label' => 'mdp')); ?>&nbsp;</td>
 		<td class="actions">
-			<?php echo $this->Html->link(__('Synchronisation'), array('action' => 'synchroniser', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-default btn-xs')); ?>
-			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs', 'id' => 'edit')); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs', 'id' => 'delete'), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?>
-			<?php echo $this->Html->link(__('Plugin'), array('action' => 'add_plugin', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-default btn-xs', 'id' => 'addPlugin')); ?>
+		&nbsp;
+		<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>
+<?php echo $this->Form->end(); ?>
 					</tbody>
 				</table>
 			</div><!-- /.table-responsive -->

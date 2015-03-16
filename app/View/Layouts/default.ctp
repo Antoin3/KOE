@@ -67,6 +67,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
 			//Bootstrap Core JavaScript
 			echo $this->Html->script('bootstrap');
+			echo $this->Html->script('fonctions.js');
+
 
 			//Morris Charts JavaScript
 			echo $this->Html->script('plugins/morris/raphael.min');
