@@ -4,14 +4,93 @@ App::uses('AppModel', 'Model');
  * Setting Model
  *
  * @property Raspberries $Raspberries
- * @property Mediasources $Mediasources
- * @property Passwords $Passwords
- * @property ConfigRaspberries $ConfigRaspberries
- * @property Guisettings $Guisettings
- * @property Sources $Sources
  */
 class Setting extends AppModel {
 
+/**
+ * Display field
+ *
+ * @var string
+ */
+	public $displayField = 'name';
+
+/**
+ * Validation rules
+ *
+ * @var array
+ */
+	public $validate = array(
+		'id' => array(
+			'blank' => array(
+				'rule' => array('blank'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'name' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'path' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'extension' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'created' => array(
+			'datetime' => array(
+				'rule' => array('datetime'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'modified' => array(
+			'datetime' => array(
+				'rule' => array('datetime'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'raspberries_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+	);
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
@@ -23,42 +102,7 @@ class Setting extends AppModel {
 	public $belongsTo = array(
 		'Raspberries' => array(
 			'className' => 'Raspberries',
-			'foreignKey' => 'Raspberries_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Mediasources' => array(
-			'className' => 'Mediasources',
-			'foreignKey' => 'mediasources_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Passwords' => array(
-			'className' => 'Passwords',
-			'foreignKey' => 'passwords_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'ConfigRaspberries' => array(
-			'className' => 'ConfigRaspberries',
-			'foreignKey' => 'config_raspberries_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Guisettings' => array(
-			'className' => 'Guisettings',
-			'foreignKey' => 'guisettings_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Sources' => array(
-			'className' => 'Sources',
-			'foreignKey' => 'sources_id',
+			'foreignKey' => 'raspberries_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

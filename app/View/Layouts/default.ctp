@@ -33,6 +33,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			echo $this->Html->css('bootstrap');
 			echo $this->Html->css('sb-admin');
 			echo $this->Html->css('plugins/morris');
+			echo $this->Html->css('carousel');
 			echo $this->Html->css('../font-awesome/css/font-awesome');
 
 			echo $this->fetch('css');
@@ -46,9 +47,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         <div id="page-wrapper">
 
             <div class="container-fluid">
-				<div id="header">
-				</div>
-	           	<div id="content">
 					<?php echo $this->Session->flash(); ?>
 					<?php echo $this->fetch('content'); ?>
 				</div>
