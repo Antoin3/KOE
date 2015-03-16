@@ -19,6 +19,16 @@ class Raspberry extends AppModel {
  * @var array
  */
 	public $validate = array(
+		'id' => array(
+			'blank' => array(
+				'rule' => array('blank'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'name' => array(
 			'notEmpty' => array(
 				'rule' => array('notEmpty'),
@@ -30,6 +40,14 @@ class Raspberry extends AppModel {
 			),
 		),
 		'address' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
 			'ip' => array(
 				'rule' => array('ip'),
 				//'message' => 'Your custom message here',

@@ -47,50 +47,53 @@ class RaspberriesController extends AppController {
  */
 	public function add() {
 		if ($this->request->is('post')) {
-			$connection = $this->connexionSSH(
-					$this->request->data['Raspberry']['address'],
-					'root','openelec');
-			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
-			if(file_exists($file)) {
-				//Create new DomDocuemnt
-			    $dom = new DomDocument();
-			    $dom->load($file);
+			$this->Raspberry->create();
+			if ($this->Raspberry->save($this->request->data)) {
+                $filepath = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
 
-			    // Find the parent node 
-				$xpath = new DomXPath($dom); 
+                $oesettings = '<openelec>
+									<addon_config/>
+									<settings>
+										<system>
+											<wizard_completed>True</wizard_completed>
+										<hostname>'.$this->request->data['Raspberry']['name'].'</hostname></system>
+										<connman>
+											<wizard_completed>True</wizard_completed>
+										</connman>
+										<services>
+											<wizard_completed>True</wizard_completed>
+										</services>
+										<about>
+											<wizard_completed>True</wizard_completed>
+										</about>
+										<openelec>
+											<wizard_completed>True</wizard_completed>
+										</openelec>
+									</settings>
+								</openelec>';
+                //Génération du futur XML en DOMDocument
+				$dom = new XmlDOM();
+            	$dom->preserveWhiteSpace = false;
+				$dom->loadXML($oesettings);
 
-				//Create the new element to insert/replace
-			    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
+				$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
+				$this->execSSH($connection,'systemctl stop kodi');
+				sleep(2);
+				if ($dom->save($filepath))
+				{
+					$this->execSSH($connection,'systemctl start kodi');
+					sleep(1);
+					$this->execSSH($connection,'systemctl restart kodi');
+					sleep(1);
 
-				//Test if node already exists
-			    $node = $dom->getElementsByTagName('hostname');
-
-			    if ($node->length==0) {
-			    	// new node will be inserted before this node 
-					$next = $xpath->query("//settings/system/wizard_completed");
-			    	// Insert the new element 
-					$next->item(0)->parentNode->insertBefore($newhostname, $next->nextSibling); 
-			    }
-			    else
-			    {
-			    	//Parent node
-		    		$oldhostname = $xpath->query("//settings/system/hostname");
-			    	//Replace
-			    	$oldhostname->item(0)->parentNode->replaceChild($newhostname, $oldhostname->item(0));
-			    }
-
-				$dom->save($file);
-				$this->Raspberry->create();
-				if ($this->Raspberry->save($this->request->data)) {
 					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
 					$this->redirect(array('action' => 'index'));
 				} else {
+					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				}
+			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-				}
 			}
-			else {
-				$this->Session->setFlash(__('oe_settings.xml not found.'), 'flash/error');
-				}
 		}
 	}
 
@@ -174,20 +177,12 @@ class RaspberriesController extends AppController {
  */
 	public function admin_add() {
 		if ($this->request->is('post')) {
-			$connection = $this->connexionSSH(
-					$this->request->data['Raspberry']['address'],
-					'root','openelec');
-			$name = $this->request->data['Raspberry']['name'];
 			$this->Raspberry->create();
-			if ($this->$execSSH($connection,'echo "'.$name.'" > /etc/hostname')) {
-				if ($this->$execSSH($connection,'reboot')) {
-					if ($this->Raspberry->save($this->request->data)) {
-						$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-						$this->redirect(array('action' => 'index'));
-				} else {
+			if ($this->Raspberry->save($this->request->data)) {
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
+			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-					}
-				} 
 			}
 		}
 	}
@@ -242,40 +237,17 @@ class RaspberriesController extends AppController {
 	}
 
 /**
- * connexion SSH method
+ *settings method
  *
  * @throws NotFoundException
- * @param string $ip
- * @param string $username
- * @param string $pass
- * @return Ressource
+ * @param string $id
+ * @return void
  */
-	public function connexionSSH($ip,$username,$pass)
-	{
-		if (!$connection = ssh2_connect($ip, 22))
-		{
-		    throw new NotFoundException(__('Failed to connect to raspberry'));
+	public function settings($id = null) {
+		if ($this->Raspberry->exists($id)) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$this->set('raspberry', $this->Raspberry->find('first', $options));
 		}
-		ssh2_auth_password($connection,$username,$pass);
-		return $connection;
 	}
 
-/**
- * connexion SSH method
- *
- * @throws BadRequestException
- * @param string $connection
- * @param string $cmd
- * @return string
- */
-	public function execSSH($connection,$cmd)
-	{
-		$query = ssh2_exec($connection,$cmd);
-		if (!$query) {
-		    throw new BadRequestException();
-		}
-		stream_set_blocking($query, true);
-		$result = stream_get_contents($query);
-		return $result;
-	}
 }

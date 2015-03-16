@@ -13,13 +13,7 @@ class SettingTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.setting',
-		'app.raspberries',
-		'app.mediasources',
-		'app.passwords',
-		'app.config_raspberries',
-		'app.guisettings',
-		'app.sources'
+		'app.setting'
 	);
 
 /**
