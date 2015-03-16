@@ -86,6 +86,8 @@ class AppController extends Controller {
 			$raspberry = $this->Raspberry->find('first', $options);
 		}
 		else {
+			// $options = array('conditions' => array('Raspberry.role' => 'master'));
+			// $this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('all');
 		}
 
@@ -93,12 +95,12 @@ class AppController extends Controller {
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 
-			$filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : '/files/';
-			$id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
-			$name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
+			$filepath = isset($raspberry['Raspberry']) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
+			$id = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['id'] : 'all';
+			$name = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 
-			$address = $raspberry['Raspberry']['address'];
-
+			foreach ($raspberry as $rasp) {
+				$address = $rasp['Raspberry']['address'];
 	            $dom = new XmlDOM();
 	            $dom->preserveWhiteSpace = false;
 	            if(file_exists($filepath.$file.'.xml')) 
@@ -114,7 +116,7 @@ class AppController extends Controller {
 
 					} else {
 						//Génération du futur XML en DOMDocument : 
-						$dom->loadXML($this->request->data[$name][$file]);
+						$dom->chargeXML($this->request->data[$file]);
 					}
 
 					$connection = $this->connexionSSH($address,'root','openelec');
@@ -126,13 +128,15 @@ class AppController extends Controller {
 						sleep(1);
 						$this->execSSH($connection,'systemctl restart kodi');
 						sleep(1);
-						$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
-						$this->redirect(array('action' => 'settings', $id,'guisettings'));
 					} else {
 						$this->Session->setFlash(__('Error when saving '.$file), 'flash/error');
+						exit;
 					}
+				}
+				$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'settings', $id,$file));
+			}
 		}
-	}
 
 }
 

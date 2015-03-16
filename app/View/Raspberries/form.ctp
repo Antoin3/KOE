@@ -1,5 +1,5 @@
 <?php
-    $filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : '/files/';
+    $filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
     $id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
     $name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 ?>
@@ -29,11 +29,11 @@
 
                     <div id="page-container" class="row">
 
-                            <?php 
+                            <?php //die($filepath.$file.'.xml');
                                     if(file_exists($filepath.$file.'.xml')) 
                                         { 
                                             echo '<div class="col-lg-6">';
-                                            echo $this->Form->create($file, array('role' => 'form', 'url' => './form/'.$id.'/'.$file));
+                                            echo $this->Form->create($name, array('role' => 'form', 'url' => './form/'.$id.'/'.$file));
 
                                             //Create new DomDocuemnt
                                             $dom = new DomDocument();

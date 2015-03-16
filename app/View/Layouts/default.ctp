@@ -34,6 +34,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			echo $this->Html->css('sb-admin');
 			echo $this->Html->css('plugins/morris');
 			echo $this->Html->css('carousel');
+			echo $this->Html->css('full-width-pics');
 			echo $this->Html->css('../font-awesome/css/font-awesome');
 
 			echo $this->fetch('css');
