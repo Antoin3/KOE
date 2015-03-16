@@ -15,7 +15,6 @@
                     </div>
                 </div>
                 <!-- /.row -->
-	<div id="content">
 		<div id="page-container" class="row">
 			
 			<div id="page-content" class="col-sm-9">

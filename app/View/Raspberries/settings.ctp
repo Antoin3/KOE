@@ -77,8 +77,8 @@
 			          <p class="lead">Blabla3</p>
 
 			          <?php 
-			          $oes = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\oe_settings.xml';
-			          if (file_exists($as)) {
+			          $oes = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+			          if (file_exists($oes)) {
 			          	$labeloes = 'Modifier parametres raspberry';
 			          	$displayoes = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($oes)).'</pre>';
 			          }

@@ -1,21 +1,24 @@
+<!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                           Ajout OpenELEC
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-list-ul"></i> Ajouter un OpenELEC
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
 
 <div id="page-container" class="row">
-
-	<div id="sidebar" class="col-sm-3">
-		
-		<div class="actions">
-		
-			<ul class="list-group">
-				<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?></li>
-			</ul><!-- /.list-group -->
-		
-		</div><!-- /.actions -->
-		
-	</div><!-- /#sidebar .col-sm-3 -->
 	
 	<div id="page-content" class="col-sm-9">
-
-		<h2><?php echo __('Add Raspberry'); ?></h2>
 
 		<div class="raspberries form">
 		
@@ -24,21 +27,18 @@
 				<fieldset>
 
 					<div class="form-group">
-						<?php echo $this->Form->input('name', array('class' => 'form-control')); ?>
+						<?php echo $this->Form->input('name', array('class' => 'form-control', 'label' => 'Nom')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('address', array('class' => 'form-control')); ?>
+						<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('description', array('class' => 'form-control')); ?>
+						<?php echo $this->Form->input('description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('image', array('class' => 'form-control')); ?>
+						<?php echo $this->Form->input('image'); ?>
+						<p class="help-block">Choisissez une image</p>
 					</div><!-- .form-group -->
-					<div class="form-group">
-						<?php echo $this->Form->input('master', array('class' => 'form-control')); ?>
-					</div><!-- .form-group -->
-
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
 
 				</fieldset>

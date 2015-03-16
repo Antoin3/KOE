@@ -5,7 +5,7 @@
                         <?php echo $this->Html->link('<i class="fa fa-fw fa-dashboard"></i> Accueil', array('controller' => 'pages', 'action' => 'home'), array('escape' => false)); ?>
                     </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#rasp"><i class="fa fa-fw fa-desktop"></i> OpenELECs <i class="fa fa-fw fa-caret-down"></i>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#rasp"><i class="fa fa-fw fa-desktop"></i> OpenELECs <i class="fa fa-fw fa-caret-down"/></i></a>
                         <ul id="rasp" class="collapse">
                             <li>
                                 <?php echo $this->Html->link(__('<i class="fa fa-list"></i> Listes'), array('controller' => 'Raspberries', 'action' => 'index'), array('escape' => false)); ?>
@@ -16,7 +16,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#users"><i class="fa fa-users"></i> Utilisateurs <i class="fa fa-fw fa-caret-down"></i>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#users"><i class="fa fa-users"></i> Utilisateurs <i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="users" class="collapse">
                             <li>
                                 <?php echo $this->Html->link(__('<i class="fa fa-list"></i> Listes'), array('controller' => 'Users', 'action' => 'index'), array('escape' => false)); ?>

@@ -49,8 +49,46 @@ class RaspberriesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
+                $filename = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+                $oesettings = '<openelec>
+									<addon_config/>
+									<settings>
+										<system>
+											<wizard_completed>True</wizard_completed>
+										<hostname>'.$this->request->data['Raspberry']['name'].'</hostname></system>
+										<connman>
+											<wizard_completed>True</wizard_completed>
+										</connman>
+										<services>
+											<wizard_completed>True</wizard_completed>
+										</services>
+										<about>
+											<wizard_completed>True</wizard_completed>
+										</about>
+										<openelec>
+											<wizard_completed>True</wizard_completed>
+										</openelec>
+									</settings>
+								</openelec>';
+                //Génération du futur XML en DOMDocument
+				$dom = new XmlDOM();
+            	$dom->preserveWhiteSpace = false;
+				$dom->loadXML($oesettings);
+
+				$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
+				$this->execSSH($connection,'systemctl stop kodi');
+				sleep(2);
+				if ($dom->save($filename))
+				{
+					$this->execSSH($connection,'systemctl start kodi');
+					sleep(1);
+					$this->execSSH($connection,'systemctl restart kodi');
+					sleep(1);
+					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'index'));
+				} else {
+					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				}
 			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
@@ -249,8 +287,8 @@ class RaspberriesController extends AppController {
 					$dom->replaceDOM($newdom);
 
 				} else {
-					//Génération du futur XML en DOMDocument
-					$dom->chargeXML($this->request->data);
+					//Génération du futur XML en DOMDocument : 
+					$dom->loadXML($this->request->data[$raspberry['Raspberry']['name']][$xml]);
 				}
 
 				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
