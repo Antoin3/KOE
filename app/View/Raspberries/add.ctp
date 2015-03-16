@@ -9,7 +9,7 @@
                                 <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                             </li>
                             <li class="active">
-                                <i class="fa fa-list-ul"></i> Ajouter un OpenELEC
+                                <i class="fa fa-plus"></i> Ajouter un OpenELEC
                             </li>
                         </ol>
                     </div>
@@ -27,16 +27,16 @@
 				<fieldset>
 
 					<div class="form-group">
-						<?php echo $this->Form->input('name', array('class' => 'form-control', 'label' => 'Nom')); ?>
+						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
+						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
+						<?php echo $this->Form->input('Raspberry.description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('image'); ?>
+						<?php echo $this->Form->input('Raspberry.image'); ?>
 						<p class="help-block">Choisissez une image</p>
 					</div><!-- .form-group -->
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>

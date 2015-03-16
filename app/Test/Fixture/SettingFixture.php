@@ -12,22 +12,18 @@ class SettingFixture extends CakeTestFixture {
  */
 	public $fields = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'Raspberries_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'mediasources_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
-		'passwords_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
-		'config_raspberries_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
-		'guisettings_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
-		'sources_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
+		'name' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'path' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'extension' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'timestamp', 'null' => true, 'default' => null),
+		'modified' => array('type' => 'timestamp', 'null' => true, 'default' => null),
+		'raspberries_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => array('id', 'Raspberries_id'), 'unique' => 1),
-			'fk_settings_Raspberries1_idx' => array('column' => 'Raspberries_id', 'unique' => 0),
-			'fk_settings_mediasources1_idx' => array('column' => 'mediasources_id', 'unique' => 0),
-			'fk_settings_passwords1_idx' => array('column' => 'passwords_id', 'unique' => 0),
-			'fk_settings_config_raspberries1_idx' => array('column' => 'config_raspberries_id', 'unique' => 0),
-			'fk_settings_guisettings1_idx' => array('column' => 'guisettings_id', 'unique' => 0),
-			'fk_settings_sources1_idx' => array('column' => 'sources_id', 'unique' => 0)
+			'PRIMARY' => array('column' => array('id', 'raspberries_id'), 'unique' => 1),
+			'fk_settings_raspberries_idx' => array('column' => 'raspberries_id', 'unique' => 0)
 		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
 	);
 
 /**
@@ -38,12 +34,13 @@ class SettingFixture extends CakeTestFixture {
 	public $records = array(
 		array(
 			'id' => 1,
-			'Raspberries_id' => 1,
-			'mediasources_id' => 1,
-			'passwords_id' => 1,
-			'config_raspberries_id' => 1,
-			'guisettings_id' => 1,
-			'sources_id' => 1
+			'name' => 'Lorem ipsum dolor sit amet',
+			'description' => 'Lorem ipsum dolor sit amet',
+			'path' => 'Lorem ipsum dolor sit amet',
+			'extension' => 'Lorem ipsum dolor sit amet',
+			'created' => 1426521844,
+			'modified' => 1426521844,
+			'raspberries_id' => 1
 		),
 	);
 

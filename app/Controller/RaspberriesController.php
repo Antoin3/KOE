@@ -49,7 +49,8 @@ class RaspberriesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
-                $filename = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+                $filepath = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+
                 $oesettings = '<openelec>
 									<addon_config/>
 									<settings>
@@ -78,12 +79,13 @@ class RaspberriesController extends AppController {
 				$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
 				$this->execSSH($connection,'systemctl stop kodi');
 				sleep(2);
-				if ($dom->save($filename))
+				if ($dom->save($filepath))
 				{
 					$this->execSSH($connection,'systemctl start kodi');
 					sleep(1);
 					$this->execSSH($connection,'systemctl restart kodi');
 					sleep(1);
+
 					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
 					$this->redirect(array('action' => 'index'));
 				} else {
@@ -242,69 +244,10 @@ class RaspberriesController extends AppController {
  * @return void
  */
 	public function settings($id = null) {
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-		$this->set('raspberry', $this->Raspberry->find('first', $options));
-	}
-
-/**
- *form method
- *
- * @throws NotFoundException
- * @param string $id
- * @param string $xml
- * @return void
- */
-	public function form($id = null, $xml = null) {
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-		$this->set('raspberry', $this->Raspberry->find('first', $options));
-		$this->set('xml',$xml);
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$raspberry = $this->Raspberry->find('first', $options);
-
-			if ($xml != 'oe_settings') {
-                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\'.$xml.'.xml';
-            }
-            else {
-                $filename = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\\'.$xml.'.xml';
-            }
-            $dom = new XmlDOM();
-            $dom->preserveWhiteSpace = false;
-            if(file_exists($filename)) 
-                {
-					//Génération du XML dont les valeurs remplaceront les nouvelles
-					$newdom = new XmlDOM();
-					$newdom->chargeXML($this->request->data);
-
-					$dom->load($filename);
-
-					//On remplace les valeurs de $olddom par celles de $newdom
-					$dom->replaceDOM($newdom);
-
-				} else {
-					//Génération du futur XML en DOMDocument : 
-					$dom->loadXML($this->request->data[$raspberry['Raspberry']['name']][$xml]);
-				}
-
-				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
-				$this->execSSH($connection,'systemctl stop kodi');
-				sleep(2);
-				if ($dom->save($filename))
-				{
-					$this->execSSH($connection,'systemctl start kodi');
-					sleep(1);
-					$this->execSSH($connection,'systemctl restart kodi');
-					sleep(1);
-					$this->Session->setFlash(__('The new '.$xml.' has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'settings', $raspberry['Raspberry']['id'],'guisettings'));
-				} else {
-					$this->Session->setFlash(__('Error when saving '.$xml), 'flash/error');
-				}
+		if ($this->Raspberry->exists($id)) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$this->set('raspberry', $this->Raspberry->find('first', $options));
 		}
 	}
+
 }

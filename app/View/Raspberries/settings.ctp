@@ -16,82 +16,61 @@
                     </div>
                 </div>
                 <!-- /.row -->
+
 	<div id="page-container" class="row">
 		
 		<div id="page-content" class="col-sm-9">
 
 			<div class="raspberries view">
 
-				<h2><?php echo $raspberry['Raspberry']['name']; ?></h2>
+				<?php 
+				$address = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
+				$id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
+				$name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 
-				<hr class="featurette-divider">
-			      <div class="row featurette">
-			        <div class="col-md-7">
-			          <h2 class="featurette-heading">Parametres de l'interface <span class="text-muted">(guisettings.xml)</span></h2>
-			          <p class="lead">Blabla1</p>
 
-			          <?php 
-			          $gs = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\guisettings.xml';
-			          if (file_exists($gs)) {
-			          	$labelgs = 'Modifier guisettings.xml';
-			          	$displaygs = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($gs)).'</pre>';
-			          }
-			          else {
-			          	$labelgs = 'Créer guisettings.xml';
-			          	$displaygs = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
-			          } ?>
-					 
-			        </div>
-			        <div class="col-md-5">
-			        <?php echo $displaygs.'<p>'.$this->Html->link(__($labelgs), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'guisettings'),array('class' => 'btn btn-default')).'</p>'; ?>
-			        </div>
-			      </div>
+				echo '<h2>'.$name.' :</h2>';
+				$notexists = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
 
-			    <hr class="featurette-divider">
-			      <div class="row featurette">
-			        <div class="col-md-7">
-			          <h2 class="featurette-heading">Parametres avancés <span class="text-muted">(advancedsettings.xml)</span></h2>
-			          <p class="lead">Blabla2</p>
+				$xmlfiles = array(
+					'guisettings' => array($address.'\guisettings.xml', 'Interface', 'Blabla1'),
+					'advancedsettings' => array($address.'\advancedsettings.xml', 'Parametres Avancés', 'Blabla2'),
+					'oe_settings' => array($address.'\addon_data\service.openelec.settings\oe_settings.xml', 'Raspberry', 'Blabla3')
+					);
 
-			          <?php 
-			          $as = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\advancedsettings.xml';
-			          if (file_exists($as)) {
-			          	$labelas = 'Modifier advancedsettings.xml';
-			          	$displayas = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($as)).'</pre>';
-			          }
-			          else {
-			          	$labelas = 'Créer advancedsettings.xml';
-			          	$displayas = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
-			          } ?>
+				foreach ($xmlfiles as $xmlfile => $xmlval) {
+					?>
+					<hr class="featurette-divider">
+				      <div class="row featurette">
+				        <div class="col-md-7">
+				          <h2 class="featurette-heading"> <?php echo $xmlval[1]; ?></h2>
+				          <p class="lead"><?php echo $xmlval[2]; ?></p>
 
-			        </div>
-			        <div class="col-md-5">
-			        <?php echo $displayas.'<p>'.$this->Html->link(__($labelas), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'advancedsettings'),array('class' => 'btn btn-default')).'</p>'; ?>
-			        </div>
-			      </div>
 
-				<hr class="featurette-divider">
-			      <div class="row featurette">
-			        <div class="col-md-7">
-			          <h2 class="featurette-heading">Parametres du raspberry <span class="text-muted">(oe_settings.xml, config.txt, etc)</span></h2>
-			          <p class="lead">Blabla3</p>
+				          <?php
 
-			          <?php 
-			          $oes = '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
-			          if (file_exists($oes)) {
-			          	$labeloes = 'Modifier parametres raspberry';
-			          	$displayoes = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($oes)).'</pre>';
-			          }
-			          else {
-			          	$labeloes = 'Créer parametres raspberry';
-			          	$displayoes = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
-			          } ?>
-					 
-			        </div>
-			        <div class="col-md-5">
-			        <?php echo $displayoes.'<p>'.$this->Html->link(__($labeloes), array('controller' => 'Raspberries', 'action' => 'form', $raspberry['Raspberry']['id'],'oe_settings'),array('class' => 'btn btn-default')).'</p>'; ?>
-			    </div>
+				          if (file_exists($xmlval[0])) {
+				          	$label = 'Modifier '.$xmlfile;
+				          	$display = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($xmlval[0])).'</pre>';
+				          }
+				          else {
+				          	$label = 'Créer '.$xmlfile;
+				          	$display = $notexists;
+				          } ?>
+
+						 
+				        </div>
+				        <div class="col-md-5">
+				        <?php echo $display.'<p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form', $id,$xmlfile),array('class' => 'btn btn-default')).'</p>';
+				        ?>
+				        </div>
+				      </div>
+					
+				<?php } ?>
+				    
 			</div>
+
+		</div>
 			
 	</div><!-- /#page-content .col-sm-9 -->
 
