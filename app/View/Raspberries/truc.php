@@ -58,37 +58,19 @@ public $uses = array('Raspberry','Setting');
 									'description' => 'description guisettings', 
 									'path' => '\Userdata\\', 
 									'extension' => 'xml', 
-									'raspberries_id' => $id),
+									'raspberries_id' => $this->Raspberry->id),
 								'advancedsettings' => array(
 									'name' => 'advancedsettings', 
 									'description' => 'description advancedsettings', 
 									'path' => '\Userdata\\', 
 									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'mediasources' => array(
-									'name' => 'mediasources', 
-									'description' => 'description mediasources', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'sources' => array(
-									'name' => 'sources', 
-									'description' => 'description sources', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'passwords' => array(
-									'name' => 'passwords', 
-									'description' => 'description passwords', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
+									'raspberries_id' => $this->Raspberry->id),
 								'oe_settings' => array(
 									'name' => 'oe_settings', 
 									'description' => 'description oe_settings', 
 									'path' => '\Userdata\addon_data\service.openelec.settings\\', 
 									'extension' => 'xml', 
-									'raspberries_id' => $id)
+									'raspberries_id' => $this->Raspberry->id)
 							);
 				$connection = $this->connexionSSH($address,'root','openelec');
 				$this->execSSH($connection,'systemctl stop kodi');
@@ -258,9 +240,6 @@ public $uses = array('Raspberry','Setting');
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('first', $options);
-			$options2 = array('conditions' => array('Setting.raspberries_id' => $id));
-			$this->set('setting', $this->Raspberry->find('all'));
-			$files = $this->Raspberry->find('all', $options);
 		} else {
 			// $options = array('conditions' => array('Raspberry.role' => 'master'));
 			// $this->set('raspberry', $this->Raspberry->find('first', $options));
@@ -300,7 +279,7 @@ public $uses = array('Raspberry','Setting');
 
 	public function uploadfiles($address, $files) {
 		foreach ($files as $filename=>$file) {
-			$pathfile = './files'.$file['path'].$file['name'].'.'.$file['extension'];
+			$pathfile = './files/'.$file['path'].'/'.$file['name'].'.'.$file['extension'];
 			if(file_exists($pathfile)) {
                 	$uploadingfile = file_get_contents($pathfile);
 					if ($file['name'] == 'oe_settings')
@@ -316,13 +295,13 @@ public $uses = array('Raspberry','Setting');
 					$raspberry = $this->Raspberry->find('first', $options);
 					$file['raspberries_id'] = $raspberry['Raspberry']['id'];
 					$this->Setting->create();
-					if (!(file_put_contents('\\\\'.$address.$file['path'].$file['name'].'.'.$file['extension'],$uploadingfile)) || !($this->Setting->save($file))) {
+					if (!(file_put_contents('\\\\'.$address.$file['name'].'.'.$file['extension'],$uploadingfile)) || !($this->Setting->save($file))) {
 						$this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
 						exit(0);
 					}
 			} else $this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
+			return 1;
 		}	
-		return 1;
 	}
 
 }

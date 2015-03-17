@@ -1,4 +1,3 @@
-
 <!-- Page Heading -->
                 <div class="row">
                     <div class="col-lg-12">
@@ -23,53 +22,84 @@
 
 			<div class="raspberries view">
 
-				<?php
-				$address = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
+				<?php 
+
+				$address = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'] : './files/';
 				$id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
 				$name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
-				$submitall = isset($raspberry) ? '' : $this->Form->submit('Submit all', array('class' => 'btn btn-large btn-primary'));
 
-				echo '<h2>'.$name.' :</h2> ';
-
-				$files = array(
-					'guisettings' => array($address.'\guisettings.xml', 'Interface', 'Blabla1'),
-					'advancedsettings' => array($address.'\advancedsettings.xml', 'Parametres Avancés', 'Blabla2'),
-					'oe_settings' => array($address.'\addon_data\service.openelec.settings\oe_settings.xml', 'Raspberry', 'Blabla3')
+				$setting = array(
+						'guisettings' => array(
+							'name' => 'guisettings', 
+							'description' => 'description guisettings', 
+							'path' => '\Userdata\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id),
+						'advancedsettings' => array(
+							'name' => 'advancedsettings', 
+							'description' => 'description advancedsettings', 
+							'path' => '\Userdata\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id),
+						'mediasources' => array(
+							'name' => 'mediasources', 
+							'description' => 'description mediasources', 
+							'path' => '\Userdata\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id),
+						'sources' => array(
+							'name' => 'sources', 
+							'description' => 'description sources', 
+							'path' => '\Userdata\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id),
+						'passwords' => array(
+							'name' => 'passwords', 
+							'description' => 'description passwords', 
+							'path' => '\Userdata\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id),
+						'oe_settings' => array(
+							'name' => 'oe_settings', 
+							'description' => 'description oe_settings', 
+							'path' => '\Userdata\addon_data\service.openelec.settings\\', 
+							'extension' => 'xml', 
+							'raspberries_id' => $id)
 					);
-                 
-                echo $this->Form->create('settings', array('role' => 'form'));
 
-				foreach ($files as $file => $val) {
+				$files = isset($files) ? $files : $setting;
+
+				echo '<h2>'.$name.' :</h2>';
+				$notexists = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
+				foreach ($files as $filename => $file) {
 					?>
 					<hr class="featurette-divider">
 				      <div class="row featurette">
 				        <div class="col-md-7">
-				          <h2 class="featurette-heading"> <?php echo $val[1]; ?></h2>
-				          <p class="lead"><?php echo $val[2]; ?></p>
+				          <h2 class="featurette-heading"> <?php echo $file['name']; ?></h2>
+				          <p class="lead"><?php echo $file['description']; ?></p>
 
 
 				          <?php
-
-				          if (file_exists($val[0])) {
-				          	$label = 'Modifier '.$file;
-				          	$display = $this->Form->input($file, array('class' => 'form-control', 'type' => 'textarea', 'style'=>'width:700px; height:400px;', 'disabled' => 'disabled', 'value' => file_get_contents($val[0])));				          }
+				          $pathfile = $address.$file['path'].$file['name'].'.'.$file['extension'];
+				          if (file_exists($pathfile)) {
+				          	$label = 'Modifier '.$file['name'];
+				          	$display = '<pre class="pre-scrollable">'.htmlspecialchars(file_get_contents($pathfile)).'</pre>';
+				          }
 				          else {
-				          	$label = 'Créer '.$file;
-				          	$display = '<img class="featurette-image img-responsive" src="'.$this->webroot.'app/webroot/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
+				          	$label = 'Créer '.$file['name'];
+				          	$display = $notexists;
 				          } ?>
 
 						 
 				        </div>
 				        <div class="col-md-5">
-				        <?php echo '<p>'.$display.'</p><p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form', $id,$file),array('class' => 'btn btn-default')).'</p>';
+				        <?php echo $display.'<p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form', $id,$file['name']),array('class' => 'btn btn-default')).'</p>';
 				        ?>
 				        </div>
 				      </div>
 					
-				<?php } 
-				echo $submitall;
-                echo $this->Form->end();
-				?>
+				<?php } ?>
 				    
 			</div>
 
