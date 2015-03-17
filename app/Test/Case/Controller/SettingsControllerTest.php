@@ -14,12 +14,7 @@ class SettingsControllerTest extends ControllerTestCase {
  */
 	public $fixtures = array(
 		'app.setting',
-		'app.raspberries',
-		'app.mediasources',
-		'app.passwords',
-		'app.config_raspberries',
-		'app.guisettings',
-		'app.sources'
+		'app.raspberries'
 	);
 
 /**

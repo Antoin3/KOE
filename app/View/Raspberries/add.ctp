@@ -36,9 +36,6 @@
 						<?php echo $this->Form->input('Raspberry.description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
 					</div><!-- .form-group -->
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.image'); ?>
-						<p class="help-block">Choisissez une image</p>
-					</div><!-- .form-group -->
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
 
 				</fieldset>
