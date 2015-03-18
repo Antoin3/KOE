@@ -27,7 +27,6 @@
 									<div class="col-lg-4">
 										<?php $image = $raspberry['Raspberry']['image'] == '' ?'data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==':'data:image/jpg;base64,' .   base64_encode($raspberry['Raspberry']['image']);?>
 
-<<<<<<< HEAD
 		<div class="raspberries index">
 		
 			<h2><?php echo __('Raspberries'); ?></h2>
@@ -44,7 +43,7 @@
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="bodybod">
 <?php foreach ($raspberries as $raspberry): ?>
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
@@ -55,7 +54,7 @@
 		<td class="actions">
 			<?php echo $this->Html->link(__('Synchronisation'), array('action' => 'synchroniser', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-default btn-xs')); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs', 'id' => 'edit')); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs', 'id' => 'delete'), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?>
+			 <?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-default btn-xs', 'onclick' => 'delete();'), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id']));?>
 			<?php echo $this->Html->link(__('Plugin'), array('action' => 'add_plugin', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-default btn-xs', 'id' => 'addPlugin')); ?>
 		</td>
 	</tr>
@@ -71,11 +70,10 @@
 					));
 				?>
 			</small></p>
-=======
+
 										<p class="text-center"><img class="img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 140px; height: 140px;"></p>
 								        <h4><p class='text-center'><?php echo h($raspberry['Raspberry']['name']); ?></p></h4>
 								        
->>>>>>> origin/master
 
 								      	<p class='text-center'>
 								      	<?php $desc = strlen(h($raspberry['Raspberry']['description'])) > 55 ? substr(h($raspberry['Raspberry']['description']),0,55).'...' : h($raspberry['Raspberry']['description']); echo $desc; ?>
@@ -96,3 +94,8 @@
 			</div><!-- /#page-content .col-sm-9 -->
 
 		</div><!-- /#page-container .row-fluid -->
+<script type="text/javascript">
+function delete() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Suppression en cours . . .</a><br/><br/><img src='../img/chargement.gif' ></img></div>");
+}
+</script>

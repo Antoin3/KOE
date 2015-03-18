@@ -14,9 +14,10 @@
 			<th class="actions"><?php echo __('Actions'); ?></th>
 		</tr>
 	</thead>
-	<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+	
 	<tbody>
 	<?php foreach ($raspberries as $raspberry): ?>
+	<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
 	<tr>
 		<?php $options = array('default' => 'default', 'modest' => 'modest', 'medium' => 'medium', 'high' => 'high', 'turbo' => 'turbo');?>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
@@ -25,11 +26,12 @@
 		<td><?php echo $this->Form->input('overclocking', array('class' => 'form-control', 'style' => 'select','label' => '', 'options' => $options)); ?>&nbsp;</td>
 		<td class="actions">
 		&nbsp;
-			<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+			<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'configuration();')); ?>
 		</td>
 	</tr>
-	<?php endforeach; ?>
 	<?php echo $this->Form->end(); ?>
+	<?php endforeach; ?>
+	
 	</tbody>
 				</table>
 			</div><!-- /.table-responsive -->
@@ -51,3 +53,8 @@
 			</ul><!-- /.pagination -->
 			
 		</div><!-- /.index -->
+<script type="text/javascript">
+function configuration() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Configuration en cours . . .</a><br/><br/><img src='../../img/chargement.gif' ></img></div>");
+}
+</script>

@@ -1,16 +1,9 @@
-$(function(){
-	$('#edit').click(function(){
-		$.post->action/edit;
-		$('.raspberries index').empty().append('edit.ctp');
-	});
-	$('.reboot').click(function(){
-		xhr = getXMLHttpRequest();
-
-		xhr.open("POST","http://10.10.10.102/",true);
-		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xhr.send("jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"System.Reboot\",\"id\":\"1\"}");
-	});
-})
+// $(function(){
+// 	$('#delete').click(function(){
+// 		$.post->action/delete;
+// 		$('#bodybod').reload();
+// 	});
+// })
 function getXMLHttpRequest() {
     var xmlhttp = null;
     if (window.XMLHttpRequest || window.ActiveXObject) {

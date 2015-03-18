@@ -13,17 +13,17 @@ class RaspberriesController extends AppController {
  *
  * @var array
  */
-	public $components = array('Paginator');
+public $components = array('Paginator');
 
 /**
  * index method
  *
  * @return void
  */
-	public function index() {
+public function index() {
 		$this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
-	}
+}
 
 /**
  * view method
@@ -32,7 +32,7 @@ class RaspberriesController extends AppController {
  * @param string $id
  * @return void
  */
-	public function synchroniser($id = null, $address) {
+public function synchroniser($id = null, $address) {
 		$this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
 		$role = false;
@@ -49,38 +49,43 @@ class RaspberriesController extends AppController {
 		$this->Raspberry->id = $id;
 
 		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
-			$bdd = $this->request->data['Raspberry']['BDD'];
-			$loginBDD = $this->request->data['Raspberry']['loginBDD'];
-			$mdpBDD = $this->request->data['Raspberry']['mdpBDD'];
-			$NAS = $this->request->data['Raspberry']['NAS'];
-			$loginNAS = $this->request->data['Raspberry']['loginNAS'];
-			$mdpNAS = $this->request->data['Raspberry']['mdpNAS'];
-			$cheminMusic1 = $this->request->data['Raspberry']['cheminMusic'];
-			$cheminVideo1 = $this->request->data['Raspberry']['cheminVideo'];
-			$cheminTVShow1 = $this->request->data['Raspberry']['cheminTVShow'];
+			
+			
 			if ($this->Raspberry->findByRole('master', array('Raspberry.address'))!=null) {
+				$bdd = $this->request->data['Raspberry']['BDD'];
+				$loginBDD = $this->request->data['Raspberry']['loginBDD'];
+				$mdpBDD = $this->request->data['Raspberry']['mdpBDD'];
+				$NAS = $this->request->data['Raspberry']['NAS'];
+				$loginNAS = $this->request->data['Raspberry']['loginNAS'];
+				$mdpNAS = $this->request->data['Raspberry']['mdpNAS'];
+				$cheminMusic1 = $this->request->data['Raspberry']['cheminMusic'];
+				$cheminVideo1 = $this->request->data['Raspberry']['cheminVideo'];
+				$cheminTVShow1 = $this->request->data['Raspberry']['cheminTVShow'];
 				$this->setSlave($address);
+				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
 			}
 			else{
 				$this->setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1);
+				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
 			}
-			
+
 		}
 		else{
 		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 		$this->set('raspberry', $this->Raspberry->find('first', $options));
 		}
-	}
+}
 
 /**
  * add method
  *
  * @return void
  */
-	public function add() {
+public function add() {
 		if ($this->request->is('post')) {
-<<<<<<< HEAD
+
 			$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
 			$this->dossierScript($connection);
 			$Overclock = $this->getOverclock($connection);
@@ -114,7 +119,7 @@ class RaspberriesController extends AppController {
 			    	//Replace
 			    	$oldhostname->item(0)->parentNode->replaceChild($newhostname, $oldhostname->item(0));
 			    }
-=======
+
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
                 $filepath = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
@@ -153,7 +158,7 @@ class RaspberriesController extends AppController {
 					sleep(1);
 					$this->execSSH($connection,'systemctl restart kodi');
 					sleep(1);
->>>>>>> origin/master
+
 
 					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
 					$this->redirect(array('action' => 'index'));
@@ -165,6 +170,7 @@ class RaspberriesController extends AppController {
 			}
 		}
 	}
+}
 
 /**
  * edit method
@@ -173,7 +179,7 @@ class RaspberriesController extends AppController {
  * @param string $id
  * @return void
  */
-	public function edit($id = null) {
+public function edit($id = null) {
 
         $this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
@@ -192,19 +198,22 @@ class RaspberriesController extends AppController {
 			if ($this->Raspberry->save($this->request->data)) {
 				if (!$over) {
 					$this->Session->setFlash(__('Erreur lors du changement de configuration'), 'flash/error');
+					$this->redirect(array('action' => 'index'));
 				}
 				else{
 					$this->Session->setFlash(__('Configuration réussi, openElec va redémarrer'), 'flash/success');
 					$this->reboot($connection);
+					$this->redirect(array('action' => 'index'));
 				}
 			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				$this->redirect(array('action' => 'index'));
 			}
 		} else {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->request->data = $this->Raspberry->find('first', $options);
 		}
-	}
+}
 
 /**
  * delete method
@@ -214,8 +223,8 @@ class RaspberriesController extends AppController {
  * @param string $id
  * @return void
  */
-	public function delete($id = null) {
-
+public function delete($id = null) {
+		
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
@@ -227,11 +236,12 @@ class RaspberriesController extends AppController {
 			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
 			$this->redirect(array('action' => 'index'));
 		}
-		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
-		$this->redirect(array('action' => 'index'));
+		else{
+			$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
+			$this->redirect(array('action' => 'index'));
+		}
+}
 
-<<<<<<< HEAD
-=======
 /**
  * admin_view method
  *
@@ -239,20 +249,20 @@ class RaspberriesController extends AppController {
  * @param string $id
  * @return void
  */
-	public function admin_view($id = null) {
+public function admin_view($id = null) {
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
 		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 		$this->set('raspberry', $this->Raspberry->find('first', $options));
-	}
+}
 
 /**
  * admin_add method
  *
  * @return void
  */
-	public function admin_add() {
+public function admin_add() {
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
@@ -262,10 +272,10 @@ class RaspberriesController extends AppController {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
 		}
->>>>>>> origin/master
-	}
 
-	public function add_plugin($id = null, $address) {
+}
+
+public function add_plugin($id = null, $address) {
 		$this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
 		
@@ -296,7 +306,7 @@ class RaspberriesController extends AppController {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->request->data = $this->Raspberry->find('first', $options);
 		}
-	}
+}
 
 
 /**
@@ -306,14 +316,13 @@ class RaspberriesController extends AppController {
  * @param string $id
  * @return void
  */
-	public function settings($id = null) {
+public function settings($id = null) {
 		if ($this->Raspberry->exists($id)) {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->set('raspberry', $this->Raspberry->find('first', $options));
 		}
-	}
+}
 
-<<<<<<< HEAD
 /**
  * connexion SSH method
  *
@@ -322,7 +331,7 @@ class RaspberriesController extends AppController {
  * @param string $cmd
  * @return string
  */
-	public function execSSH($connection,$cmd)
+public function execSSH($connection,$cmd)
 	{
 		$query = ssh2_exec($connection,$cmd);
 		if (!$query) {
@@ -331,8 +340,8 @@ class RaspberriesController extends AppController {
 		stream_set_blocking($query, true);
 		$result = stream_get_contents($query);
 		return $result;
-	}
-	public function overclock($connection,$overclock)
+}
+public function overclock($connection,$overclock)
 	{
 		ssh2_scp_send($connection,"../View/Layouts/script/scriptBon.sh","./scripts/scriptBon.sh", 0644);  
 	    ssh2_exec($connection, "chmod +x ./scripts/scriptBon.sh");
@@ -344,9 +353,9 @@ class RaspberriesController extends AppController {
 	    else{
 	    	return true;
 	    }
-	}
+}
 	
-	public function getOverclock($connection)
+public function getOverclock($connection)
 	{
         ssh2_scp_send($connection,"../View/Layouts/script/scriptParam.sh","./scripts/scriptParam.sh", 0644);
         ssh2_exec($connection, "chmod +x ./scripts/scriptParam.sh");
@@ -361,20 +370,20 @@ class RaspberriesController extends AppController {
         elseif(strstr($res, "arm_freq=1000")){$overClock = "turbo";}
 
         return $overClock;
-	}
-	public function reboot($connection)
+}
+public function reboot($connection)
 	{
 		$reboot = ssh2_exec($connection, "reboot");
 		        if (!$reboot) {
 		            die("Failed to execute command reboot");
 		        }
-	}
-	public function dossierScript($connection)
+}
+public function dossierScript($connection)
 	{
 		ssh2_exec($connection, "mkdir scripts");
 		ssh2_exec($connection, "chmod 777 scripts");
-	}
-	public function uploadPlugin($connection, $file, $filename)
+}
+public function uploadPlugin($connection, $file, $filename)
 	{
                 $result = ssh2_scp_send($connection, $file,"/storage/.kodi/addons/" . $filename, 0644);
                 
@@ -392,8 +401,8 @@ class RaspberriesController extends AppController {
                 			return true;
                 		}
                 }
-	}
-	public function synchronisation($connection, $master)
+}
+public function synchronisation($connection, $master)
 	{
 		if ($master == false) {
 			$etape1 = ssh2_exec($connection, 'mkdir partageS');
@@ -425,18 +434,21 @@ class RaspberriesController extends AppController {
 		stream_set_blocking($scan, 1);
 		$scan2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
 		stream_set_blocking($scan2, 1);
-	}
-	public function replaceXML($file, $element, $newElement, $chemin)
+}
+public function replaceXML($file, $element, $newElement, $chemin, $ID)
 	{
 		$xml = new DOMDocument;
 		$xml->load($file);
 		$xpath = new DomXPath($xml);
 		$place = $xpath->query($chemin);
 		$new = $xml->createElement($element,$newElement);
+		if ($ID != null) {
+			$new->setAttribute('id', $ID);
+		}
 		$place->item(0)->parentNode->replaceChild($new, $place->item(0));
 		$xml->save($file);
-	}
-	public function setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1)
+}
+public function setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1)
 	{
 			$master = false;
 
@@ -450,31 +462,31 @@ class RaspberriesController extends AppController {
 			$cheminTVShow = $chemin . $cheminTVShow1;
 			$cheminTVShowPwd = $cheminPwd . $cheminTVShow1;
 
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/videodatabase/host');
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/videodatabase/user');
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/videodatabase/pass');
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/musicdatabase/host');
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/musicdatabase/user');
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/musicdatabase/pass');
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminMusicPwd, '//mediasources/network/location[@id=0]');
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminVideoPwd, '//mediasources/network/location[@id=1]');
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminTVShowPwd, '//mediasources/network/location[@id=2]');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminMusicPwd . "/", '//passwords/path[@id=0]/to');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminVideoPwd . "/", '//passwords/path[@id=1]/to');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminTVShowPwd . "/", '//passwords/path[@id=2]/to');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminMusic, '//passwords/path[@id=0]/from');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminVideo, '//passwords/path[@id=1]/from');
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminTVShow, '//passwords/path[@id=2]/from');
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminMusic, '//sources/music/source/path');
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminVideo, '//sources/video/source[@id=0]/path');
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminTVShow, '//sources/video/source[@id=1]/path');
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/videodatabase/host', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/videodatabase/user', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/videodatabase/pass', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/musicdatabase/host', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/musicdatabase/user', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/musicdatabase/pass', null);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminMusicPwd, '//mediasources/network/location[@id=1]', 1);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminVideoPwd, '//mediasources/network/location[@id=2]', 2);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminTVShowPwd, '//mediasources/network/location[@id=3]', 3);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminMusicPwd . "/", '//passwords/path[@id=0]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminVideoPwd . "/", '//passwords/path[@id=1]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminTVShowPwd . "/", '//passwords/path[@id=2]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminMusic, '//passwords/path[@id=0]/from', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminVideo, '//passwords/path[@id=1]/from', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminTVShow, '//passwords/path[@id=2]/from', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminMusic, '//sources/music/source/path', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminVideo, '//sources/video/source[@id=0]/path', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminTVShow, '//sources/video/source[@id=1]/path', null);
 			$connection = $this->connexionSSH($address,'root','openelec');
 			$synchro = $this->synchronisation($connection, $master);
 			$this->request->data['Raspberry']['role'] = "master";
 			$this->Raspberry->save($this->request->data);
 			$this->reboot($connection);
-	}
-	public function setSlave($address){
+}
+public function setSlave($address){
 		$master = true;
 		$addressM = $this->Raspberry->findByRole('master', array('Raspberry.address'));
 		$addressM = $addressM['Raspberry']['address'];
@@ -488,8 +500,6 @@ class RaspberriesController extends AppController {
 		ssh2_exec($connection, 'chmod +x ./scripts/scriptMaster.sh');
 		ssh2_exec($connection, './scripts/scriptMaster.sh ' . $address);
 		ssh2_exec($connection, 'cd scripts && ./script.sh');
-	}
 }
-=======
+
 }
->>>>>>> origin/master

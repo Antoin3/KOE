@@ -19,12 +19,9 @@
 <div id="page-container" class="row">
 	
 	<div id="page-content" class="col-sm-9">
-<<<<<<< HEAD
 	<div></div>
 		<h2><?php echo __('Add Raspberry'); ?></h2>
-=======
->>>>>>> origin/master
-
+		
 		<div class="raspberries form">
 		
 			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
@@ -44,7 +41,7 @@
 						<?php echo $this->Form->input('Raspberry.image'); ?>
 						<p class="help-block">Choisissez une image</p>
 					</div><!-- .form-group -->
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'sauvegarde();')); ?>
 
 				</fieldset>
 
@@ -55,3 +52,8 @@
 	</div><!-- /#page-content .col-sm-9 -->
 
 </div><!-- /#page-container .row-fluid -->
+<script type="text/javascript">
+function sauvegarde() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Sauvegarde en cours . . .</a><br/><br/><img src='../img/chargement.gif' ></img></div>");
+}
+</script>

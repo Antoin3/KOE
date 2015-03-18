@@ -19,13 +19,25 @@
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
-					<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+					<?php 
+						$raspMaster = false;
+						foreach ($raspberries as $raspberry):
+						if ($raspberry['Raspberry']['role']=='master') {
+							$raspMaster = true;
+						}
+						endforeach;
+					?>
+					
 					<tbody>
+
 <?php foreach ($raspberries as $raspberry): ?>
+	<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['address']); ?>&nbsp;</td>
+		<?php if ($raspMaster == false) { ?>
+		
 		<td><?php echo $this->Form->input('BDD', array('class' => 'form-control', 'label' => 'adresse BDD')); ?>&nbsp;
 		<?php echo $this->Form->input('loginBDD', array('class' => 'form-control', 'label' => 'login')); ?>&nbsp;
 		<?php echo $this->Form->input('mdpBDD', array('class' => 'form-control', 'label' => 'mdp')); ?>&nbsp;</td>
@@ -35,13 +47,25 @@
 		<?php echo $this->Form->input('cheminTVShow', array('class' => 'form-control', 'label' => 'dossier TVShow')); ?>&nbsp;
 		<?php echo $this->Form->input('loginNAS', array('class' => 'form-control', 'label' => 'login')); ?>&nbsp;
 		<?php echo $this->Form->input('mdpNAS', array('class' => 'form-control', 'label' => 'mdp')); ?>&nbsp;</td>
+		<?php } ?>
+		<?php if ($raspMaster == true) { ?>
+		<td><?php echo h($raspberry['Raspberry']['BDD']); ?>&nbsp;</td>
+		<td><?php echo h($raspberry['Raspberry']['NAS']); ?>&nbsp;</td>
+		<?php } ?>
 		<td class="actions">
-		&nbsp;
-		<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+		<?php 
+		if ($raspberry['Raspberry']['role']==null) {
+			echo $this->Form->submit('Synchroniser', array('class' => 'btn btn-large btn-primary', 'onclick' => 'synchronisation1();')); 
+		}
+		else{
+			 echo __('Ajouté'); 
+		}
+		?>
 		</td>
 	</tr>
+	<?php echo $this->Form->end();?>
 <?php endforeach; ?>
-<?php echo $this->Form->end(); ?>
+
 					</tbody>
 				</table>
 			</div><!-- /.table-responsive -->
@@ -67,3 +91,8 @@
 	</div><!-- /#page-content .col-sm-9 -->
 
 </div><!-- /#page-container .row-fluid -->
+<script type="text/javascript">
+function synchronisation1() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Synchronisation en cours . . .</a><br/><br/><img src='../../../img/chargement.gif' ></img></div>");
+}
+</script>

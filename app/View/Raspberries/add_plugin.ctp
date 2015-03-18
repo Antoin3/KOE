@@ -20,9 +20,10 @@
 							<th class="actions"><?php echo __('Actions'); ?></th>
 						</tr>
 					</thead>
-					<?php echo $this->Form->create('Raspberry', array('type' => 'file')); ?>
+					
 					<tbody>
 <?php foreach ($raspberries as $raspberry): ?>
+<?php echo $this->Form->create('Raspberry', array('type' => 'file')); ?>
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
 		<td><?php echo h($raspberry['Raspberry']['name']); ?>&nbsp;</td>
@@ -32,11 +33,11 @@
 		<td><?php echo $this->Form->input('plugin', array('class' => 'form-control', 'label' => '', 'type' => 'file', 'id' => 'plugin')); ?>&nbsp;</td>
 		<td class="actions">
 		&nbsp;
-			<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+			<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'plugin1();')); ?>
 		</td>
 	</tr>
-<?php endforeach; ?>
 <?php echo $this->Form->end(); ?>
+<?php endforeach; ?>
 					</tbody>
 				</table>
 			</div><!-- /.table-responsive -->
@@ -62,3 +63,8 @@
 	</div><!-- /#page-content .col-sm-9 -->
 
 </div><!-- /#page-container .row-fluid -->
+<script type="text/javascript">
+function plugin1() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Ajout du plugin en cours . . .</a><br/><br/><img src='../../../img/chargement.gif' ></img></div>");
+}
+</script>
