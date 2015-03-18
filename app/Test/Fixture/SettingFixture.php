@@ -38,8 +38,8 @@ class SettingFixture extends CakeTestFixture {
 			'description' => 'Lorem ipsum dolor sit amet',
 			'path' => 'Lorem ipsum dolor sit amet',
 			'extension' => 'Lorem ipsum dolor sit amet',
-			'created' => 1426521844,
-			'modified' => 1426521844,
+			'created' => 1426672738,
+			'modified' => 1426672738,
 			'raspberries_id' => 1
 		),
 	);

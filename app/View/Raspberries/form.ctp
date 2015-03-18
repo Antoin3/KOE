@@ -1,5 +1,5 @@
 <?php
-    $filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
+    $filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/default/Userdata/';
     $id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
     $name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 ?>
@@ -15,7 +15,7 @@
                                 <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index', $id)); ?>
                             </li>
                             <li>
-                                <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings')); ?>
+                                <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings', $id)); ?>
                             </li>
                             <li class="active">
                                 <i class="fa fa-pencil-square-o"></i> <?php echo $file; ?>

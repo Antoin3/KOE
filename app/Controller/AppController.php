@@ -33,7 +33,7 @@ App::uses('XmlDOM', 'Lib');
 class AppController extends Controller {
 	public $components = array('Session','DebugKit.Toolbar');
 
-	/**
+/**
  * connexion SSH method
  *
  * @throws NotFoundException
@@ -76,7 +76,7 @@ class AppController extends Controller {
  *
  * @throws NotFoundException
  * @param string $id
- * @param string $xml
+ * @param string $file
  * @return void
  */
 	public function form($id = null, $file = null) {
@@ -95,7 +95,7 @@ class AppController extends Controller {
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 
-			$filepath = isset($raspberry['Raspberry']) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/';
+			$filepath = isset($raspberry['Raspberry']) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/default/Userdata/';
 			$id = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['id'] : 'all';
 			$name = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 
@@ -137,6 +137,5 @@ class AppController extends Controller {
 				$this->redirect(array('action' => 'settings', $id,$file));
 			}
 		}
-
 }
 

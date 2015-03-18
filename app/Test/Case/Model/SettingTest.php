@@ -13,7 +13,8 @@ class SettingTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.setting'
+		'app.setting',
+		'app.raspberries'
 	);
 
 /**

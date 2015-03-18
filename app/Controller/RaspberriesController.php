@@ -51,6 +51,7 @@ public $uses = array('Raspberry','Setting');
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
+				$id = $this->Raspberry->id;
 				$address = $this->request->data['Raspberry']['address'];
 				$files = array(
 								'guisettings' => array(
@@ -90,19 +91,40 @@ public $uses = array('Raspberry','Setting');
 									'extension' => 'xml', 
 									'raspberries_id' => $id)
 							);
-				$connection = $this->connexionSSH($address,'root','openelec');
-				$this->execSSH($connection,'systemctl stop kodi');
-				sleep(2);
-				if ($this->uploadfiles($address,$files)) {
-					$this->execSSH($connection,'systemctl start kodi');
-					sleep(1);
-					$this->execSSH($connection,'systemctl restart kodi');
-					sleep(1);
-					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'index'));
+
+				$settings = array();
+				if ($this->request->data['Raspberry']['actualsettings']) {
+					foreach ($files as $filename => $file) {
+						$pathfile = '\\\\'.$address.$file['path'].$file['name'].'.'.$file['extension'];
+						if(file_exists($pathfile)) {
+							$settings[$filename] = $file;
+						}
+					}
 				} else {
-					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-				}
+					$connection = $this->connexionSSH($address,'root','openelec');
+					$this->execSSH($connection,'systemctl stop kodi');
+					sleep(2);
+					foreach ($files as $filename => $file) {
+						if (!$this->movefiles('./files/default/','\\\\'.$address,$file)) {
+								$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+						}
+					}
+						$this->execSSH($connection,'systemctl start kodi');
+						sleep(1);
+						$this->execSSH($connection,'systemctl restart kodi');
+						$settings = $files;
+					}
+				foreach ($settings as $setting => $set) {
+							$set['path'] = '\\\\'.$address.$set['path'];
+							$this->Setting->create();
+							if (!$this->Setting->save($set)) {
+								$this->Session->setFlash(__('The settings '.$setting.' could not be saved. Please, try again.'), 'flash/error');
+								exit();
+							}
+						}
+				sleep(1);
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			}
 		}
 	}
@@ -140,7 +162,7 @@ public $uses = array('Raspberry','Setting');
  * @param string $id
  * @return void
  */
-	public function delete($id = null) {
+	public function delete($id = null, $cascade = true) {
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
@@ -155,6 +177,7 @@ public $uses = array('Raspberry','Setting');
 				$this->Session->setFlash(__('Raspberry was not deleted (Raspberry)'), 'flash/error');
 				$this->redirect(array('action' => 'index'));
 	}
+
 /**
  * admin_index method
  *
@@ -259,33 +282,32 @@ public $uses = array('Raspberry','Setting');
 			$this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('first', $options);
 			$options2 = array('conditions' => array('Setting.raspberries_id' => $id));
-			$this->set('setting', $this->Raspberry->find('all'));
-			$files = $this->Raspberry->find('all', $options);
+			$this->set('setting', $this->Setting->find('all',$options2));
+			$files = $this->Setting->find('all', $options2);
 		} else {
 			// $options = array('conditions' => array('Raspberry.role' => 'master'));
 			// $this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('all');
 		}
-
 		if ($this->request->is('post') || $this->request->is('put')) {
-
-			foreach ($raspberry as $rasp=>$val) {
-				$address = $rasp['Raspberry']['address'];
-				$raspId = $rasp['Raspberry']['id'];
-				$connection = $this->connexionSSH($address,'root','openelec');
-				$this->execSSH($connection,'systemctl stop kodi');
-				sleep(2);
-				if ($this->uploadfiles($address,$files)) {
-					$this->execSSH($connection,'systemctl start kodi');
-					sleep(1);
-					$this->execSSH($connection,'systemctl restart kodi');
-					sleep(1);
-				} else {
+			if (array_key_exists('backup', $this->request->data)){
+				$source = '\\\\'.$raspberry['Raspberry']['address'];
+				$destination = './files/'.$raspberry['Raspberry']['name'];
+			}
+			elseif (array_key_exists('restore', $this->request->data)) {
+				$source = './files/'.$raspberry['Raspberry']['name'];
+				$destination = '\\\\'.$raspberry['Raspberry']['address'];
+				foreach ($files as $filename => &$file) {
+					$file['Setting']['path'] = $source.str_replace($destination,"",$file['Setting']['path']);
+				 }
+			}
+			foreach ($files as $filename => $file) {
+				if (!$this->movefiles($source,$destination,$file['Setting'])) {
 					$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
-					exit;
+					break;
 				}
 			}
-			$this->Session->setFlash(__('New file(s) has been saved'), 'flash/success');
+			$this->Session->setFlash(__('File(s) has been saved'), 'flash/success');
 			$this->redirect(array('action' => 'settings', $id));
 		}
 	}
@@ -298,31 +320,34 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 
-	public function uploadfiles($address, $files) {
-		foreach ($files as $filename=>$file) {
-			$pathfile = './files'.$file['path'].$file['name'].'.'.$file['extension'];
+	public function movefiles($source,$destination, $file) {
+			$pathfile = $file['path'].$file['name'].'.'.$file['extension'];
+			$newpathfile = str_replace($source,"",$file['path']);
+			$newpathfile = (substr($destination,0,2) == '\\\\') ? str_replace('/','\\',$newpathfile) : str_replace('\\','/',$newpathfile);
 			if(file_exists($pathfile)) {
-                	$uploadingfile = file_get_contents($pathfile);
-					if ($file['name'] == 'oe_settings')
-					{
-						$dom = new DOMDocument();
-	            		$dom->preserveWhiteSpace = false;
-						$dom->load($pathfile);
-						$dom->getElementsByTagName("hostname")->item(0)->nodeValue = is_null($dom->getElementsByTagName("hostname")->item(0)->nodeValue) ?
-						$this->request->data['Raspberry']['name'] : $dom->getElementsByTagName("hostname")->item(0)->nodeValue;
-						$uploadingfile = $dom->saveXML();
+            	$movingfile = file_get_contents($pathfile);
+				if ($file['name'] == 'oe_settings')
+				{
+					$dom = new DOMDocument();
+            		$dom->preserveWhiteSpace = false;
+					$dom->load($pathfile);
+					if ($dom->getElementsByTagName("hostname")->item(0)->nodeValue == '') {
+						$dom->getElementsByTagName("hostname")->item(0)->nodeValue = $this->request->data['Raspberry']['name'];
 					}
-					$options = array('conditions' => array('Raspberry.address' => $address));
-					$raspberry = $this->Raspberry->find('first', $options);
-					$file['raspberries_id'] = $raspberry['Raspberry']['id'];
-					$this->Setting->create();
-					if (!(file_put_contents('\\\\'.$address.$file['path'].$file['name'].'.'.$file['extension'],$uploadingfile)) || !($this->Setting->save($file))) {
+					$movingfile = $dom->saveXML();
+				}
+				if (!file_exists($destination.$newpathfile)) {
+					if (!mkdir($destination.$newpathfile,0777,true)) {
 						$this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
 						exit(0);
 					}
+				}
+				if (!file_put_contents($destination.$newpathfile.$file['name'].'.'.$file['extension'],$movingfile)) {
+					$this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
+					exit(0);
+				}
 			} else $this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
-		}	
-		return 1;
+			return 1;
 	}
 
 }

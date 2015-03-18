@@ -24,7 +24,7 @@
 
 				<?php 
 
-				$address = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'] : './files/';
+				$address = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'] : './files/default';
 				$id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
 				$name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
 
@@ -67,9 +67,16 @@
 							'raspberries_id' => $id)
 					);
 
-				$files = isset($files) ? $files : $setting;
+				$files = isset($files) ? $files['Setting'] : $setting;
 
-				echo '<h2>'.$name.' :</h2>';
+				echo '<h2>'.$name.' :</h2></br>';
+
+				echo $this->Form->create();
+				echo $this->Form->button('Sauvegarder',array('class' => 'btn btn-large btn-success', 'div' => false,'type' => 'submit', 'name' => 'backup')).'&nbsp';
+				echo $this->Form->button('Restaurer',array('class' => 'btn btn-large btn-error', 'type' => 'submit', 'name' => 'restore'));
+				echo $this->Form->end();
+
+
 				$notexists = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
 				foreach ($files as $filename => $file) {
 					?>
