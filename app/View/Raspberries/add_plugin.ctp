@@ -22,7 +22,9 @@
 					</thead>
 					
 					<tbody>
-<?php foreach ($raspberries as $raspberry): ?>
+<?php foreach ($raspberries as $raspberry): 
+if ($raspberry['Raspberry']['id']==$this->request->pass[0]) {
+?>
 <?php echo $this->Form->create('Raspberry', array('type' => 'file')); ?>
 	<tr>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
@@ -37,7 +39,7 @@
 		</td>
 	</tr>
 <?php echo $this->Form->end(); ?>
-<?php endforeach; ?>
+<?php } endforeach; ?>
 					</tbody>
 				</table>
 			</div><!-- /.table-responsive -->

@@ -49,8 +49,6 @@ public function synchroniser($id = null, $address) {
 		$this->Raspberry->id = $id;
 
 		if ($this->request->is('post') || $this->request->is('put')) {
-			
-			
 			if ($this->Raspberry->findByRole('master', array('Raspberry.address'))!=null) {
 				$bdd = $this->request->data['Raspberry']['BDD'];
 				$loginBDD = $this->request->data['Raspberry']['loginBDD'];
@@ -183,7 +181,6 @@ public function edit($id = null) {
 
         $this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
-		
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
@@ -501,5 +498,8 @@ public function setSlave($address){
 		ssh2_exec($connection, './scripts/scriptMaster.sh ' . $address);
 		ssh2_exec($connection, 'cd scripts && ./script.sh');
 }
+public function scanOE()
+{
 
+}
 }

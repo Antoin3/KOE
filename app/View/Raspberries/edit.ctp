@@ -9,20 +9,21 @@
 		<tr>
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
 			<th><?php echo $this->Paginator->sort('name'); ?></th>
-			<th><?php echo $this->Paginator->sort('adresse'); ?></th>
+			<th><?php echo $this->Paginator->sort('address'); ?></th>
 			<th><?php echo $this->Paginator->sort('overclocking'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 		</tr>
 	</thead>
-	
 	<tbody>
-	<?php foreach ($raspberries as $raspberry): ?>
+	<?php foreach ($raspberries as $raspberry):
+	if ($raspberry['Raspberry']['id']==$this->request->pass[0]) {
+	?>
 	<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
 	<tr>
 		<?php $options = array('default' => 'default', 'modest' => 'modest', 'medium' => 'medium', 'high' => 'high', 'turbo' => 'turbo');?>
 		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
-		<td><?php echo $this->Form->input('name', array('class' => 'form-control', 'label' => '')); ?>&nbsp;</td>
-		<td><?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => '')); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('name', array('class' => 'form-control', 'label' => '', 'value' => $raspberry['Raspberry']['name'])); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => '', 'value' => $raspberry['Raspberry']['address'])); ?>&nbsp;</td>
 		<td><?php echo $this->Form->input('overclocking', array('class' => 'form-control', 'style' => 'select','label' => '', 'options' => $options)); ?>&nbsp;</td>
 		<td class="actions">
 		&nbsp;
@@ -30,8 +31,7 @@
 		</td>
 	</tr>
 	<?php echo $this->Form->end(); ?>
-	<?php endforeach; ?>
-	
+	<?php } endforeach; ?>
 	</tbody>
 				</table>
 			</div><!-- /.table-responsive -->

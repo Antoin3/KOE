@@ -23,10 +23,7 @@
 					
 					<div class="table-responsive">
 						<table cellpadding="0" cellspacing="0" class="table table-striped table-bordered">
-								<?php foreach ($raspberries as $raspberry): ?>
 									<div class="col-lg-4">
-										<?php $image = $raspberry['Raspberry']['image'] == '' ?'data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==':'data:image/jpg;base64,' .   base64_encode($raspberry['Raspberry']['image']);?>
-
 		<div class="raspberries index">
 		
 			<h2><?php echo __('Raspberries'); ?></h2>
@@ -70,22 +67,7 @@
 					));
 				?>
 			</small></p>
-
-										<p class="text-center"><img class="img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 140px; height: 140px;"></p>
-								        <h4><p class='text-center'><?php echo h($raspberry['Raspberry']['name']); ?></p></h4>
-								        
-
-								      	<p class='text-center'>
-								      	<?php $desc = strlen(h($raspberry['Raspberry']['description'])) > 55 ? substr(h($raspberry['Raspberry']['description']),0,55).'...' : h($raspberry['Raspberry']['description']); echo $desc; ?>
-								      	</p>
-								          
-								        <p class='text-center'>
-										<?php echo $this->Html->link(__('Vue d\'ensemble'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
-										<?php echo $this->Html->link(__('Parametres'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
-										<?php echo $this->Form->postLink(__('Supprimer'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer l\'OpenElec %s?', $raspberry['Raspberry']['name'])); ?> </p>
-											
 									</div>
-								<?php endforeach; ?>
 						</table>
 					</div><!-- /.table-responsive -->
 					
