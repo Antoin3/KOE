@@ -35,7 +35,7 @@
                                             $dom->preserveWhiteSpace = FALSE;
                                             $dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
                                             $this->Xml->inputXML($dom);
-                                            echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary'));
+                                            echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement();'));
                                             echo $this->Form->end();
                                             echo '</div>';
                                             ?>

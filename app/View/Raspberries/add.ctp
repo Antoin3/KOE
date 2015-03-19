@@ -43,7 +43,7 @@
 					</div><!-- .form-group -->
 					
 					<div class="form-group">
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement();')); ?>
 
 				</fieldset>
 

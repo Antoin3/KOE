@@ -71,6 +71,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			echo $this->Html->script('plugins/morris/raphael.min');
 			echo $this->Html->script('plugins/morris/morris');
 			echo $this->Html->script('plugins/morris/morris-data');
+
+			echo $this->Html->script('loading');
 			
 			echo $this->fetch('script');
 ?>
