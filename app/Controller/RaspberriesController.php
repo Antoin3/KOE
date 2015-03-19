@@ -57,56 +57,57 @@ public $uses = array('Raspberry','Setting');
 
 				$address = $this->request->data['Raspberry']['address'];
 
-				$default = array( 
-									(int) 0 => array(
-											'Setting' => array(
-												'name' => 'guisettings',
-												'description' => 'description guisettings',
-												'path' => '\Userdata\\',
-												'extension' => 'xml',
-												'raspberries_id' => $id
-									)),
-									(int) 1 => array(
-										'Setting' => array(
-											'name' => 'advancedsettings',
-											'description' => 'description advancedsettings',
-											'path' => '\Userdata\\',
-											'extension' => 'xml',
-											'raspberries_id' => $id
-									)),
-									(int) 2 => array(
-										'Setting' => array(
-											'name' => 'mediasources',
-											'description' => 'description mediasources',
-											'path' => '\Userdata\\',
-											'extension' => 'xml',
-											'raspberries_id' => $id
-									)),
-									(int) 3 => array(
-										'Setting' => array(
-											'name' => 'sources',
-											'description' => 'description sources',
-											'path' => '\Userdata\\',
-											'extension' => 'xml',
-											'raspberries_id' => $id
-									)),
-									(int) 4 => array(
-										'Setting' => array(
-											'name' => 'passwords',
-											'description' => 'description passwords',
-											'path' => '\Userdata\\',
-											'extension' => 'xml',
-											'raspberries_id' => $id
-									)),
-									(int) 5 => array(
-										'Setting' => array(
-											'name' => 'oe_settings',
-											'description' => 'description oe_settings',
-											'path' => '\Userdata\addon_data\service.openelec.settings\\',
-											'extension' => 'xml',
-											'raspberries_id' => $id
-									))
-							);
+		$default = array( 
+							(int) 0 => array(
+									'Setting' => array(
+										'name' => 'guisettings',
+										'description' => 'description guisettings',
+										'path' => '/Userdata/',
+										'extension' => 'xml',
+										'raspberries_id' => $id
+							)),
+							(int) 1 => array(
+								'Setting' => array(
+									'name' => 'advancedsettings',
+									'description' => 'description advancedsettings',
+									'path' => '/Userdata/',
+									'extension' => 'xml',
+									'raspberries_id' => $id
+							)),
+							(int) 2 => array(
+								'Setting' => array(
+									'name' => 'mediasources',
+									'description' => 'description mediasources',
+									'path' => '/Userdata/',
+									'extension' => 'xml',
+									'raspberries_id' => $id
+							)),
+							(int) 3 => array(
+								'Setting' => array(
+									'name' => 'sources',
+									'description' => 'description sources',
+									'path' => '/Userdata/',
+									'extension' => 'xml',
+									'raspberries_id' => $id
+							)),
+							(int) 4 => array(
+								'Setting' => array(
+									'name' => 'passwords',
+									'description' => 'description passwords',
+									'path' => '/Userdata/',
+									'extension' => 'xml',
+									'raspberries_id' => $id
+							)),
+							(int) 5 => array(
+								'Setting' => array(
+									'name' => 'oe_settings',
+									'description' => 'description oe_settings',
+									'path' => '/Userdata/addon_data/service.openelec.settings/',
+									'extension' => 'xml',
+									'raspberries_id' => $id
+							))
+					);
+
 
 				$settings = array();
 
@@ -127,7 +128,8 @@ public $uses = array('Raspberry','Setting');
 					sleep(2);
 
 					foreach ($default as $filename => $file) {
-						if (!$this->movefiles('./files/default/','\\\\'.$address,$file['Setting'])) {
+						$file['Setting']['path'] = './files/default'.$file['Setting']['path'];
+						if (!$this->movefiles('./files/default','\\\\'.$address,$file['Setting'])) {
 								$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 						}
 					}
@@ -135,19 +137,19 @@ public $uses = array('Raspberry','Setting');
 						$this->execSSH($connection,'systemctl start kodi');
 						sleep(1);
 						$this->execSSH($connection,'systemctl restart kodi');
-						$settings = $files;
+						$settings = $default;
 				}
 				
 				foreach ($settings as $setting => $set) {
-					
-							$set['Setting']['path'] = '\\\\'.$address.$set['Setting']['path'];
 
-							$this->Setting->create();
-							if (!$this->Setting->save($set)) {
-								$this->Session->setFlash(__('The settings '.$setting.' could not be saved. Please, try again.'), 'flash/error');
-								exit();
-							}
-						}
+					$set['Setting']['path'] = '\\\\'.$address.str_replace('/','\\',$set['Setting']['path']);
+
+					$this->Setting->create();
+					if (!$this->Setting->save($set)) {
+						$this->Session->setFlash(__('The settings '.$setting.' could not be saved. Please, try again.'), 'flash/error');
+						exit();
+					}
+				}
 
 				sleep(1);
 				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
@@ -465,7 +467,7 @@ public $uses = array('Raspberry','Setting');
 				$msg = 'saved to all OpenElecs';
 				
 			} else {
-				
+
 				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
 				$this->execSSH($connection,'systemctl stop kodi');
 				sleep(2);
@@ -510,12 +512,11 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 
-	public function movefiles($source,$destination, $file) {
+	public function movefiles($source,$destination,$file) {
 
 			$pathfile = $file['path'].$file['name'].'.'.$file['extension'];
 			$newpathfile = str_replace($source,"",$file['path']);
 			$newpathfile = (substr($destination,0,2) == '\\\\') ? str_replace('/','\\',$newpathfile) : str_replace('\\','/',$newpathfile);
-
 			if(file_exists($pathfile)) {
 
             	$movingfile = file_get_contents($pathfile);
@@ -525,7 +526,7 @@ public $uses = array('Raspberry','Setting');
 					$dom = new DOMDocument();
             		$dom->preserveWhiteSpace = false;
 					$dom->load($pathfile);
-					if (isset($this->request->data['Raspberry']['name']) && $dom->getElementsByTagName("hostname")->item(0)->nodeValue == '') {
+					if (isset($this->request->data['Raspberry']['name']) && $dom->getElementsByTagName("hostname")->item(0)->nodeValue == 'default') {
 						$dom->getElementsByTagName("hostname")->item(0)->nodeValue = $this->request->data['Raspberry']['name'];
 					}
 					$movingfile = $dom->saveXML();

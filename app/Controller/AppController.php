@@ -198,6 +198,13 @@ class AppController extends Controller {
 							$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
 							$this->execSSH($connection,'systemctl stop kodi');
 							sleep(2);
+
+							if (isset($this->request->data['openelec']['settings']['system']['hostname'])) 
+							{
+								$this->Raspberry->id = $id;
+								$this->Raspberry->set('name', $this->request->data['openelec']['settings']['system']['hostname'][0]);
+								$this->Raspberry->save();
+							}
 					}
 					
 					if ($dom->save($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']))

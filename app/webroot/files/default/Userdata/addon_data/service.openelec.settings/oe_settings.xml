@@ -3,7 +3,7 @@
 									<settings>
 										<system>
 											<wizard_completed>True</wizard_completed>
-										<hostname></hostname></system>
+										<hostname>default</hostname></system>
 										<connman>
 											<wizard_completed>True</wizard_completed>
 										</connman>
