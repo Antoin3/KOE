@@ -29,15 +29,19 @@
 					<div class="form-group">
 						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom')); ?>
 					</div><!-- .form-group -->
+
 					<div class="form-group">
 						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
 					</div><!-- .form-group -->
+
 					<div class="form-group">
 						<?php echo $this->Form->input('Raspberry.description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
 					</div><!-- .form-group -->
+
 					<div class="form-group">
 						<?php echo $this->Form->input('actualsettings', array('class' => 'form-control', 'options' => array('non','oui'), 'label' => 'Conserver les réglages actuellement présents ?')); ?>
 					</div><!-- .form-group -->
+					
 					<div class="form-group">
 					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
 

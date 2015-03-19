@@ -25,6 +25,7 @@
 						<table cellpadding="0" cellspacing="0" class="table table-striped table-bordered">
 								<?php foreach ($raspberries as $raspberry): ?>
 									<div class="col-lg-4">
+
 										<?php $image = $raspberry['Raspberry']['image'] == '' ?'data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==':'data:image/jpg;base64,' .   base64_encode($raspberry['Raspberry']['image']);?>
 
 										<p class="text-center"><img class="img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 140px; height: 140px;"></p>

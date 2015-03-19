@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<mediasources>
+    <network>
+        <location id="1">smb://admin:admin@10.10.10.101/Multimedia/DTC</location>
+    </network>
+    <network>
+        <location id="2">smb://admin:admin@10.10.10.101/Multimedia/Videos</location>
+    </network>
+    <network>
+        <location id="3">smb://admin:admin@10.10.10.101/Multimedia/TV Shows</location>
+    </network>
+</mediasources>

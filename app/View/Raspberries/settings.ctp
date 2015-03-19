@@ -29,7 +29,12 @@
 				if ($id != 'all') {
 					echo $this->Form->create();
 					echo $this->Form->button('Sauvegarder',array('class' => 'btn btn-large btn-success', 'div' => false,'type' => 'submit', 'name' => 'backup')).'&nbsp';
-					echo $this->Form->button('Restaurer',array('class' => 'btn btn-large btn-error', 'type' => 'submit', 'name' => 'restore'));
+					echo $this->Form->button('Restaurer',array('class' => 'btn btn-large btn-default', 'type' => 'submit', 'name' => 'restore'));
+					echo $this->Form->end();
+				}
+				else {
+					echo $this->Form->create();
+					echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-large btn-info', 'type' => 'submit', 'name' => 'apply'));
 					echo $this->Form->end();
 				}
 
@@ -37,6 +42,7 @@
 				foreach ($files as $filename => $file) {
 					?>
 					<hr class="featurette-divider">
+
 				      <div class="row featurette">
 				        <div class="col-md-7">
 				          <h2 class="featurette-heading"> <?php echo $file['Setting']['name']; ?></h2>
@@ -55,10 +61,12 @@
 
 						 
 				        </div>
+
 				        <div class="col-md-5">
 				        <?php echo $display.'<p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form',$id, $file['Setting']['name']),array('class' => 'btn btn-default')).'</p>';
 				        ?>
 				        </div>
+
 				      </div>
 					
 				<?php } ?>
