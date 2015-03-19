@@ -20,7 +20,7 @@
  */
 
 App::uses('Controller', 'Controller');
-
+App::uses('XmlDOM', 'Lib');
 /**
  * Application Controller
  *
@@ -31,5 +31,199 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	public $theme = "Cakestrap";
+	public $components = array('Session','DebugKit.Toolbar');
+
+/**
+ * recursively remove directory method
+ *
+ * @param string $dir
+ * @return void
+ */
+
+ 	public function rrmdir($dir) 
+ 	{ 
+	   if (is_dir($dir)) { 
+	     $objects = scandir($dir); 
+	     foreach ($objects as $object) { 
+	       if ($object != "." && $object != "..") { 
+	         if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+	       } 
+	     } 
+	     reset($objects); 
+	     rmdir($dir); 
+	   } 
+	 }
+
+/**
+ * connexion SSH method
+ *
+ * @throws NotFoundException
+ * @param string $ip
+ * @param string $username
+ * @param string $pass
+ * @return Ressource
+ */
+	public function connexionSSH($ip,$username,$pass)
+	{
+		if (!$connection = ssh2_connect($ip, 22))
+		{
+		    throw new NotFoundException(__('Failed to connect to raspberry'));
+		}
+		ssh2_auth_password($connection,$username,$pass);
+		return $connection;
+	}
+
+/**
+ * connexion SSH method
+ *
+ * @throws BadRequestException
+ * @param string $connection
+ * @param string $cmd
+ * @return string
+ */
+	public function execSSH($connection,$cmd)
+	{
+		$query = ssh2_exec($connection,$cmd);
+		if (!$query) {
+		    throw new BadRequestException();
+		}
+		stream_set_blocking($query, true);
+		$result = stream_get_contents($query);
+		return $result;
+	}
+
+/**
+ *form method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @param string $file
+ * @return void
+ */
+	public function form($id = null, $file = null) {
+		$default = array( 
+							(int) 0 => array(
+									'Setting' => array(
+										'name' => 'guisettings',
+										'description' => 'description guisettings',
+										'path' => './files/default/Userdata/',
+										'extension' => 'xml'
+							)),
+							(int) 1 => array(
+								'Setting' => array(
+									'name' => 'advancedsettings',
+									'description' => 'description advancedsettings',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 2 => array(
+								'Setting' => array(
+									'name' => 'mediasources',
+									'description' => 'description mediasources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 3 => array(
+								'Setting' => array(
+									'name' => 'sources',
+									'description' => 'description sources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 4 => array(
+								'Setting' => array(
+									'name' => 'passwords',
+									'description' => 'description passwords',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 5 => array(
+								'Setting' => array(
+									'name' => 'oe_settings',
+									'description' => 'description oe_settings',
+									'path' => './files/default/Userdata/addon_data/service.openelec.settings/',
+									'extension' => 'xml'
+							))
+					);
+
+		if ($this->Raspberry->exists($id)) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id, 'Setting.name' => $file));
+			$fileinfo = $this->Setting->find('first',$optionsfiles);
+
+			$name = $raspberry['Raspberry']['name'];
+			$id = $raspberry['Raspberry']['id'];
+		}
+		else {
+			// $options = array('conditions' => array('Raspberry.role' => 'master'));
+			// $this->set('raspberry', $this->Raspberry->find('first', $options));
+			foreach ($default as $def => $key) {
+					if ($key['Setting']['name'] == $file) 
+					{
+						$fileinfo = $key;
+						break;
+					}
+				 }
+			$name = 'Parametres généraux';
+			$id = 'all';
+		}
+
+		$this->set('fileinfo',$fileinfo);
+		$this->set('name',$name);
+		$this->set('id',$id);
+
+		if ($this->request->is('post') || $this->request->is('put')) {
+	            $dom = new XmlDOM();
+	            $dom->preserveWhiteSpace = false;
+	            if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])) 
+	                {
+						//Génération du XML dont les valeurs remplaceront les nouvelles
+						$newdom = new XmlDOM();
+						$newdom->chargeXML($this->request->data);
+
+						$dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
+
+						//On remplace les valeurs de $olddom par celles de $newdom
+						$dom->replaceDOM($newdom);
+
+					} else {
+						//Génération du futur XML en DOMDocument : 
+						$dom->chargeXML($this->request->data);
+					}
+
+					if ($id != 'all')
+					{
+							$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
+							$this->execSSH($connection,'systemctl stop kodi');
+							sleep(2);
+
+							if (isset($this->request->data['openelec']['settings']['system']['hostname'])) 
+							{
+								$this->Raspberry->id = $id;
+								$this->Raspberry->set('name', $this->request->data['openelec']['settings']['system']['hostname'][0]);
+								$this->Raspberry->save();
+							}
+					}
+					
+					if ($dom->save($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']))
+					{
+						if ($id != 'all')
+						{	
+							$this->execSSH($connection,'systemctl start kodi');
+							sleep(1);
+							$this->execSSH($connection,'systemctl restart kodi');
+							sleep(1);
+						}
+					} else {
+						$this->Session->setFlash(__('Error when saving '.$file), 'flash/error');
+						exit;
+					}
+
+					$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'settings', $id,$file));
+				}
+		}
 }
+

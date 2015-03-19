@@ -1,5 +1,8 @@
 <?php
 /**
+ *
+ * PHP 5
+ *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
@@ -23,41 +26,55 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php echo $this->Html->charset(); ?>
 	<title>
 		<?php echo $cakeDescription ?>:
-		<?php echo $this->fetch('title'); ?>
+		<?php echo $title_for_layout; ?>
 	</title>
 	<?php
-		echo $this->Html->meta('icon');
 
-		echo $this->Html->css('cake.generic');
+			echo $this->Html->css('bootstrap');
+			echo $this->Html->css('sb-admin');
+			echo $this->Html->css('plugins/morris');
+			echo $this->Html->css('carousel');
+			echo $this->Html->css('full-width-pics');
+			echo $this->Html->css('../font-awesome/css/font-awesome');
 
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
-		echo $this->fetch('script');
+			echo $this->fetch('css');
 	?>
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
-		</div>
-		<div id="content">
 
-			<?php echo $this->Session->flash(); ?>
+<div id="wrapper">
+				<?php echo $this->element('menu/top_menu'); ?>
+				<?php echo $this->element('menu/sidebar_menu'); ?>
+        <div id="page-wrapper">
 
-			<?php echo $this->fetch('content'); ?>
-		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false, 'id' => 'cake-powered')
-				);
-			?>
-			<p>
-				<?php echo $cakeVersion; ?>
-			</p>
-		</div>
-	</div>
-	<?php echo $this->element('sql_dump'); ?>
+            <div class="container-fluid">
+					<?php echo $this->Session->flash(); ?>
+					<?php echo $this->fetch('content'); ?>
+				</div>
+				<div id="footer">
+				</div>
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+<?php
+			//jQuery
+			echo $this->Html->script('jquery.js');
+
+			//Bootstrap Core JavaScript
+			echo $this->Html->script('bootstrap');
+
+			//Morris Charts JavaScript
+			echo $this->Html->script('plugins/morris/raphael.min');
+			echo $this->Html->script('plugins/morris/morris');
+			echo $this->Html->script('plugins/morris/morris-data');
+			
+			echo $this->fetch('script');
+?>
+
+
 </body>
 </html>

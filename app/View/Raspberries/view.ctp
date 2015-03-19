@@ -1,73 +1,43 @@
 
-<div id="page-container" class="row">
+<!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                           Vue d'ensemble
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-eye"></i> Vue d'ensemble 
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
+				      
+                <?php $image = $raspberry['Raspberry']['image'] == '' ?'data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==':'data:image/jpg;base64,' .   base64_encode($raspberry['Raspberry']['image']);?>
+			    <header class="image-bg-fluid-height">
+			        <img class="img-responsive img-center img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 140px; height: 140px;">
+			    </header>
 
-	<div id="sidebar" class="col-sm-3">
-		
-		<div class="actions">
-			
-			<ul class="list-group">			
-						<li class="list-group-item"><?php echo $this->Html->link(__('Edit Raspberry'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => '')); ?> </li>
-		<li class="list-group-item"><?php echo $this->Form->postLink(__('Delete Raspberry'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => ''), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?> </li>
-		<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index'), array('class' => '')); ?> </li>
-		<li class="list-group-item"><?php echo $this->Html->link(__('New Raspberry'), array('action' => 'add'), array('class' => '')); ?> </li>
-				
-			</ul><!-- /.list-group -->
-			
-		</div><!-- /.actions -->
-		
-	</div><!-- /#sidebar .span3 -->
-	
-	<div id="page-content" class="col-sm-9">
-		
-		<div class="raspberries view">
+    <!-- Content Section -->
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="section-heading"><?php echo $raspberry['Raspberry']['name']; ?></h1>
+                    <p class="lead section-lead"><strong>Adresse IP :</strong> <?php echo h($raspberry['Raspberry']['address']); ?></p>
+                    <p class="section-paragraph">Blabla2</p><h4>Création le : <?php echo h($raspberry['Raspberry']['created']); ?></h4>
+						 	<h4>Derniere modification le : <?php echo h($raspberry['Raspberry']['modified']); ?></h4>
+                </div>
+            </div>
+        </div>
+    </section>
 
-			<h2><?php  echo __('Raspberry'); ?></h2>
-			
-			<div class="table-responsive">
-				<table class="table table-striped table-bordered">
-					<tbody>
-						<tr>		<td><strong><?php echo __('Id'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['id']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Name'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['name']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Version'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['version']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Address'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['address']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Overcloking'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['overcloking']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Created'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['created']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Modified'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['modified']); ?>
-			&nbsp;
-		</td>
-</tr>					</tbody>
-				</table><!-- /.table table-striped table-bordered -->
-			</div><!-- /.table-responsive -->
-			
-		</div><!-- /.view -->
 
-			
-	</div><!-- /#page-content .span9 -->
+    <!-- Fixed Height Image Aside -->
+    <!-- Image backgrounds are set within the full-width-pics.css file. -->
+    <aside class="image-bg-fixed-height"></aside>
 
-</div><!-- /#page-container .row-fluid -->
