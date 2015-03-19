@@ -53,59 +53,66 @@ public $uses = array('Raspberry','Setting');
 			if ($this->Raspberry->save($this->request->data)) {
 				$id = $this->Raspberry->id;
 				$address = $this->request->data['Raspberry']['address'];
-				$files = array(
-								'guisettings' => array(
-									'name' => 'guisettings', 
-									'description' => 'description guisettings', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'advancedsettings' => array(
-									'name' => 'advancedsettings', 
-									'description' => 'description advancedsettings', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'mediasources' => array(
-									'name' => 'mediasources', 
-									'description' => 'description mediasources', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'sources' => array(
-									'name' => 'sources', 
-									'description' => 'description sources', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'passwords' => array(
-									'name' => 'passwords', 
-									'description' => 'description passwords', 
-									'path' => '\Userdata\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id),
-								'oe_settings' => array(
-									'name' => 'oe_settings', 
-									'description' => 'description oe_settings', 
-									'path' => '\Userdata\addon_data\service.openelec.settings\\', 
-									'extension' => 'xml', 
-									'raspberries_id' => $id)
+				$default = array( 
+									(int) 0 => array(
+											'Setting' => array(
+												'name' => 'guisettings',
+												'description' => 'description guisettings',
+												'path' => '\Userdata\\',
+												'extension' => 'xml'
+									)),
+									(int) 1 => array(
+										'Setting' => array(
+											'name' => 'advancedsettings',
+											'description' => 'description advancedsettings',
+											'path' => '\Userdata\\',
+											'extension' => 'xml'
+									)),
+									(int) 2 => array(
+										'Setting' => array(
+											'name' => 'mediasources',
+											'description' => 'description mediasources',
+											'path' => '\Userdata\\',
+											'extension' => 'xml'
+									)),
+									(int) 3 => array(
+										'Setting' => array(
+											'name' => 'sources',
+											'description' => 'description sources',
+											'path' => '\Userdata\\',
+											'extension' => 'xml'
+									)),
+									(int) 4 => array(
+										'Setting' => array(
+											'name' => 'passwords',
+											'description' => 'description passwords',
+											'path' => '\Userdata\\',
+											'extension' => 'xml'
+									)),
+									(int) 5 => array(
+										'Setting' => array(
+											'name' => 'oe_settings',
+											'description' => 'description oe_settings',
+											'path' => '\Userdata\addon_data\service.openelec.settings\\',
+											'extension' => 'xml'
+									))
 							);
 
 				$settings = array();
 				if ($this->request->data['Raspberry']['actualsettings']) {
-					foreach ($files as $filename => $file) {
-						$pathfile = '\\\\'.$address.$file['path'].$file['name'].'.'.$file['extension'];
+					$i = 0;
+					foreach ($default as $filename => $file) {
+						$pathfile = '\\\\'.$address.$file['Setting']['path'].$file['Setting']['name'].'.'.$file['Setting']['extension'];
 						if(file_exists($pathfile)) {
-							$settings[$filename] = $file;
+							$settings[$i]['Setting'] = $file;
 						}
 					}
 				} else {
 					$connection = $this->connexionSSH($address,'root','openelec');
 					$this->execSSH($connection,'systemctl stop kodi');
 					sleep(2);
-					foreach ($files as $filename => $file) {
-						if (!$this->movefiles('./files/default/','\\\\'.$address,$file)) {
+					foreach ($default as $filename => $file) {
+						if (!$this->movefiles('./files/default/','\\\\'.$address,$file['Setting'])) {
 								$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 						}
 					}
@@ -277,18 +284,80 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 	public function settings($id = null) {
+		$default = array( 
+							(int) 0 => array(
+									'Setting' => array(
+										'id' => '63',
+										'name' => 'guisettings',
+										'description' => 'description guisettings',
+										'path' => './files/default/Userdata/',
+										'extension' => 'xml'
+							)),
+							(int) 1 => array(
+								'Setting' => array(
+									'id' => '64',
+									'name' => 'advancedsettings',
+									'description' => 'description advancedsettings',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 2 => array(
+								'Setting' => array(
+									'id' => '65',
+									'name' => 'mediasources',
+									'description' => 'description mediasources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 3 => array(
+								'Setting' => array(
+									'id' => '66',
+									'name' => 'sources',
+									'description' => 'description sources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 4 => array(
+								'Setting' => array(
+									'name' => 'passwords',
+									'description' => 'description passwords',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 5 => array(
+								'Setting' => array(
+									'id' => '68',
+									'name' => 'oe_settings',
+									'description' => 'description oe_settings',
+									'path' => './files/default/Userdata/addon_data/service.openelec.settings/',
+									'extension' => 'xml'
+							))
+					);
+
+
 		if ($this->Raspberry->exists($id)) {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('first', $options);
-			$options2 = array('conditions' => array('Setting.raspberries_id' => $id));
-			$this->set('setting', $this->Setting->find('all',$options2));
-			$files = $this->Setting->find('all', $options2);
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
+			$files = $this->Setting->find('all', $optionsfiles);
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$name = $raspberry['Raspberry']['name'];
+			$id = $raspberry['Raspberry']['id'];
+
+			
 		} else {
 			// $options = array('conditions' => array('Raspberry.role' => 'master'));
 			// $this->set('raspberry', $this->Raspberry->find('first', $options));
-			$raspberry = $this->Raspberry->find('all');
+			$name = 'Parametres généraux';
+			$id = 'all';
+			$files = $default;
 		}
+
+		$this->set('name', $name);
+		$this->set('id', $id);
+		$this->set('files',$files);
+
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if (array_key_exists('backup', $this->request->data)){
 				$source = '\\\\'.$raspberry['Raspberry']['address'];

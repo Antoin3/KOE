@@ -80,36 +80,90 @@ class AppController extends Controller {
  * @return void
  */
 	public function form($id = null, $file = null) {
+		$default = array( 
+							(int) 0 => array(
+									'Setting' => array(
+										'name' => 'guisettings',
+										'description' => 'description guisettings',
+										'path' => './files/default/Userdata/',
+										'extension' => 'xml'
+							)),
+							(int) 1 => array(
+								'Setting' => array(
+									'name' => 'advancedsettings',
+									'description' => 'description advancedsettings',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 2 => array(
+								'Setting' => array(
+									'name' => 'mediasources',
+									'description' => 'description mediasources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 3 => array(
+								'Setting' => array(
+									'name' => 'sources',
+									'description' => 'description sources',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 4 => array(
+								'Setting' => array(
+									'name' => 'passwords',
+									'description' => 'description passwords',
+									'path' => './files/default/Userdata/',
+									'extension' => 'xml'
+							)),
+							(int) 5 => array(
+								'Setting' => array(
+									'name' => 'oe_settings',
+									'description' => 'description oe_settings',
+									'path' => './files/default/Userdata/addon_data/service.openelec.settings/',
+									'extension' => 'xml'
+							))
+					);
+
 		if ($this->Raspberry->exists($id)) {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->set('raspberry', $this->Raspberry->find('first', $options));
 			$raspberry = $this->Raspberry->find('first', $options);
+
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id, 'Setting.name' => $file));
+			$fileinfo = $this->Setting->find('first',$optionsfiles);
+
+			$name = $raspberry['Raspberry']['name'];
+			$id = $raspberry['Raspberry']['id'];
 		}
 		else {
 			// $options = array('conditions' => array('Raspberry.role' => 'master'));
 			// $this->set('raspberry', $this->Raspberry->find('first', $options));
-			$raspberry = $this->Raspberry->find('all');
+			foreach ($default as $def => $key) {
+					if ($key['Setting']['name'] == $file) 
+					{
+						$fileinfo = $key;
+						break;
+					}
+				 }
+			$name = 'Parametres généraux';
+			$id = 'all';
 		}
 
-		$this->set('file',$file);
+		$this->set('fileinfo',$fileinfo);
+		$this->set('name',$name);
+		$this->set('id',$id);
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 
-			$filepath = isset($raspberry['Raspberry']) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : './files/default/Userdata/';
-			$id = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['id'] : 'all';
-			$name = isset($raspberry['Raspberry']) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
-
-			foreach ($raspberry as $rasp) {
-				$address = $rasp['Raspberry']['address'];
 	            $dom = new XmlDOM();
 	            $dom->preserveWhiteSpace = false;
-	            if(file_exists($filepath.$file.'.xml')) 
+	            if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].$fileinfo['Setting']['extension'])) 
 	                {
 						//Génération du XML dont les valeurs remplaceront les nouvelles
 						$newdom = new XmlDOM();
 						$newdom->chargeXML($this->request->data);
 
-						$dom->load($filepath.$file.'.xml');
+						$dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].$fileinfo['Setting']['extension']);
 
 						//On remplace les valeurs de $olddom par celles de $newdom
 						$dom->replaceDOM($newdom);
@@ -119,23 +173,30 @@ class AppController extends Controller {
 						$dom->chargeXML($this->request->data[$file]);
 					}
 
-					$connection = $this->connexionSSH($address,'root','openelec');
-					$this->execSSH($connection,'systemctl stop kodi');
-					sleep(2);
-					if ($dom->save($filepath.$file.'.xml'))
+					if ($id != 'all')
 					{
-						$this->execSSH($connection,'systemctl start kodi');
-						sleep(1);
-						$this->execSSH($connection,'systemctl restart kodi');
-						sleep(1);
+							$connection = $this->connexionSSH($fileinfo['Setting']['Raspberry']['address'],'root','openelec');
+							$this->execSSH($connection,'systemctl stop kodi');
+							sleep(2);
+					}
+					
+					if ($dom->save($fileinfo['Setting']['path'].$file.$fileinfo['Setting']['extension']))
+					{
+						if ($id != 'all')
+						{	
+							$this->execSSH($connection,'systemctl start kodi');
+							sleep(1);
+							$this->execSSH($connection,'systemctl restart kodi');
+							sleep(1);
+						}
 					} else {
 						$this->Session->setFlash(__('Error when saving '.$file), 'flash/error');
 						exit;
 					}
+
+					$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'settings', $id,$file));
 				}
-				$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'settings', $id,$file));
-			}
 		}
 }
 
