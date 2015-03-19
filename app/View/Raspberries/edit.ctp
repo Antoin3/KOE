@@ -1,46 +1,60 @@
 
-<div id="page-container" class="row">
-
-	<div id="sidebar" class="col-sm-3">
+	<div class="raspberries index">
 		
-		<div class="actions">
-		
-			<ul class="list-group">
-				<li class="list-group-item"><?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $this->Form->value('Raspberry.id')), null, __('Are you sure you want to delete # %s?', $this->Form->value('Raspberry.id'))); ?></li>
-				<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index')); ?></li>
-			</ul><!-- /.list-group -->		
-		</div><!-- /.actions -->
-		
-	</div><!-- /#sidebar .col-sm-3 -->
-	
-	<div id="page-content" class="col-sm-9">
-
-		<h2><?php echo __('Edit Raspberry'); ?></h2>
-
-		<div class="raspberries form">
-		
-			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
-
-				<fieldset>
-
-					<div class="form-group">
-						<?php echo $this->Form->input('name', array('class' => 'form-control')); ?>
-					</div><!-- .form-group -->
-					<div class="form-group">
-						<?php echo $this->Form->input('version', array('class' => 'form-control')); ?>
-					</div><!-- .form-group -->
-					<div class="form-group">
-						<?php echo $this->Form->input('overcloking', array('class' => 'form-control')); ?>
-					</div><!-- .form-group -->
-
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary')); ?>
-
-				</fieldset>
-
-			<?php echo $this->Form->end(); ?>
-
-		</div><!-- /.form -->
+			<h2><?php echo __('Raspberries'); ?></h2>
 			
-	</div><!-- /#page-content .col-sm-9 -->
+			<div class="table-responsive">
+				<table cellpadding="0" cellspacing="0" class="table table-striped table-bordered" id="raspberries">
+					<thead>
+		<tr>
+			<th><?php echo $this->Paginator->sort('id'); ?></th>
+			<th><?php echo $this->Paginator->sort('name'); ?></th>
+			<th><?php echo $this->Paginator->sort('address'); ?></th>
+			<th><?php echo $this->Paginator->sort('overclocking'); ?></th>
+			<th class="actions"><?php echo __('Actions'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach ($raspberries as $raspberry):
+	if ($raspberry['Raspberry']['id']==$this->request->pass[0]) {
+	?>
+	<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+	<tr>
+		<?php $options = array('default' => 'default', 'modest' => 'modest', 'medium' => 'medium', 'high' => 'high', 'turbo' => 'turbo');?>
+		<td><?php echo h($raspberry['Raspberry']['id']); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('name', array('class' => 'form-control', 'label' => '', 'value' => $raspberry['Raspberry']['name'])); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => '', 'value' => $raspberry['Raspberry']['address'])); ?>&nbsp;</td>
+		<td><?php echo $this->Form->input('overclocking', array('class' => 'form-control', 'style' => 'select','label' => '', 'options' => $options)); ?>&nbsp;</td>
+		<td class="actions">
+		&nbsp;
+			<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'configuration();')); ?>
+		</td>
+	</tr>
+	<?php echo $this->Form->end(); ?>
+	<?php } endforeach; ?>
+	</tbody>
+				</table>
+			</div><!-- /.table-responsive -->
+			
+			<p><small>
+				<?php
+					echo $this->Paginator->counter(array(
+					'format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')
+					));
+				?>
+			</small></p>
 
-</div><!-- /#page-container .row-fluid -->
+			<ul class="pagination">
+				<?php
+					echo $this->Paginator->prev('< ' . __('Previous'), array('tag' => 'li'), null, array('class' => 'disabled', 'tag' => 'li', 'disabledTag' => 'a'));
+					echo $this->Paginator->numbers(array('separator' => '', 'currentTag' => 'a', 'tag' => 'li', 'currentClass' => 'disabled'));
+					echo $this->Paginator->next(__('Next') . ' >', array('tag' => 'li'), null, array('class' => 'disabled', 'tag' => 'li', 'disabledTag' => 'a'));
+				?>
+			</ul><!-- /.pagination -->
+			
+		</div><!-- /.index -->
+<script type="text/javascript">
+function configuration() {
+    $('body').prepend("<div id='wait' style='border-radius:5px;border-style:groove;border-color:black;z-index:1;position:absolute;height:150px;width:400px;top:40%;left:40%;text-align:center;font-weight:bold;background-color:#5a5a5a;' ><br/><a style='z-index:2;color:white;font-size:large;'>Configuration en cours . . .</a><br/><br/><img src='../../img/chargement.gif' ></img></div>");
+}
+</script>

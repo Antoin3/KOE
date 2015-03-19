@@ -1,68 +1,44 @@
 
-<div id="page-container" class="row">
-
-	<div id="sidebar" class="col-sm-3">
+<!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                           Vue d'ensemble
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-eye"></i> Vue d'ensemble 
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
+	<div id="page-container" class="row">
 		
-		<div class="actions">
+		<div id="page-content" class="col-sm-9">
 			
-			<ul class="list-group">			
-						<li class="list-group-item"><?php echo $this->Html->link(__('Edit Raspberry'), array('action' => 'edit', $raspberry['Raspberry']['id']), array('class' => '')); ?> </li>
-		<li class="list-group-item"><?php echo $this->Form->postLink(__('Delete Raspberry'), array('action' => 'delete', $raspberry['Raspberry']['id']), array('class' => ''), __('Are you sure you want to delete # %s?', $raspberry['Raspberry']['id'])); ?> </li>
-		<li class="list-group-item"><?php echo $this->Html->link(__('List Raspberries'), array('action' => 'index'), array('class' => '')); ?> </li>
-		<li class="list-group-item"><?php echo $this->Html->link(__('New Raspberry'), array('action' => 'add'), array('class' => '')); ?> </li>
-				
-			</ul><!-- /.list-group -->
-			
-		</div><!-- /.actions -->
-		
-	</div><!-- /#sidebar .span3 -->
-	
-	<div id="page-content" class="col-sm-9">
-		
-		<div class="raspberries view">
+			<div class="raspberries view">
 
-			<h2><?php  echo __('Raspberry'); ?></h2>
+				<h2 class="featurette-heading"><?php echo $raspberry['Raspberry']['name']; ?></h2>
 			
 			<div class="table-responsive">
-				<table class="table table-striped table-bordered">
-					<tbody>
-						<tr>		<td><strong><?php echo __('Id'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['id']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Name'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['name']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Version'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['version']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Address'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['address']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Overcloking'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['overcloking']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Created'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['created']); ?>
-			&nbsp;
-		</td>
-</tr><tr>		<td><strong><?php echo __('Modified'); ?></strong></td>
-		<td>
-			<?php echo h($raspberry['Raspberry']['modified']); ?>
-			&nbsp;
-		</td>
-</tr>					</tbody>
-				</table><!-- /.table table-striped table-bordered -->
+
+					<hr class="featurette-divider">
+				      <div class="row featurette">
+				        <div class="col-md-7">
+				          <h3><strong>Adresse IP :</strong> <?php echo __('Address'); ?></h3>
+						 	  <p class="lead">Blabla2</p><h4>Création le : <?php echo h($raspberry['Raspberry']['created']); ?></h4>
+						 	<h4>Derniere modification le : <?php echo h($raspberry['Raspberry']['modified']); ?></h4></p>
+				        </div>
+				        <div class="col-md-5">
+				        	<img class="featurette-image img-responsive" src="'data:image/jpg;base64,' .   base64_encode($raspberry['Raspberry']['image']);"></img>
+				        	<p class="lead"> <?php echo h($raspberry['Raspberry']['description']); ?></p>
+				        </div>
+				      </div>
+
 			</div><!-- /.table-responsive -->
 			
 		</div><!-- /.view -->
