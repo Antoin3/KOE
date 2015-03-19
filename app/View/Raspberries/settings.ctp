@@ -28,17 +28,17 @@
 
 				if ($id != 'all') {
 					echo $this->Form->create();
-					echo $this->Form->button('Sauvegarder',array('class' => 'btn btn-large btn-success', 'div' => false,'type' => 'submit', 'name' => 'backup')).'&nbsp';
-					echo $this->Form->button('Restaurer',array('class' => 'btn btn-large btn-default', 'type' => 'submit', 'name' => 'restore'));
+					echo $this->Form->button('Sauvegarder',array('class' => 'btn btn-large btn-success', 'div' => false,'type' => 'submit', 'name' => 'backup', 'onclick' => 'chargement();')).'&nbsp';
+					echo $this->Form->button('Restaurer',array('class' => 'btn btn-large btn-default', 'type' => 'submit', 'name' => 'restore', 'onclick' => 'chargement();'));
 					echo $this->Form->end();
 				}
 				else {
 					echo $this->Form->create();
-					echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-large btn-info', 'type' => 'submit', 'name' => 'apply'));
+					echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-large btn-info', 'type' => 'submit', 'name' => 'apply', 'onclick' => 'chargement();'));
 					echo $this->Form->end();
 				}
 
-				$notexists = '<img class="featurette-image img-responsive" src="/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
+				$notexists = '<img class="featurette-image img-responsive" src="'.$this->webroot.'/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
 				foreach ($files as $filename => $file) {
 					?>
 					<hr class="featurette-divider">
@@ -63,7 +63,7 @@
 				        </div>
 
 				        <div class="col-md-5">
-				        <?php echo $display.'<p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form',$id, $file['Setting']['name']),array('class' => 'btn btn-default')).'</p>';
+				        <?php echo $display.'<p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form',$id, $file['Setting']['name']),array('class' => 'btn btn-default', 'onclick' => 'chargement();')).'</p>';
 				        ?>
 				        </div>
 
