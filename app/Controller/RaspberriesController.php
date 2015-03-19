@@ -59,52 +59,57 @@ public $uses = array('Raspberry','Setting');
 												'name' => 'guisettings',
 												'description' => 'description guisettings',
 												'path' => '\Userdata\\',
-												'extension' => 'xml'
+												'extension' => 'xml',
+												'raspberries_id' => $id
 									)),
 									(int) 1 => array(
 										'Setting' => array(
 											'name' => 'advancedsettings',
 											'description' => 'description advancedsettings',
 											'path' => '\Userdata\\',
-											'extension' => 'xml'
+											'extension' => 'xml',
+											'raspberries_id' => $id
 									)),
 									(int) 2 => array(
 										'Setting' => array(
 											'name' => 'mediasources',
 											'description' => 'description mediasources',
 											'path' => '\Userdata\\',
-											'extension' => 'xml'
+											'extension' => 'xml',
+											'raspberries_id' => $id
 									)),
 									(int) 3 => array(
 										'Setting' => array(
 											'name' => 'sources',
 											'description' => 'description sources',
 											'path' => '\Userdata\\',
-											'extension' => 'xml'
+											'extension' => 'xml',
+											'raspberries_id' => $id
 									)),
 									(int) 4 => array(
 										'Setting' => array(
 											'name' => 'passwords',
 											'description' => 'description passwords',
 											'path' => '\Userdata\\',
-											'extension' => 'xml'
+											'extension' => 'xml',
+											'raspberries_id' => $id
 									)),
 									(int) 5 => array(
 										'Setting' => array(
 											'name' => 'oe_settings',
 											'description' => 'description oe_settings',
 											'path' => '\Userdata\addon_data\service.openelec.settings\\',
-											'extension' => 'xml'
+											'extension' => 'xml',
+											'raspberries_id' => $id
 									))
 							);
 
 				$settings = array();
 				if ($this->request->data['Raspberry']['actualsettings']) {
-					$i = 0;
 					foreach ($default as $filename => $file) {
 						$pathfile = '\\\\'.$address.$file['Setting']['path'].$file['Setting']['name'].'.'.$file['Setting']['extension'];
 						if(file_exists($pathfile)) {
-							$settings[$i]['Setting'] = $file;
+							$settings[] = $file;
 						}
 					}
 				} else {
@@ -122,7 +127,7 @@ public $uses = array('Raspberry','Setting');
 						$settings = $files;
 					}
 				foreach ($settings as $setting => $set) {
-							$set['path'] = '\\\\'.$address.$set['path'];
+							$set['Setting']['path'] = '\\\\'.$address.$set['Setting']['path'];
 							$this->Setting->create();
 							if (!$this->Setting->save($set)) {
 								$this->Session->setFlash(__('The settings '.$setting.' could not be saved. Please, try again.'), 'flash/error');
@@ -177,7 +182,10 @@ public $uses = array('Raspberry','Setting');
 		if (!$this->Raspberry->exists()) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
+		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+		$raspberry = $this->Raspberry->find('first', $options);
 			if ($this->Raspberry->delete()) {
+				$this->rrmdir('./files/'.$raspberry['Raspberry']['name']);
 				$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
 				$this->redirect(array('action' => 'index'));
 			}
@@ -360,10 +368,12 @@ public $uses = array('Raspberry','Setting');
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if (array_key_exists('backup', $this->request->data)){
+				$msg = 'saved';
 				$source = '\\\\'.$raspberry['Raspberry']['address'];
 				$destination = './files/'.$raspberry['Raspberry']['name'];
 			}
 			elseif (array_key_exists('restore', $this->request->data)) {
+				$msg = 'restored';
 				$source = './files/'.$raspberry['Raspberry']['name'];
 				$destination = '\\\\'.$raspberry['Raspberry']['address'];
 				foreach ($files as $filename => &$file) {
@@ -376,7 +386,7 @@ public $uses = array('Raspberry','Setting');
 					break;
 				}
 			}
-			$this->Session->setFlash(__('File(s) has been saved'), 'flash/success');
+			$this->Session->setFlash(__('File(s) has been '.$msg), 'flash/success');
 			$this->redirect(array('action' => 'settings', $id));
 		}
 	}

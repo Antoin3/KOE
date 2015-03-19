@@ -34,6 +34,27 @@ class AppController extends Controller {
 	public $components = array('Session','DebugKit.Toolbar');
 
 /**
+ * recursively remove directory method
+ *
+ * @param string $dir
+ * @return void
+ */
+
+ 	public function rrmdir($dir) 
+ 	{ 
+	   if (is_dir($dir)) { 
+	     $objects = scandir($dir); 
+	     foreach ($objects as $object) { 
+	       if ($object != "." && $object != "..") { 
+	         if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+	       } 
+	     } 
+	     reset($objects); 
+	     rmdir($dir); 
+	   } 
+	 }
+
+/**
  * connexion SSH method
  *
  * @throws NotFoundException
@@ -154,33 +175,32 @@ class AppController extends Controller {
 		$this->set('id',$id);
 
 		if ($this->request->is('post') || $this->request->is('put')) {
-
 	            $dom = new XmlDOM();
 	            $dom->preserveWhiteSpace = false;
-	            if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].$fileinfo['Setting']['extension'])) 
+	            if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])) 
 	                {
 						//Génération du XML dont les valeurs remplaceront les nouvelles
 						$newdom = new XmlDOM();
 						$newdom->chargeXML($this->request->data);
 
-						$dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].$fileinfo['Setting']['extension']);
+						$dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
 
 						//On remplace les valeurs de $olddom par celles de $newdom
 						$dom->replaceDOM($newdom);
 
 					} else {
 						//Génération du futur XML en DOMDocument : 
-						$dom->chargeXML($this->request->data[$file]);
+						$dom->chargeXML($this->request->data);
 					}
 
 					if ($id != 'all')
 					{
-							$connection = $this->connexionSSH($fileinfo['Setting']['Raspberry']['address'],'root','openelec');
+							$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
 							$this->execSSH($connection,'systemctl stop kodi');
 							sleep(2);
 					}
 					
-					if ($dom->save($fileinfo['Setting']['path'].$file.$fileinfo['Setting']['extension']))
+					if ($dom->save($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']))
 					{
 						if ($id != 'all')
 						{	

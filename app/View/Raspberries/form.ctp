@@ -28,15 +28,13 @@
                                     if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])) 
                                         { 
                                             echo '<div class="col-lg-6">';
-                                            echo $this->Form->create($name, array('role' => 'form', 'url' => './form/'.$id.'/'.$fileinfo['Setting']['name']));
+                                            echo $this->Form->create($fileinfo['Setting']['name'], array('role' => 'form', 'url' => './form/'.$id.'/'.$fileinfo['Setting']['name']));
 
-                                            {
-                                                    //Create new DomDocuemnt
-                                                    $dom = new DomDocument();
-                                                    $dom->preserveWhiteSpace = FALSE;
-                                                    $dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
-                                                    $this->Xml->inputXML($dom);
-                                                }
+                                            //Create new DomDocuemnt
+                                            $dom = new DomDocument();
+                                            $dom->preserveWhiteSpace = FALSE;
+                                            $dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
+                                            $this->Xml->inputXML($dom);
                                             echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary'));
                                             echo $this->Form->end();
                                             echo '</div>';
