@@ -39,7 +39,7 @@
 								        <p class='text-center'>
 										<?php echo $this->Html->link(__('Vue d\'ensemble'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 										<?php echo $this->Html->link(__('Parametres'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
-										<?php echo $this->Html->link(__('Plugin'), array('action' => 'add_plugin', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-sm btn-default', 'id' => 'addPlugin')); ?>
+										<?php // echo $this->Html->link(__('Plugin'), array('action' => 'add_plugin', $raspberry['Raspberry']['id'], $raspberry['Raspberry']['address']), array('class' => 'btn btn-sm btn-default', 'id' => 'addPlugin')); ?>
 										<?php echo $this->Form->postLink(__('Supprimer'), array('action' => 'delete', $raspberry['Raspberry']['id'],true), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer l\'OpenElec %s?', $raspberry['Raspberry']['name'])); ?>
 										 </p>
 											

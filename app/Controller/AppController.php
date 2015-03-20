@@ -101,6 +101,8 @@ class AppController extends Controller {
  * @return void
  */
 	public function form($id = null, $file = null) {
+
+		//Tableau contenant les informations des fichiers de configurations par défaut
 		$default = array( 
 							(int) 0 => array(
 									'Setting' => array(
@@ -150,6 +152,7 @@ class AppController extends Controller {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$raspberry = $this->Raspberry->find('first', $options);
 
+			//Si on cible un OpenElec en particulier, on récupere dans la BDD toutes les informations du fichier de configurations ciblé liés a cet OE
 			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id, 'Setting.name' => $file));
 			$fileinfo = $this->Setting->find('first',$optionsfiles);
 
@@ -159,6 +162,8 @@ class AppController extends Controller {
 		else {
 			// $options = array('conditions' => array('Raspberry.role' => 'master'));
 			// $this->set('raspberry', $this->Raspberry->find('first', $options));
+
+			//Si on cible tous les OpenElecs, on récupere dans le tableau 'default' toutes les informations du fichier de configuration ciblé
 			foreach ($default as $def => $key) {
 					if ($key['Setting']['name'] == $file) 
 					{
@@ -166,6 +171,7 @@ class AppController extends Controller {
 						break;
 					}
 				 }
+
 			$name = 'Parametres généraux';
 			$id = 'all';
 		}
@@ -175,6 +181,7 @@ class AppController extends Controller {
 		$this->set('id',$id);
 
 		if ($this->request->is('post') || $this->request->is('put')) {
+				//On créer un nouveau fichier Xml qui viendra remplacer le précédent s'il existe, on qui sera créé
 	            $dom = new XmlDOM();
 	            $dom->preserveWhiteSpace = false;
 	            if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])) 
@@ -193,8 +200,10 @@ class AppController extends Controller {
 						$dom->chargeXML($this->request->data);
 					}
 
+					//Dans le cas on réalise une requete sur un OE en particulier
 					if ($id != 'all')
 					{
+							//On éteint Kodi et edite les nouvelles infos dans la base
 							$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
 							$this->execSSH($connection,'systemctl stop kodi');
 							sleep(2);
@@ -207,10 +216,13 @@ class AppController extends Controller {
 							}
 					}
 					
+					//On enregistre le Xml
 					if ($dom->save($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']))
 					{
+						//Dans le cas on réalise une requete sur un OE en particulier
 						if ($id != 'all')
 						{	
+							//On relance et restart Kodi
 							$this->execSSH($connection,'systemctl start kodi');
 							sleep(1);
 							$this->execSSH($connection,'systemctl restart kodi');

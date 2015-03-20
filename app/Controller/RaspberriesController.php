@@ -57,7 +57,8 @@ public $uses = array('Raspberry','Setting');
 
 				$address = $this->request->data['Raspberry']['address'];
 
-		$default = array( 
+				//Tableau contenant les informations des fichiers de configurations par défaut
+				$default = array( 
 							(int) 0 => array(
 									'Setting' => array(
 										'name' => 'guisettings',
@@ -108,9 +109,10 @@ public $uses = array('Raspberry','Setting');
 							))
 					);
 
-
+				//Tableau qui servira a créer les informations des fichiers de configurations dans la base
 				$settings = array();
 
+				//Cas ou on veut garder les configurations actuelles de l'OE
 				if ($this->request->data['Raspberry']['actualsettings']) {
 
 					foreach ($default as $filename => $file) {
@@ -121,12 +123,13 @@ public $uses = array('Raspberry','Setting');
 					}
 
 				} else {
-
+					//Cas ou on veut parametrer les configurations par défaut a l'OE
 					$connection = $this->connexionSSH($address,'root','openelec');
 
 					$this->execSSH($connection,'systemctl stop kodi');
 					sleep(2);
 
+					//On charge tout les fichiers par défaut dans l'OE
 					foreach ($default as $filename => $file) {
 						$file['Setting']['path'] = './files/default'.$file['Setting']['path'];
 						if (!$this->movefiles('./files/default','\\\\'.$address,$file['Setting'])) {
@@ -140,6 +143,7 @@ public $uses = array('Raspberry','Setting');
 						$settings = $default;
 				}
 				
+				//On enregistre les données dans la base
 				foreach ($settings as $setting => $set) {
 
 					$set['Setting']['path'] = '\\\\'.$address.str_replace('/','\\',$set['Setting']['path']);
@@ -205,7 +209,8 @@ public $uses = array('Raspberry','Setting');
 		$raspberry = $this->Raspberry->find('first', $options);
 
 			if ($this->Raspberry->delete()) {
-				$this->rrmdir('./files/'.$raspberry['Raspberry']['name']);
+				//Si un dossier de sauvegarde des parametres de configuration de l'OE existe, il sera supprimé
+				if (is_dir('./files/'.$raspberry['Raspberry']['name'])) $this->rrmdir('./files/'.$raspberry['Raspberry']['name']);
 				$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
 				$this->redirect(array('action' => 'index'));
 			}
@@ -312,6 +317,8 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 	public function settings($id = null) {
+		
+		//Tableau contenant les informations des fichiers de configurations par défaut
 		$default = array( 
 							(int) 0 => array(
 									'Setting' => array(
@@ -365,6 +372,7 @@ public $uses = array('Raspberry','Setting');
 
 
 		if ($this->Raspberry->exists($id)) {
+			//Si on cible un OE en particulier, 
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$raspberry = $this->Raspberry->find('first', $options);
 
@@ -430,40 +438,6 @@ public $uses = array('Raspberry','Setting');
 					sleep(1);
 				}
 
-
-
-				// foreach ($allrasps as $rasps => $rasp) {
-				// 	//Afin d'upload tout les fihciers sur chaque OpenElec en parallele
-				// 	$pid = pcntl_fork();
-
-				//     if($pid == -1) {
-				//             exit("Error forking...\n");
-				//     } else if($pid == 0) {
-
-				// 		$connection = $this->connexionSSH($rasp['Raspberry']['address'],'root','openelec');
-
-				// 		$this->execSSH($connection,'systemctl stop kodi');
-
-				// 		sleep(2);
-
-				// 		foreach ($files as $filename => $file) {
-				// 			if (!$this->movefiles($file['path'],$rasp['Raspberry']['address'],$file['Setting'])) {
-				// 				$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
-				// 				break;
-				// 			}
-				// 		}
-				// 		$this->execSSH($connection,'systemctl start kodi');
-
-				// 		sleep(1);
-
-				// 		$this->execSSH($connection,'systemctl restart kodi');
-
-				// 		exit();
-				// 	}
-				// }
-
-				//while(pcntl_waitpid(0,$status) != -1);
-
 				$msg = 'saved to all OpenElecs';
 				
 			} else {
@@ -473,14 +447,14 @@ public $uses = array('Raspberry','Setting');
 				sleep(2);
 
 				if (array_key_exists('backup', $this->request->data)){
-					$msg = 'saved';
 					$source = '\\\\'.$raspberry['Raspberry']['address'];
 					$destination = './files/'.$raspberry['Raspberry']['name'];
+					$msg = 'saved';
 				}
 				elseif (array_key_exists('restore', $this->request->data)) {
-					$msg = 'restored';
 					$source = './files/'.$raspberry['Raspberry']['name'];
 					$destination = '\\\\'.$raspberry['Raspberry']['address'];
+					$msg = 'restored';
 
 					foreach ($files as $filename => &$file) {
 						$file['Setting']['path'] = $source.str_replace($destination,"",$file['Setting']['path']);
