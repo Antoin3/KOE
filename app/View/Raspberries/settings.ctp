@@ -37,7 +37,7 @@
 					echo $this->Form->end();
 				}
 				echo '<hr class="featurette-divider">';
-				$notexists = '<img class="featurette-image img-responsive" src="'.$this->webroot.'/img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
+				$notexists = '<img class="featurette-image img-responsive" src="'.$this->webroot.'img/settingsnotfound.png"><p><h2>Fichier inexistant</h2></p></img>';
 				foreach ($files as $filename => $file) {
 					?>
 				    <div class="row featurette">
@@ -57,7 +57,7 @@
 						          } ?>
 					    </div>
 				        <div class="col-lg-6 text-center">
-					        <?php echo '<p>'.$display.'</p><p>'.$this->Html->link(__($label), array('controller' => 'Raspberries', 'action' => 'form',$id, $file['Setting']['name']),array('class' => 'btn btn-default', 'onclick' => 'chargement();')).'</p>';
+					        <?php echo '<p>'.$display.'</p><p>'.$this->Html->link(__($label), array('action' => 'form',$id, $file['Setting']['name']),array('class' => 'btn btn-default', 'onclick' => 'chargement();')).'</p>';
 					        ?>
 				        </div>
 					</div>

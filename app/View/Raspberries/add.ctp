@@ -27,7 +27,7 @@
 				<fieldset>
 
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom')); ?>
+						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom', 'id' => 'name')); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
@@ -39,7 +39,12 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
-						<?php echo $this->Form->input('actualsettings', array('class' => 'form-control', 'options' => array('non','oui'), 'label' => 'Conserver les réglages actuellement présents ?')); ?>
+						<?php echo $this->Form->input('actualsettings', array('class' => 'form-control', 'options' => array('non','oui'), 'label' => 'Conserver les réglages actuellement présents ?', 'id' => 'as', 'onchange' => 'if ($("#as").val() == 1) {
+																								document.getElementById("name").disabled = true;
+																								document.getElementById("name").value = "";
+																							} else {
+																								document.getElementById("name").disabled = false;
+																							};')); ?>
 					</div><!-- .form-group -->
 					
 					<div class="form-group">

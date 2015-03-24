@@ -8,7 +8,7 @@ App::uses('AppController', 'Controller');
  */
 class RaspberriesController extends AppController {
 
-public $uses = array('Raspberry','Setting');
+public $uses = array('Raspberry','Setting','Plugin');
 
 /**
  * Components
@@ -51,11 +51,14 @@ public $uses = array('Raspberry','Setting');
 		if ($this->request->is('post')) {
 			$this->Raspberry->create();
 
+			$address = $this->request->data['Raspberry']['address'];
+			$connection = $this->connexionSSH($address,'root','openelec');
+
+			//Cas (notamment) ou on garde les settings par defaut
+			if ($this->request->data['Raspberry']['actualsettings']) $this->request->data['Raspberry']['name'] = trim($this->execSSH($connection,'cat /etc/hostname'));
+
 			if ($this->Raspberry->save($this->request->data)) {
-
 				$id = $this->Raspberry->id;
-
-				$address = $this->request->data['Raspberry']['address'];
 
 				//Tableau contenant les informations des fichiers de configurations par défaut
 				$default = array( 
@@ -114,7 +117,6 @@ public $uses = array('Raspberry','Setting');
 
 				//Cas ou on veut garder les configurations actuelles de l'OE
 				if ($this->request->data['Raspberry']['actualsettings']) {
-
 					foreach ($default as $filename => $file) {
 						$pathfile = '\\\\'.$address.$file['Setting']['path'].$file['Setting']['name'].'.'.$file['Setting']['extension'];
 						if(file_exists($pathfile)) {
@@ -123,9 +125,8 @@ public $uses = array('Raspberry','Setting');
 					}
 
 				} else {
-					//Cas ou on veut parametrer les configurations par défaut a l'OE
-					$connection = $this->connexionSSH($address,'root','openelec');
 
+					//Cas ou on veut parametrer les configurations par défaut a l'OE
 					$this->execSSH($connection,'systemctl stop kodi');
 					sleep(2);
 
@@ -155,7 +156,7 @@ public $uses = array('Raspberry','Setting');
 					}
 				}
 
-				sleep(1);
+				sleep(2);
 				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
 				$this->redirect(array('action' => 'index'));
 			}
