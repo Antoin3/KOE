@@ -42,7 +42,7 @@
 
 										<?php echo $this->Html->link(__('Parametres'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 
-										<?php  echo $this->Html->link(__('Plugin'), array('controller' => 'Plugins', 'action' => 'index', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
+										<?php  echo $this->Html->link(__('Plugins'), array('controller' => 'Plugins', 'action' => 'index', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 
 										<?php echo $this->Form->postLink(__('Supprimer'), array('action' => 'delete', $raspberry['Raspberry']['id'],true), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer l\'OpenElec %s?', $raspberry['Raspberry']['name'])); ?>
 										 </p>

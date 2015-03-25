@@ -79,7 +79,7 @@ class AppController extends Controller {
  * @throws BadRequestException
  * @param string $connection
  * @param string $cmd
- * @return string
+ * @return Ressource
  */
 	public function execSSH($connection,$cmd)
 	{

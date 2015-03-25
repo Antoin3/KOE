@@ -16,9 +16,6 @@
                             <li>
                                 <?php echo $this->Html->link(__('<i class="fa fa-cogs"></i> Parametres généraux'), array('controller' => 'Raspberries', 'action' => 'settings','all'), array('escape' => false)); ?>
                             </li>
-                            <li>
-                                <?php echo $this->Html->link(__('<i class="fa fa-plug"></i> Plugins généraux'), array('controller' => 'Plugins', 'action' => 'index','all'), array('escape' => false)); ?>
-                            </li>
                         </ul>
                     </li>
                     <li class="<?php echo (!empty($this->params['action']) && ($this->params['controller']=='Users'))?'active' :'inactive' ?>">

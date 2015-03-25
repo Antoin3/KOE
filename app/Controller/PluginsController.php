@@ -23,37 +23,39 @@ public $uses = array('Plugin','Setting','Raspberry');
  * @return void
  */
 	public function index($id = null) {
-		//Tableau contenant les informations des fichiers de configurations par défaut
-		$default = array( 
-							(int) 0 => array(
-								'Plugin' => array(
-										'name' => 'Ceci est un plugin',
-										'description' => 'Genre',
-										'path' => './files/default/plugins/',
-										'extension' => 'py',
-										'raspberries_id' => $id
-					)));
-
-		if ($this->Raspberry->exists($id)) {
-
-			//Si on cible un OE en particulier, 
-			$plugins = $this->Plugin->find('all',array('Plugins.raspberries_id' => $id));
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$raspberry = $this->Raspberry->find('first', $options);
-
-			$name = "Plugins de ".$raspberry['Raspberry']['name'];
-
-		} else {
-			$id = 'all';
-			$name = 'Plugins généraux';
-			$plugins = $default;
-		}
-
 		$this->Plugin->recursive = 0;
 
+		$plugins = $this->Plugin->find('all',array('Plugins.raspberries_id' => $id));
+		$raspberry = $this->Raspberry->find('first', array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+
 		$this->set('plugins', $plugins);
-		$this->set('id', $id);
-		$this->set('name', $name);
+		$this->set('raspberry',$raspberry);
+
+		if ($this->request->is('post') || $this->request->is('put')) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+			$this->set('raspberry',$raspberry);
+			if ($this->request->is('post')) {
+				$this->Plugin->create();
+				$tmp = './files/plugins/';
+				$this->request->data['Plugin']['filename'] = substr($this->request->data['Plugin']['file']['name'],0,strripos($this->request->data['Plugin']['file']['name'], '.'));
+				if ($this->Plugin->save($this->request->data)) {
+					if (move_uploaded_file($this->request->data['Plugin']['file']['tmp_name'], $tmp.$this->request->data['Plugin']['file']['name'])) {
+						$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
+						if ($this->uploadPlugin($connection,$tmp.$this->request->data['Plugin']['file']['name'],$this->request->data['Plugin']['file']['name'])) {
+							$this->Session->setFlash(__('The plugin has been saved'), 'flash/success');
+							$this->redirect(array('action' => 'index',$id));
+						} else {
+							$this->Session->setFlash(__('Error when uploading '.$this->request->data['Plugin']['file']['name']), 'flash/error');
+						}
+					} else {
+						$this->Session->setFlash(__('Error when moving '.$this->request->data['Plugin']['file']['name']), 'flash/error');
+					}
+				} else {
+					$this->Session->setFlash(__('The plugin could not be saved. Please, try again.'), 'flash/error');
+				}
+			}
+		}
 	}
 
 /**
@@ -76,21 +78,17 @@ public $uses = array('Plugin','Setting','Raspberry');
  *
  * @return void
  */
-	public function add() {
+	public function add($id = null) {
 		if ($this->request->is('post')) {
 			$this->Plugin->create();
+			$tmp = './files/plugins/';
 			if ($this->Plugin->save($this->request->data)) {
-				$connection = $this->connexionSSH($this->Raspberry->address,'root','openelec');
-				if ($this->uploadPlugin($connection,'source',$this->request->data['Plugin']['filename'])) {
-					$this->Session->setFlash(__('The plugin has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'index'));
-				}
+				$this->Session->setFlash(__('The plugin has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The plugin could not be saved. Please, try again.'), 'flash/error');
 			}
 		}
-		$raspberries = $this->Plugin->Raspberry->find('list');
-		$this->set(compact('raspberries'));
 	}
 
 /**
@@ -136,12 +134,20 @@ public $uses = array('Plugin','Setting','Raspberry');
 		if (!$this->Plugin->exists()) {
 			throw new NotFoundException(__('Invalid plugin'));
 		}
+
+		$options = array('conditions' => array('Plugin.' . $this->Plugin->primaryKey => $id));
+		$plugin = $this->Plugin->find('first', $options); 
+
+		$optionsrasp = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $plugin['Plugin']['raspberries_id']));
+		$raspberry = $this->Raspberry->find('first', $optionsrasp);
+
 		if ($this->Plugin->delete()) {
+			$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
+			$this->execSSH($connection,'rm -rf '.$plugin['Plugin']['path'].$plugin['Plugin']['filename']);
 			$this->Session->setFlash(__('Plugin deleted'), 'flash/success');
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(array('action' => 'index',$plugin['Plugin']['raspberries_id']));
 		}
 		$this->Session->setFlash(__('Plugin was not deleted'), 'flash/error');
-		$this->redirect(array('action' => 'index'));
 	}
 
 /**
@@ -152,23 +158,23 @@ public $uses = array('Plugin','Setting','Raspberry');
  * @param string $filename
  * @return boolean
  */
-public function uploadPlugin($connection, $file, $filename)
-	{
-                $result = ssh2_scp_send($connection, $file,"/storage/.kodi/addons/" . $filename, 0644);
-                
-                if (!$result) {
-                   die("Failed to execute command scp send");
-                }
-                else {  
-                		$result = ssh2_exec($connection,"cd /storage/.kodi/addons/ && unzip /storage/.kodi/addons/" . $filename . " && rm " . $filename);
-                		stream_set_blocking($result, true);
-                		$unzip = stream_get_contents($result);
-                		if (!$unzip) {
-                   			die("Failed to execute command unzip");
-                		}
-                		else{
-                			return true;
-                		}
-                }
-}
+	public function uploadPlugin($connection, $file, $filename) {
+	                $result = ssh2_scp_send($connection, $file,"/storage/.kodi/addons/" . $filename, 0644);
+	                
+	                if (!$result) {
+	                   die("Failed to execute command scp send");
+	                }
+	                else {  
+	                		$result = ssh2_exec($connection,"cd /storage/.kodi/addons/ && unzip /storage/.kodi/addons/" . $filename . " && rm " . $filename);
+	                		stream_set_blocking($result, true);
+	                		$unzip = stream_get_contents($result);
+	                		if (!$unzip) {
+	                   			die("Failed to execute command unzip");
+	                		}
+	                		else{
+	                			$this->execSSH($connection,'reboot');
+	                			return true;
+	                		}
+	                }
+	}
 }

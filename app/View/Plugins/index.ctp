@@ -1,37 +1,32 @@
-<!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">
-                           Liste des Plugins
-                        </h1>
-                        <ol class="breadcrumb">
-                            <li>
-                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-plug"></i> Liste Plugins
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-                <!-- /.row -->
+		<!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                   Plugins
+                </h1>
+                <ol class="breadcrumb">
+                    <li>
+                        <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                    </li>
+                    <li class="active">
+                        <i class="fa fa-plug"></i> Liste Plugins <?php echo $raspberry['Raspberry']['name']; ?>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
+
 		<div id="page-container" class="row">
 			
 			<div id="page-content" class="col-sm-9">
 
-				<div class="raspberries index">
-				<?php 
+				<div class="plugin index">
 
-					echo '<div class="col-lg-12"><h2>'.$name.' :</h2></br>';
-
-				?>
-					<?php  echo $this->Html->link(__('Ajouter un plugin'), array('controller' => 'Plugin', 'action' => 'add', $id), 
-					array('class' => 'btn btn-success', 'target' => '_blank', 'escape' => false, 'onclick' => 
-					"window.open('/Plugin/add/".$id."','popUpWindow','height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');")); ?>
+					<?php 
+						echo '<h2>Liste des plugins de '.$raspberry['Raspberry']['name'].' :</h2>&nbsp'.$this->Form->button('Ajouter un plugin', array ('class' => "btn btn-success btn-lg", 'data-toggle' => "modal",'data-target' => '#add-plugin')); 
+					?>
 
 					<div class="table-responsive">
-
-						<table cellpadding="0" cellspacing="0" class="table table-striped table-bordered">
 
 						<hr class="featurette-divider">
 
@@ -55,20 +50,69 @@
 
 						                        <p class='text-center'>
 													
-													<?php if ($id != 'all' ) echo $this->Form->postLink(__('Supprimer'), array('controller' => 'Plugin', 'action' => 'delete', $plugin['Plugin']['id'],true), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer le plugin %s?', $plugin['Plugin']['name'])); ?>
+													<?php echo $this->Form->postLink(__('Supprimer'), array('controller' => 'plugins', 'action' => 'delete', $plugin['Plugin']['id']), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer le plugin %s?', $plugin['Plugin']['name'])); ?>
 
-													 </p>
-
-				                                </div>
+												</p>
 
 				                            </div>
 
 				                        </div>
 
-				                    </div>
-										<!-- <p class="text-center"><img class="img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 140px; height: 140px;"></p> -->
-								<?php endforeach; ?>
-						</table>
+				                   </div>
+
+				                <?php endforeach; ?>
+
+						<div class="modal fade" id="add-plugin" tabindex="-1" role="dialog" aria-hidden="true">
+
+							<div class="modal-dialog">
+
+							    <div class="modal-content">
+
+							    	<div class="modal-header">
+
+							    		<?php echo $this->Form->button('<span aria-hidden="true">&times;</span>', array ('class' => "close", 'data-dismiss' => "modal",'aria-label' => 'Close'));?>
+							    		<h4 class="modal-title text-center">Ajouter un plugin a <?php echo $raspberry['Raspberry']['name']; ?></h4>
+
+							    	</div>
+							        	
+							        	<div class="modal-body">
+
+											<?php echo $this->Form->create('Plugin', array('role' => 'form','type' => 'file')); ?>
+
+												<fieldset>
+
+													<div class="form-group">
+														<?php echo $this->Form->input('name', array('class' => 'form-control','label' => 'Nom')); ?>
+													</div><!-- .form-group -->
+													<div class="form-group">
+														<?php echo $this->Form->input('description', array('class' => 'form-control')); ?>
+													</div><!-- .form-group -->
+													<div class="form-group">
+														<?php echo $this->Form->input('path', array('class' => 'form-control', 'value' => '/.kodi/addons/','type' => 'hidden')); ?>
+													</div><!-- .form-group -->
+													<div class="form-group">
+														<?php echo $this->Form->input('raspberries_id', array('class' => 'form-control','value' => $raspberry['Raspberry']['id'],'type' => 'hidden')); ?>
+													</div><!-- .form-group -->
+													<div class="form-group">
+														<?php echo $this->Form->input('file', array('class' => 'form-control','type' => 'file', 'label' => 'Charger le plugin')); ?>
+													</div><!-- .form-group -->
+													<div class="modal-footer">
+													<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div'=>false, 'onclick' => 'chargement();$("#add-plugin").modal("hide");')); ?>
+													<?php echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal"));?>
+													</div>
+
+												</fieldset>
+
+											<?php echo $this->Form->end(); ?>
+
+										</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
 					</div><!-- /.table-responsive -->
 					
 				</div><!-- /.index -->

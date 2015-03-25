@@ -15,6 +15,7 @@ class PluginFixture extends CakeTestFixture {
 		'name' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'path' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'filename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'extension' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'created' => array('type' => 'timestamp', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'timestamp', 'null' => true, 'default' => null),
@@ -37,9 +38,10 @@ class PluginFixture extends CakeTestFixture {
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
 			'path' => 'Lorem ipsum dolor sit amet',
+			'filename' => 'Lorem ipsum dolor sit amet',
 			'extension' => 'Lorem ipsum dolor sit amet',
-			'created' => 1427211286,
-			'modified' => 1427211286,
+			'created' => 1427300789,
+			'modified' => 1427300789,
 			'raspberries_id' => 1
 		),
 	);

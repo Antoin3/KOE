@@ -42,7 +42,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 </head>
 <body>
 
-<div id="wrapper">
+	<div id="wrapper">
 				<?php echo $this->element('menu/top_menu'); ?>
 				<?php echo $this->element('menu/sidebar_menu'); ?>
         <div id="page-wrapper">
@@ -50,7 +50,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             <div class="container-fluid">
 					<?php echo $this->Session->flash(); ?>
 					<?php echo $this->fetch('content'); ?>
-				</div>
 				<div id="footer">
 				</div>
             </div>
@@ -76,7 +75,5 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			
 			echo $this->fetch('script');
 ?>
-
-
 </body>
 </html>

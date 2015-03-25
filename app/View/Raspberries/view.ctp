@@ -34,6 +34,57 @@
                 <div class="col-md-5"><p>
                     <img class="img-responsive img-center img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 200px; height: 200px;">
                 </p></div>
+                <div class="col-lg-12">
+                    <h2>Settings :</h2>
+                </div>
+                <?php if (isset($raspberry['Setting'])) {
+                foreach ($raspberry['Setting'] as $setting): ?>
+
+                                    <div class="col-lg-4">
+                                        <div class="panel panel-primary">
+
+                                            <div class="panel-heading">
+
+                                                <h4 class="panel-title"><p class='text-center'><?php echo h($setting['name']); ?></p></h4>
+                                            </div>
+
+                                            <div class="panel-body">
+                                                <p>
+                                                    <?php echo h($setting['description']);?>
+                                                </p>
+                                            </div>
+
+                                        </div>
+
+                                   </div>
+
+                                <?php endforeach; }?>
+                <div class="col-lg-12">
+                    <h2>Plugins :</h2>
+                </div>
+                <?php if (isset($raspberry['Plugin'])) {
+                foreach ($raspberry['Plugin'] as $plugin): ?>
+
+                                    <div class="col-lg-4">
+                                        <div class="panel panel-primary">
+
+                                            <div class="panel-heading">
+
+                                                <h4 class="panel-title"><p class='text-center'><?php echo h($plugin['name']); ?></p></h4>
+                                            </div>
+
+                                            <div class="panel-body">
+                                                <p>
+                                                    <?php echo h($plugin['description']);?>
+                                                </p>
+                                            </div>
+
+                                        </div>
+
+                                   </div>
+
+                                <?php endforeach; }?>
+
             </div>
         </div>
     </section>
