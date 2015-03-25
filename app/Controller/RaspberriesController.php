@@ -48,7 +48,23 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 	public function add() {
+		if (($result = exec('ipconfig |find "Adresse IPv4"'))!=null) {
+			$result2 = substr($result, 44);
+			$host = $result2;
+			$this->set('host', $host);
+		}
+		else{
+			$result2 = exec('ip addr show dev eth0 | grep inet | awk \'{print $2}\' | cut -d '/' -f 1');
+			$host = $result2;
+			$this->set('host', $host);
+		}
 		if ($this->request->is('post')) {
+
+			$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
+			$this->dossierScript($connection);
+			$Overclock = $this->getOverclock($connection);
+			$this->request->data['Raspberry']['overclocking'] = $Overclock;
+
 			$this->Raspberry->create();
 
 			if ($this->Raspberry->save($this->request->data)) {
@@ -166,17 +182,48 @@ public $uses = array('Raspberry','Setting');
  * @return void
  */
 	public function edit($id = null) {
-        $this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
+        if ($this->Raspberry->exists($id)) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
+
+			$files = $this->Setting->find('all', $optionsfiles);
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$name = $raspberry['Raspberry']['name'];
+			$id = $raspberry['Raspberry']['id'];
+			$address = $raspberry['Raspberry']['address'];
+
+		} else {
+			$name = 'Parametres généraux';
+			$id = 'all';
+			$files = $default;
 		}
+		$this->Raspberry->id = $id;
+		$this->set('name', $name);
+		$this->set('id', $id);
 		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-			}
+			$overclock = $this->request->data['Raspberry']['overclocking'];
+			$connection = $this->connexionSSH($address,'root','openelec');
+	        
+	        $over = $this->overclock($connection,$overclock);
+
+			// if ($this->Raspberry->save($this->request->data['Raspberry']['overclocking'])) {
+				if (!$over) {
+					$this->Session->setFlash(__('Erreur lors du changement de configuration'), 'flash/error');
+					$this->redirect(array('action' => 'index'));
+				}
+				else{
+					$this->Session->setFlash(__('Configuration réussi, openElec va redémarrer'), 'flash/success');
+					$this->Raspberry->save($this->request->data);
+					$this->reboot($connection);
+					$this->redirect(array('action' => 'index'));
+				}
+			// } else {
+			// 	$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+			// 	$this->redirect(array('action' => 'index'));
+			// }
 		} else {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->request->data = $this->Raspberry->find('first', $options);
@@ -213,96 +260,6 @@ public $uses = array('Raspberry','Setting');
 				$this->redirect(array('action' => 'index'));
 	}
 
-/**
- * admin_index method
- *
- * @return void
- */
-	public function admin_index() {
-		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->paginate());
-	}
-
-/**
- * admin_view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function admin_view($id = null) {
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-		$this->set('raspberry', $this->Raspberry->find('first', $options));
-	}
-
-/**
- * admin_add method
- *
- * @return void
- */
-	public function admin_add() {
-		if ($this->request->is('post')) {
-			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-			}
-		}
-	}
-
-/**
- * admin_edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function admin_edit($id = null) {
-        $this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-			}
-		} else {
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->request->data = $this->Raspberry->find('first', $options);
-		}
-	}
-
-/**
- * admin_delete method
- *
- * @throws NotFoundException
- * @throws MethodNotAllowedException
- * @param string $id
- * @return void
- */
-	public function admin_delete($id = null) {
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
-		$this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists()) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		if ($this->Raspberry->delete()) {
-			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
-			$this->redirect(array('action' => 'index'));
-		}
-		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
-		$this->redirect(array('action' => 'index'));
-	}
 
 /**
  *settings method
@@ -547,5 +504,85 @@ public $uses = array('Raspberry','Setting');
 			} else $this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
 			return 1;
 	}
+	
+	
+	public function synchroniser($id = null) {
+		$this->Raspberry->recursive = 0;
+		$this->set('raspberries', $this->paginate());
+		$role = false;
+		$bdd = null;
+		$loginBDD = null;
+		$mdpBDD = null;
+		$NAS = null;
+		$loginNAS = null;
+		$mdpNAS = null;
+		$cheminMusic1 = null;
+		$cheminVideo1 = null;
+		$cheminTVShow1 = null;
 
+		//debug($addressM['Raspberry']['address']);
+		if ($this->Raspberry->exists($id)) {
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
+
+			$files = $this->Setting->find('all', $optionsfiles);
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$name = $raspberry['Raspberry']['name'];
+			$id = $raspberry['Raspberry']['id'];
+			$address = $raspberry['Raspberry']['address'];
+			$master = false;
+
+		} else {
+			$name = 'Parametres généraux';
+			$id = 'all';
+			$files = $default;
+		}
+		if (($RaspMaster = $this->Raspberry->findByRole('master'))!=null) {
+			$BDD = '';
+			$NAS = '';
+			$BDD = $RaspMaster['Raspberry']['BDD'];
+			$NAS = $RaspMaster['Raspberry']['NAS'];
+			$this->set('BDD', $BDD);
+			$this->set('NAS', $NAS);
+			$master = true;
+		}
+		else{
+			$master = false;
+		}
+		
+		$this->Raspberry->id = $id;
+		$this->set('master', $master);
+		$this->set('name', $name);
+		$this->set('id', $id);
+
+		if ($this->request->is('post') || $this->request->is('put')) {
+			if ($this->Raspberry->findByRole('master')!=null) {
+				$this->setSlave($address);
+				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
+			}
+			else{
+				$bdd = $this->request->data['Raspberry']['BDD'];
+				$loginBDD = $this->request->data['Raspberry']['loginBDD'];
+				$mdpBDD = $this->request->data['Raspberry']['mdpBDD'];
+				$NAS = $this->request->data['Raspberry']['NAS'];
+				$loginNAS = $this->request->data['Raspberry']['loginNAS'];
+				$mdpNAS = $this->request->data['Raspberry']['mdpNAS'];
+				$cheminMusic1 = $this->request->data['Raspberry']['cheminMusic'];
+				$cheminVideo1 = $this->request->data['Raspberry']['cheminVideo'];
+				$cheminTVShow1 = $this->request->data['Raspberry']['cheminTVShow'];
+				$this->setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1);
+				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
+			}
+
+		}
+		else{
+		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+		$this->set('raspberry', $this->Raspberry->find('first', $options));
+		}
+	}
 }

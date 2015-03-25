@@ -225,5 +225,147 @@ class AppController extends Controller {
 					$this->redirect(array('action' => 'settings', $id,$file));
 				}
 		}
+		public function reboot($connection)
+		{
+			$reboot = ssh2_exec($connection, "reboot");
+			        if (!$reboot) {
+			            die("Failed to execute command reboot");
+			        }
+		}
+		public function replaceXML($file, $element, $newElement, $chemin, $ID)
+		{
+			$xml = new DOMDocument;
+			$xml->load($file);
+			$xpath = new DomXPath($xml);
+			$place = $xpath->query($chemin);
+			$new = $xml->createElement($element,$newElement);
+			if ($ID != null) {
+				$new->setAttribute('id', $ID);
+			}
+			$place->item(0)->parentNode->replaceChild($new, $place->item(0));
+			$xml->save($file);
+		}
+		public function setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1)
+		{
+			$master = false;
+
+			$chemin = "smb://" . $NAS . "/";
+			$cheminPwd = "smb://" . $loginNAS . ":" . $mdpNAS . "@" . $NAS . "/";
+
+			$cheminMusic = $chemin . $cheminMusic1;
+			$cheminMusicPwd = $cheminPwd . $cheminMusic1;
+			$cheminVideo = $chemin . $cheminVideo1;
+			$cheminVideoPwd = $cheminPwd . $cheminVideo1;
+			$cheminTVShow = $chemin . $cheminTVShow1;
+			$cheminTVShowPwd = $cheminPwd . $cheminTVShow1;
+
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/videodatabase/host', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/videodatabase/user', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/videodatabase/pass', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/musicdatabase/host', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/musicdatabase/user', null);
+			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/musicdatabase/pass', null);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminMusicPwd, '//mediasources/network/location[@id=1]', 1);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminVideoPwd, '//mediasources/network/location[@id=2]', 2);
+			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminTVShowPwd, '//mediasources/network/location[@id=3]', 3);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminMusicPwd . "/", '//passwords/path[@id=0]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminVideoPwd . "/", '//passwords/path[@id=1]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminTVShowPwd . "/", '//passwords/path[@id=2]/to', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminMusic, '//passwords/path[@id=0]/from', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminVideo, '//passwords/path[@id=1]/from', null);
+			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminTVShow, '//passwords/path[@id=2]/from', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminMusic, '//sources/music/source/path', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminVideo, '//sources/video/source[@id=0]/path', null);
+			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminTVShow, '//sources/video/source[@id=1]/path', null);
+			$connection = $this->connexionSSH($address,'root','openelec');
+			$synchro = $this->synchronisation($connection, $master);
+			$this->request->data['Raspberry']['role'] = "master";
+			$this->Raspberry->save($this->request->data);
+			$this->reboot($connection);
+		}
+		public function setSlave($address)
+		{
+			$master = true;
+			$addressM = $this->Raspberry->findByRole('master', array('Raspberry.address'));
+			$addressM = $addressM['Raspberry']['address'];
+			$connection = $this->connexionSSH($address,'root','openelec');
+			$synchro = $this->synchronisation($connection, $master);
+			$this->request->data['Raspberry']['role'] = "slave";
+			$this->Raspberry->save($this->request->data);
+			$this->reboot($connection);
+			$connection = $this->connexionSSH($addressM,'root','openelec');
+			ssh2_scp_send($connection,"../View/Layouts/script/scriptMaster.sh","./scripts/scriptMaster.sh", 0644);
+			ssh2_exec($connection, 'chmod +x ./scripts/scriptMaster.sh');
+			ssh2_exec($connection, './scripts/scriptMaster.sh ' . $address);
+			ssh2_exec($connection, 'cd scripts && ./script.sh');
+		}
+		public function synchronisation($connection, $master)
+		{
+				if ($master == false) {
+					$etape1 = ssh2_exec($connection, 'mkdir partageS');
+			        $etape1 = ssh2_exec($connection, 'mkdir partageF');
+			        $etape1 = ssh2_exec($connection, 'mkdir partageM');
+				    stream_set_blocking($etape1, 1);
+
+				    ssh2_scp_send($connection, "../View/Layouts/script/autoexec.py", "./.kodi/userdata/autoexec.py",0644);
+			        ssh2_scp_send($connection, "../View/Layouts/script/script.sh", "./scripts/script.sh",0644);
+			        ssh2_exec($connection, 'chmod +x ./scripts/script.sh');
+				}
+		        
+				$mdiasrc = ssh2_scp_send($connection, "../View/Layouts/script/mediasources.xml", "./.kodi/userdata/mediasources.xml",0644);
+				$src = ssh2_scp_send($connection,"../View/Layouts/script/sources.xml","./.kodi/userdata/sources.xml", 0644);
+				$psswd = ssh2_scp_send($connection, "../View/Layouts/script/passwords.xml", "./.kodi/userdata/passwords.xml",0644);
+				$clean = ssh2_exec($connection, 'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Clean", "id": "2"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($clean, 1);
+				$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan, 1);
+				$scan1 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan1, 1);
+				$export = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($export, 1);
+				$export2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($export2, 1);
+				 $as = ssh2_scp_send($connection, "../View/Layouts/script/advancedsettings.xml", "./.kodi/userdata/advancedsettings.xml",0644);
+				
+				$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan, 1);
+				$scan2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan2, 1);
+		}
+		public function dossierScript($connection)
+		{
+			ssh2_exec($connection, "mkdir scripts");
+			ssh2_exec($connection, "chmod 777 scripts");
+		}
+		public function overclock($connection,$overclock)
+		{
+			ssh2_scp_send($connection,"../View/Layouts/script/scriptBon.sh","./scripts/scriptBon.sh", 0644);  
+		    ssh2_exec($connection, "chmod +x ./scripts/scriptBon.sh");
+		    $result = ssh2_exec($connection, "./scripts/scriptBon.sh " . $overclock);
+		    if(!$result)
+		    {
+		    	return false;
+		    }
+		    else{
+		    	return true;
+		    }
+		}
+	
+	public function getOverclock($connection)
+		{
+	        ssh2_scp_send($connection,"../View/Layouts/script/scriptParam.sh","./scripts/scriptParam.sh", 0644);
+	        ssh2_exec($connection, "chmod +x ./scripts/scriptParam.sh");
+	        
+	        $result=ssh2_exec($connection, "./scripts/scriptParam.sh");
+	        stream_set_blocking($result, true);
+	        $res = stream_get_contents($result);
+	        if(strstr($res, "arm_freq=700")){$overClock = "default";}
+	        elseif(strstr($res, "arm_freq=800")){$overClock = "modest";}
+	        elseif(strstr($res, "arm_freq=900")){$overClock = "medium";}
+	        elseif(strstr($res, "arm_freq=950")){$overClock = "high";}
+	        elseif(strstr($res, "arm_freq=1000")){$overClock = "turbo";}
+
+	        return $overClock;
+	}
 }
 

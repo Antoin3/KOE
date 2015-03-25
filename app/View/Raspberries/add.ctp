@@ -21,7 +21,7 @@
 	<div id="page-content" class="col-sm-9">
 
 		<div class="raspberries form">
-		
+		<button onclick="scan('<?php echo $host ?>');chargement('Scan en cours ...');">SCAN DU RESEAU</button>
 			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
 
 				<fieldset>
@@ -31,7 +31,7 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
+						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse', 'id' => 'address')); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
@@ -43,7 +43,7 @@
 					</div><!-- .form-group -->
 					
 					<div class="form-group">
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement();')); ?>
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement("Sauvegarde du Raspberry ...");')); ?>
 
 				</fieldset>
 
