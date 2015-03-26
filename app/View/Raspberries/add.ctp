@@ -21,8 +21,9 @@
 	<div id="page-content" class="col-sm-9">
 
 		<div class="raspberries form">
-		
+
 			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+
 
 				<fieldset>
 
@@ -31,7 +32,8 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse')); ?>
+						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresses possibles', 'id' => 'address', 'disabled' => 'disabled')).'</br>'; ?>
+						<?php echo $this->Form->button('Scan du réseau', array('class' => 'btn btn-large btn-warning', 'onclick' => "scan('".$host."');chargement('Scan en cours ...');")); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">

@@ -72,6 +72,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			echo $this->Html->script('plugins/morris/morris-data');
 
 			echo $this->Html->script('loading');
+			echo $this->Html->script('scan');
 			
 			echo $this->fetch('script');
 ?>

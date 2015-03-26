@@ -48,8 +48,16 @@ public $uses = array('Raspberry','Setting','Plugin');
  * @return void
  */
 	public function add() {
+
+		if (!is_null($result = exec('ipconfig | find "Adresse IPv4"'))) {
+			$host = substr($result, 44);
+		}
+		else{
+			$host = exec('ip addr show dev eth0 | grep inet | awk \'{print $2}\' | cut -d '/' -f 1');
+		}
+		$this->set('host', $host);
+
 		if ($this->request->is('post')) {
-			$this->Raspberry->create();
 
 			$address = $this->request->data['Raspberry']['address'];
 			$connection = $this->connexionSSH($address,'root','openelec');
@@ -57,6 +65,7 @@ public $uses = array('Raspberry','Setting','Plugin');
 			//Cas (notamment) ou on garde les settings par defaut
 			if ($this->request->data['Raspberry']['actualsettings']) $this->request->data['Raspberry']['name'] = trim($this->execSSH($connection,'cat /etc/hostname'));
 
+			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
 				$id = $this->Raspberry->id;
 
@@ -521,6 +530,38 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			} else $this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
 			return 1;
+	}
+
+	public function setOverclock($connection,$overclock)
+		{
+			ssh2_exec($connection, 'mkdir -p scripts && chmod 777 scripts');
+			ssh2_scp_send($connection,"./files/scripts/setOverclock.sh","./scripts/setOverclock.sh", 0644);  
+		    ssh2_exec($connection, "chmod +x ./scripts/setOverclock.sh");
+		    $result = ssh2_exec($connection, "./scripts/setOverclock.sh " . $overclock);
+		    if(!$result)
+		    {
+		    	return false;
+		    }
+		    else {
+		    	return true;
+		    }
+		}
+	
+	public function getOverclock($connection)
+		{
+	        ssh2_scp_send($connection,"./files/scripts/getOverclock.sh","./scripts/getOverclock.sh", 0644);
+	        ssh2_exec($connection, "chmod +x ./scripts/getOverclock.sh");
+	        
+	        $result=ssh2_exec($connection, "./scripts/getOverclock.sh");
+	        stream_set_blocking($result, true);
+	        $res = stream_get_contents($result);
+	        if(strstr($res, "arm_freq=700")){$overClock = "default";}
+	        elseif(strstr($res, "arm_freq=800")){$overClock = "modest";}
+	        elseif(strstr($res, "arm_freq=900")){$overClock = "medium";}
+	        elseif(strstr($res, "arm_freq=950")){$overClock = "high";}
+	        elseif(strstr($res, "arm_freq=1000")){$overClock = "turbo";}
+
+	        return $overClock;
 	}
 
 }
