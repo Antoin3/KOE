@@ -35,7 +35,7 @@
                     <img class="img-responsive img-center img-circle" src="<?php echo $image; ?>" alt="Generic placeholder image" style="width: 200px; height: 200px;">
                 </p></div>
                 <div class="col-lg-12">
-                    <h2>Settings :</h2>
+                    <h2>Fichiers de configurations présents :</h2>
                 </div>
                 <?php if (isset($raspberry['Setting'])) {
                 foreach ($raspberry['Setting'] as $setting): ?>
@@ -45,7 +45,7 @@
 
                                             <div class="panel-heading">
 
-                                                <h4 class="panel-title"><p class='text-center'><?php echo h($setting['name']); ?></p></h4>
+                                                <h4 class="panel-title"><p class='text-center'><?php echo $setting['name'].'.'.$setting['extension']; ?></p></h4>
                                             </div>
 
                                             <div class="panel-body">
@@ -60,7 +60,7 @@
 
                                 <?php endforeach; }?>
                 <div class="col-lg-12">
-                    <h2>Plugins :</h2>
+                    <h2>Plugins installés:</h2>
                 </div>
                 <?php if (isset($raspberry['Plugin'])) {
                 foreach ($raspberry['Plugin'] as $plugin): ?>
