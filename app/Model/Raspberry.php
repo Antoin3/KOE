@@ -4,6 +4,7 @@ App::uses('AppModel', 'Model');
  * Raspberry Model
  *
  * @property Setting $Setting
+ * @property Plugin $Plugin
  */
 class Raspberry extends AppModel {
 
@@ -58,6 +59,16 @@ class Raspberry extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'role' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'created' => array(
 			'datetime' => array(
 				'rule' => array('datetime'),
@@ -90,6 +101,19 @@ class Raspberry extends AppModel {
 	public $hasMany = array(
 		'Setting' => array(
 			'className' => 'Setting',
+			'foreignKey' => 'raspberries_id',
+			'dependent' => true,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
+		'Plugin' => array(
+			'className' => 'Plugin',
 			'foreignKey' => 'raspberries_id',
 			'dependent' => true,
 			'conditions' => '',

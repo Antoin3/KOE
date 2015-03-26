@@ -6,7 +6,10 @@
                 </h1>
                 <ol class="breadcrumb">
                     <li>
-                        <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                       	<i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
+                    </li>
+                    <li class="active">
+                        <i class="fa fa-list-ul"></i> <?php echo $this->Html->link(__('Liste OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                     </li>
                     <li class="active">
                         <i class="fa fa-plug"></i> Liste Plugins <?php echo $raspberry['Raspberry']['name']; ?>
@@ -49,9 +52,8 @@
 										      	</p>
 
 						                        <p class='text-center'>
-													
-													<?php echo $this->Form->postLink(__('Supprimer'), array('controller' => 'plugins', 'action' => 'delete', $plugin['Plugin']['id']), array('class' => 'btn btn-sm btn-default'), __('Etes vous sur de vouloir supprimer le plugin %s?', $plugin['Plugin']['name'])); ?>
-
+													<?php echo $this->Form->postLink(__('Supprimer'), array('controller' => 'plugins', 'action' => 'delete', $plugin['Plugin']['id']), array('class' => 'btn btn-sm btn-default', 'onclick' => 'chargement("Suppression du plugin en cours...");'), __('Etes vous sur de vouloir supprimer le plugin %s?', $plugin['Plugin']['name'])); ?>
+													<?php echo $this->Html->link(__('Modifier'), array('action' => 'edit', $plugin['Plugin']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 												</p>
 
 				                            </div>
@@ -88,7 +90,7 @@
 														<?php echo $this->Form->input('description', array('class' => 'form-control')); ?>
 													</div><!-- .form-group -->
 													<div class="form-group">
-														<?php echo $this->Form->input('path', array('class' => 'form-control', 'value' => '/.kodi/addons/','type' => 'hidden')); ?>
+														<?php echo $this->Form->input('path', array('class' => 'form-control', 'value' => '.kodi/addons/','type' => 'hidden')); ?>
 													</div><!-- .form-group -->
 													<div class="form-group">
 														<?php echo $this->Form->input('raspberries_id', array('class' => 'form-control','value' => $raspberry['Raspberry']['id'],'type' => 'hidden')); ?>
@@ -97,7 +99,7 @@
 														<?php echo $this->Form->input('file', array('class' => 'form-control','type' => 'file', 'label' => 'Charger le plugin')); ?>
 													</div><!-- .form-group -->
 													<div class="modal-footer">
-													<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div'=>false, 'onclick' => 'chargement();$("#add-plugin").modal("hide");')); ?>
+													<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div'=>false, 'onclick' => 'chargement("Ajout du plugin en cours");$("#add-plugin").modal("hide");')); ?>
 													<?php echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal"));?>
 													</div>
 

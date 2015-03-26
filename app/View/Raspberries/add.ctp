@@ -33,11 +33,15 @@
 
 					<div class="form-group">
 						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresses possibles', 'id' => 'address', 'disabled' => 'disabled')).'</br>'; ?>
-						<?php echo $this->Form->button('Scan du réseau', array('class' => 'btn btn-large btn-warning', 'onclick' => "scan('".$host."');chargement('Scan en cours ...');")); ?>
+						<?php echo $this->Form->button('Scan du réseau', array('class' => 'btn btn-large btn-warning', 'type' => 'button' ,'onclick' => "scan('".$host."');chargement('Scan en cours ...');")); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
 						<?php echo $this->Form->input('Raspberry.description', array('class' => 'form-control','type' => 'textarea','placeholder' => 'Entrer une description')); ?>
+					</div><!-- .form-group -->
+
+					<div class="form-group">
+						<?php echo $this->Form->input('Raspberry.role', array('class' => 'form-control','value' => $role, 'readonly' => 'readonly')); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
@@ -50,7 +54,7 @@
 					</div><!-- .form-group -->
 					
 					<div class="form-group">
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement();')); ?>
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement("Ajout en cours...");')); ?>
 
 				</fieldset>
 

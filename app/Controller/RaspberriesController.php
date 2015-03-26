@@ -17,6 +17,57 @@ public $uses = array('Raspberry','Setting','Plugin');
  */
 	public $components = array('Paginator');
 
+	private $default = array(
+				 0 => array(
+						'Setting' => array(
+							'name' => 'guisettings',
+							'description' => 'description guisettings',
+							'path' => '/Userdata/',
+							'extension' => 'xml',
+							'raspberries_id' => ''
+				)),
+				 1 => array(
+					'Setting' => array(
+						'name' => 'advancedsettings',
+						'description' => 'description advancedsettings',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 2 => array(
+					'Setting' => array(
+						'name' => 'mediasources',
+						'description' => 'description mediasources',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 3 => array(
+					'Setting' => array(
+						'name' => 'sources',
+						'description' => 'description sources',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 4 => array(
+					'Setting' => array(
+						'name' => 'passwords',
+						'description' => 'description passwords',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 5 => array(
+					'Setting' => array(
+						'name' => 'oe_settings',
+						'description' => 'description oe_settings',
+						'path' => '/Userdata/addon_data/service.openelec.settings/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				))
+			);
+
 /**
  * index method
  *
@@ -55,10 +106,14 @@ public $uses = array('Raspberry','Setting','Plugin');
 		else{
 			$host = exec('ip addr show dev eth0 | grep inet | awk \'{print $2}\' | cut -d '/' -f 1');
 		}
+
+		$options = array('conditions' => array('Raspberry.role' => 'master'));
+		$this->set('role', empty($this->Raspberry->find('all',$options)) ? 'master' : 'slave');
 		$this->set('host', $host);
 
-		if ($this->request->is('post')) {
+		$default = $this->default;
 
+		if ($this->request->is('post')) {
 			$address = $this->request->data['Raspberry']['address'];
 			$connection = $this->connexionSSH($address,'root','openelec');
 
@@ -69,57 +124,9 @@ public $uses = array('Raspberry','Setting','Plugin');
 			if ($this->Raspberry->save($this->request->data)) {
 				$id = $this->Raspberry->id;
 
-				//Tableau contenant les informations des fichiers de configurations par défaut
-				$default = array( 
-							(int) 0 => array(
-									'Setting' => array(
-										'name' => 'guisettings',
-										'description' => 'description guisettings',
-										'path' => '/Userdata/',
-										'extension' => 'xml',
-										'raspberries_id' => $id
-							)),
-							(int) 1 => array(
-								'Setting' => array(
-									'name' => 'advancedsettings',
-									'description' => 'description advancedsettings',
-									'path' => '/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 2 => array(
-								'Setting' => array(
-									'name' => 'mediasources',
-									'description' => 'description mediasources',
-									'path' => '/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 3 => array(
-								'Setting' => array(
-									'name' => 'sources',
-									'description' => 'description sources',
-									'path' => '/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 4 => array(
-								'Setting' => array(
-									'name' => 'passwords',
-									'description' => 'description passwords',
-									'path' => '/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 5 => array(
-								'Setting' => array(
-									'name' => 'oe_settings',
-									'description' => 'description oe_settings',
-									'path' => '/Userdata/addon_data/service.openelec.settings/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							))
-					);
+			foreach ($default as $defaultname => &$def) {
+				$def['Setting']['raspberries_id'] = $id;
+			}
 
 				//Tableau qui servira a créer les informations des fichiers de configurations dans la base
 				$settings = array();
@@ -326,63 +333,20 @@ public $uses = array('Raspberry','Setting','Plugin');
  * @param string $id
  * @return void
  */
+
 	public function settings($id = null) {
 		
-		//Tableau contenant les informations des fichiers de configurations par défaut
-		$default = array( 
-							(int) 0 => array(
-									'Setting' => array(
-										'name' => 'guisettings',
-										'description' => 'description guisettings',
-										'path' => './files/default/Userdata/',
-										'extension' => 'xml',
-										'raspberries_id' => $id
-							)),
-							(int) 1 => array(
-								'Setting' => array(
-									'name' => 'advancedsettings',
-									'description' => 'description advancedsettings',
-									'path' => './files/default/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 2 => array(
-								'Setting' => array(
-									'name' => 'mediasources',
-									'description' => 'description mediasources',
-									'path' => './files/default/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 3 => array(
-								'Setting' => array(
-									'name' => 'sources',
-									'description' => 'description sources',
-									'path' => './files/default/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 4 => array(
-								'Setting' => array(
-									'name' => 'passwords',
-									'description' => 'description passwords',
-									'path' => './files/default/Userdata/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							)),
-							(int) 5 => array(
-								'Setting' => array(
-									'name' => 'oe_settings',
-									'description' => 'description oe_settings',
-									'path' => './files/default/Userdata/addon_data/service.openelec.settings/',
-									'extension' => 'xml',
-									'raspberries_id' => $id
-							))
-					);
+		$default = $this->default;
 
+		foreach ($default as $defaultname => &$def) {
+				$def['Setting']['raspberries_id'] = $id;
+				$def['Setting']['path'] = ($id == 'all') ? './files/default/'.$def['Setting']['path'] : $def['Setting']['path'];
+		}
 
 		if ($this->Raspberry->exists($id)) {
+
 			//Si on cible un OE en particulier, 
+			$this->Raspberry->id = $id;
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$raspberry = $this->Raspberry->find('first', $options);
 
@@ -390,9 +354,14 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			$files = $this->Setting->find('all', $optionsfiles);
 			$raspberry = $this->Raspberry->find('first', $options);
+			$currentmode = $this->getOverclock($this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec'));
 
-			$name = $raspberry['Raspberry']['name'];
 			$id = $raspberry['Raspberry']['id'];
+			$name = $raspberry['Raspberry']['name'];
+
+			$this->set('raspberry', $raspberry);
+			$this->set('currentmode', $currentmode);
+
 
 		} else {
 			$name = 'Parametres généraux';
@@ -400,20 +369,19 @@ public $uses = array('Raspberry','Setting','Plugin');
 			$files = $default;
 		}
 
-		$this->set('name', $name);
-		$this->set('id', $id);
 		$this->set('files',$files);
+		$this->set('name',$name);
+		$this->set('id',$id);
 
-		if ($this->request->is('post') || $this->request->is('put')) {
-
+		if ($this->request->is('post')) {
+			$this->Raspberry->id = $id;
 			if (array_key_exists('apply', $this->request->data))
 			{
+				//Si on veut sauvegarder des parametres de configuration pour tout les Pi
 				$allrasps = $this->Raspberry->find('all');
 				foreach ($allrasps as $rasps => $rasp) {
 					$source = './files/default';
 					$destination = '\\\\'.$rasp['Raspberry']['address'];
-
-					$connection = $this->connexionSSH($rasp['Raspberry']['address'],'root','openelec');
 					$this->execSSH($connection,'systemctl stop kodi');
 					sleep(2);
 
@@ -448,42 +416,55 @@ public $uses = array('Raspberry','Setting','Plugin');
 					sleep(1);
 				}
 
-				$msg = 'saved to all OpenElecs';
-				
 			} else {
-
 				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
-				$this->execSSH($connection,'systemctl stop kodi');
-				sleep(2);
 
-				if (array_key_exists('backup', $this->request->data)){
-					$source = '\\\\'.$raspberry['Raspberry']['address'];
-					$destination = './files/'.$raspberry['Raspberry']['name'];
-					$msg = 'saved';
-				}
-				elseif (array_key_exists('restore', $this->request->data)) {
-					$source = './files/'.$raspberry['Raspberry']['name'];
-					$destination = '\\\\'.$raspberry['Raspberry']['address'];
-					$msg = 'restored';
+				if (array_key_exists('Raspberry', $this->request->data)) {
+					//Si on veut changer le mode d'overclocking
+					if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclock'])) {
+						$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
+						$this->redirect(array('action' => 'settings', $id));
+					} else {
+						$this->execSSH($connection,'reboot');
+						if (!$this->Raspberry->save($this->request->data)) {
+							$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
+							$this->redirect(array('action' => 'settings', $id));
+						}
+						sleep(3);
+					}
+				} else {
 
-					foreach ($files as $filename => &$file) {
-						$file['Setting']['path'] = $source.str_replace($destination,"",$file['Setting']['path']);
+						//Si on veut sauvegarder ou restaurer les parametres de configuration pour 1 seul Pi
+						$this->execSSH($connection,'systemctl stop kodi');
+						sleep(2);
+						if (array_key_exists('backup', $this->request->data)){
+							$source = '\\\\'.$raspberry['Raspberry']['address'];
+							$destination = './files/'.$raspberry['Raspberry']['name'];
+						}
+						elseif (array_key_exists('restore', $this->request->data)) {
+							$source = './files/'.$raspberry['Raspberry']['name'];
+							$destination = '\\\\'.$raspberry['Raspberry']['address'];
+
+							foreach ($files as $filename => &$file) {
+								$file['Setting']['path'] = $source.str_replace($destination,"",$file['Setting']['path']);
+							}
+						}
+
+						foreach ($files as $filename => $file) {
+							if (!$this->movefiles($source,$destination,$file['Setting'])) {
+								$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
+								break;
+							}
+						}
+
+						$this->execSSH($connection,'systemctl start kodi');
+						sleep(1);
+						$this->execSSH($connection,'systemctl restart kodi');
+						sleep(1);
 					}
 				}
 
-				foreach ($files as $filename => $file) {
-					if (!$this->movefiles($source,$destination,$file['Setting'])) {
-						$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
-						break;
-					}
-				}
-				$this->execSSH($connection,'systemctl start kodi');
-				sleep(1);
-				$this->execSSH($connection,'systemctl restart kodi');
-				sleep(1);
-			}
-
-			$this->Session->setFlash(__('File(s) has been '.$msg), 'flash/success');
+			$this->Session->setFlash(__('Changes done'), 'flash/success');
 			$this->redirect(array('action' => 'settings', $id));
 		}
 	}
@@ -549,6 +530,7 @@ public $uses = array('Raspberry','Setting','Plugin');
 	
 	public function getOverclock($connection)
 		{
+			ssh2_exec($connection, 'mkdir -p scripts && chmod 777 scripts');
 	        ssh2_scp_send($connection,"./files/scripts/getOverclock.sh","./scripts/getOverclock.sh", 0644);
 	        ssh2_exec($connection, "chmod +x ./scripts/getOverclock.sh");
 	        

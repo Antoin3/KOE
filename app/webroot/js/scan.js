@@ -18,7 +18,7 @@ function scan(host){
 	};
 	setTimeout(function(){
 		$('#wait').hide();
-		$('#address').replaceWith('<select name="Raspberry.address" id="address" class="form-control"></select>');
+		$('#address').replaceWith('<select name="data[Raspberry][address]" id="address" class="form-control"></select>');
 		for (var j = 1; j < 255; j++) {
 		if ((result[j].readyState==0)) {
 			if (result[j].statusText=="error") {

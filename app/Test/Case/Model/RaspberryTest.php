@@ -15,7 +15,8 @@ class RaspberryTest extends CakeTestCase {
 	public $fixtures = array(
 		'app.raspberry',
 		'app.setting',
-		'app.raspberries'
+		'app.raspberries',
+		'app.plugin'
 	);
 
 /**

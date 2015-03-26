@@ -6,7 +6,7 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                                <i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
                             </li>
                             <li class="active">
                                 <i class="fa fa-list-ul"></i> Liste OpenELECs
@@ -40,7 +40,7 @@
 
 										<?php echo $this->Html->link(__('Vue d\'ensemble'), array('action' => 'view', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 
-										<?php echo $this->Html->link(__('Parametres'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
+										<?php echo $this->Html->link(__('Parametres'), array('action' => 'settings', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default', 'onclick' => 'chargement("Récupération des parametres...");')); ?>
 
 										<?php  echo $this->Html->link(__('Plugins'), array('controller' => 'Plugins', 'action' => 'index', $raspberry['Raspberry']['id']), array('class' => 'btn btn-sm btn-default')); ?>
 
