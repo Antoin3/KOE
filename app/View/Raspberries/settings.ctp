@@ -33,21 +33,21 @@
 					<thead>
 						<tr>
 							<th class="text-center">
-								<?php if ($id != 'all') {
-								echo $this->Form->create();
-								echo $this->Form->button('Sauvegarder',array('class' => 'btn btn-success btn-lg', 'type' => 'submit', 'name' => 'backup', 'onclick' => 'chargement("Sauvegarde en cours...");')).'&nbsp';
-								if (is_dir('./files/'.$name)) 
-									{
-										echo '</th><th>';
-										echo $this->Form->button('Restaurer',array('class' => 'btn btn-default btn-lg', 'type' => 'submit', 'name' => 'restore', 'onclick' => 'chargement("restauration en cours...");'));
-										echo $this->Form->end();
-									}
-								}
-								else {
+								<?php 
 									echo $this->Form->create();
-									echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-large btn-error', 'type' => 'submit', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
+									if ($id != 'all') {
+										echo $this->Form->submit('Sauvegarder',array('class' => 'btn btn-success btn-lg', 'name' => 'backup', 'onclick' => 'chargement("Sauvegarde en cours...");'));
+										if (is_dir('./files/'.$name)) 
+											{
+												echo '</th><th class="text-center">';
+												echo $this->Form->submit('Restaurer',array('class' => 'btn btn-default btn-lg', 'name' => 'restore', 'onclick' => 'chargement("restauration en cours...");'));
+											}
+									}
+									else {
+										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'type' => 'submit', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
+									} 
 									echo $this->Form->end();
-								} ?>
+								?>
 							</th>				
 							<?php if (isset($raspberry)) {
 									echo '<th class="text-center">'.$this->Form->button('Overclock', array ('class' => "btn btn-info btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#overclock')).'</th>'; } ?>
