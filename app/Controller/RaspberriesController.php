@@ -348,8 +348,6 @@ public $uses = array('Raspberry','Setting','Plugin');
 			//Si on cible un OE en particulier, 
 			$this->Raspberry->id = $id;
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$raspberry = $this->Raspberry->find('first', $options);
-
 			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
 
 			$files = $this->Setting->find('all', $optionsfiles);
@@ -361,8 +359,6 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			$this->set('raspberry', $raspberry);
 			$this->set('currentmode', $currentmode);
-
-
 		} else {
 			$name = 'Parametres généraux';
 			$id = 'all';
@@ -418,20 +414,126 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			} else {
 				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
-
-				if (array_key_exists('Raspberry', $this->request->data)) {
-					//Si on veut changer le mode d'overclocking
-					if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclock'])) {
-						$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
-						$this->redirect(array('action' => 'settings', $id));
-					} else {
-						$this->execSSH($connection,'reboot');
-						if (!$this->Raspberry->save($this->request->data)) {
-							$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
+				if (array_key_exists('Raspberry', $this->request->data)) {		
+						//Si on veut changer le mode d'overclocking
+						if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclock'])) {
+							$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
 							$this->redirect(array('action' => 'settings', $id));
+						} else {
+							$this->execSSH($connection,'reboot');
+							if (!$this->Raspberry->save($this->request->data)) {
+								$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
+								$this->redirect(array('action' => 'settings', $id));
+							}
+							sleep(3);
 						}
-						sleep(3);
+				} elseif (array_key_exists('Synchronisation', $this->request->data)) {
+					if ($raspberry['Raspberry']['role'] == 'master') {
+						$mediasources = '<mediasources>
+									<network>
+									<location id="1">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</location>
+									</network>
+									<network>
+									<location id="2">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</location>
+									</network>
+									<network>
+									<location id="3">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</location>
+									</network>
+									</mediasources>';
+
+						$passwords = '<passwords>
+										<path id="0">
+										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</from>
+										<to>smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'/</to>
+										</path>
+										<path id="1">
+										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</from>
+										<to>smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'/</to>
+										</path>
+										<path id="2">
+										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</from>
+										<to>
+										smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'/</to>
+										</path>
+										</passwords>';
+
+						$sources = '<sources>
+									<programs>
+									<default pathversion="1"/>
+									</programs>
+									<video>
+									<default pathversion="1"/>
+									<source id="0">
+									<name>Videos</name>
+									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</path>
+									<allowsharing>true</allowsharing>
+									<scrapers>metadata.themoviedb.org</scrapers>
+									</source>
+									<source id="1">
+									<name>TV Shows</name>
+									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</path>
+									<allowsharing>true</allowsharing>
+									<scrapers>metadata.tvdb.com</scrapers>
+									</source>
+									</video>
+									<music>
+									<default pathversion="1"/>
+									<source>
+									<name>Music</name>
+									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</path>
+									<allowsharing>true</allowsharing>
+									</source>
+									</music>
+									<pictures>
+									<default pathversion="1"/>
+									<source>
+									<name>Pictures</name>
+									<path pathversion="1">/storage/pictures/</path>
+									<allowsharing>true</allowsharing>
+									</source>
+									</pictures>
+									<files>
+									<default pathversion="1"/>
+									</files>
+									</sources>';
+
+						$advancedsettings = '<advancedsettings>
+											<videodatabase>
+											<type>mysql</type>
+											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
+											<port>3306</port>
+											<user>'.$this->request->data['Synchronisation']['login'].'</user>
+											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
+											</videodatabase>
+											<musicdatabase>
+											<type>mysql</type>
+											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
+											<port>3306</port>
+											<user>'.$this->request->data['Synchronisation']['login'].'</user>
+											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
+											</musicdatabase>
+											<videolibrary>
+											<importwatchedstate>true</importwatchedstate>
+											</videolibrary>
+											</advancedsettings>';
+
+						$ms = new DOMDocument();
+						$ms->loadXML($mediasources);
+						$ms->save('./files/synchro/mediasources.xml');
+
+						$src = new DOMDocument();
+						$src->loadXML($sources);
+						$src->save('./files/synchro/sources.xml');
+
+						$psswd = new DOMDocument();
+						$psswd->loadXML($passwords);
+						$psswd->save('./files/synchro/passwords.xml');
+
+						$as = new DOMDocument();
+						$as->loadXML($advancedsettings);
+						$as->save('./files/synchro/advancedsettings.xml');
 					}
+					$this->synchronisation($connection);
 				} else {
 
 						//Si on veut sauvegarder ou restaurer les parametres de configuration pour 1 seul Pi
@@ -462,7 +564,7 @@ public $uses = array('Raspberry','Setting','Plugin');
 						$this->execSSH($connection,'systemctl restart kodi');
 						sleep(1);
 					}
-				}
+			}
 
 			$this->Session->setFlash(__('Changes done'), 'flash/success');
 			$this->redirect(array('action' => 'settings', $id));

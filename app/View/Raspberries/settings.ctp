@@ -50,7 +50,8 @@
 								?>
 							</th>				
 							<?php if (isset($raspberry)) {
-									echo '<th class="text-center">'.$this->Form->button('Overclock', array ('class' => "btn btn-info btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#overclock')).'</th>'; } ?>
+									echo '<th class="text-center">'.$this->Form->button('Overclock', array ('class' => "btn btn-info btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#overclock')).'</th>';
+									echo '<th class="text-center">'.$this->Form->button('Synchronisation', array ('class' => "btn btn-warning btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#synchro')).'</th>'; } ?>
 						</tr>
 					</thead>
 				</table>
@@ -112,6 +113,69 @@
 											<?php echo $this->Form->submit('Configurer',array('class' => 'btn btn-large btn-success','div'=>false, 'onclick' => 'chargement("Configuration en cours");$("#overclock").modal("hide");'));
 												echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal")); ?>
 										</div>
+									</fieldset>
+									
+							<?php echo $this->Form->end();	?>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="modal fade" id="synchro" tabindex="-1" role="dialog" aria-hidden="true">
+
+				<div class="modal-dialog">
+
+					<div class="modal-content">
+
+						<div class="modal-header">
+
+							<?php echo $this->Form->button('<span aria-hidden="true">&times;</span>', array ('class' => "close", 'data-dismiss' => "modal",'aria-label' => 'Close')); ?>
+							<h4 class="modal-title text-center">Synchronisation</h4>
+
+						</div>
+
+							        	
+						<div class="modal-body">
+							<h3><strong>Synchroniser </strong><?php echo $name ?></h3>
+			        		<?php 
+								echo $this->Form->create('Synchronisation'); ?>
+
+									<fieldset>
+										<?php if ($raspberry['Raspberry']['role'] == 'master')
+										{ ?>
+											<div class="form-group">';
+											echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('musics', array('class' => 'form-control','label' => 'Chemin musiques')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('videos', array('class' => 'form-control','label' => 'Chemin vidéos')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('tvshows', array('class' => 'form-control','label' => 'Chemin séries')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('DBaddress', array('class' => 'form-control','label' => 'Adresse de la BDD')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+											</div>
+										<?php } ?>
+											<div class="form-group">
+												<?php echo $this->Form->input('slave', array('class' => 'form-control','type' => 'hidden')); ?>
+											</div>
+											<div class="modal-footer">
+											<?php echo $this->Form->submit('Synchroniser',array('class' => 'btn btn-large btn-success','div'=>false, 'onclick' => 'chargement("Synchronisation en cours");$("#synchro").modal("hide");'));
+													echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal")); ?>
+											</div>
 									</fieldset>
 									
 							<?php echo $this->Form->end();	?>
