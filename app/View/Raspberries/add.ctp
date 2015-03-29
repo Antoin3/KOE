@@ -6,7 +6,10 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                                <i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-list-ul"></i> <?php echo $this->Html->link(__('Liste OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                             </li>
                             <li class="active">
                                 <i class="fa fa-plus"></i> Ajouter un OpenELEC
@@ -21,17 +24,19 @@
 	<div id="page-content" class="col-sm-9">
 
 		<div class="raspberries form">
-		<button onclick="scan('<?php echo $host ?>');chargement('Scan en cours ...');">SCAN DU RESEAU</button>
+
 			<?php echo $this->Form->create('Raspberry', array('role' => 'form')); ?>
+
 
 				<fieldset>
 
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom')); ?>
+						<?php echo $this->Form->input('Raspberry.name', array('class' => 'form-control', 'label' => 'Nom', 'id' => 'name')); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
-						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresse', 'id' => 'address')); ?>
+						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresses possibles', 'id' => 'address', 'disabled' => 'disabled')).'</br>'; ?>
+						<?php echo $this->Form->button('Scan du réseau', array('class' => 'btn btn-large btn-warning', 'type' => 'button' ,'onclick' => "scan('".$host."');chargement('Scan en cours ...');")); ?>
 					</div><!-- .form-group -->
 
 					<div class="form-group">
@@ -39,11 +44,20 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
-						<?php echo $this->Form->input('actualsettings', array('class' => 'form-control', 'options' => array('non','oui'), 'label' => 'Conserver les réglages actuellement présents ?')); ?>
+						<?php echo $this->Form->input('Raspberry.role', array('class' => 'form-control','value' => $role)); ?>
+					</div><!-- .form-group -->
+
+					<div class="form-group">
+						<?php echo $this->Form->input('actualsettings', array('class' => 'form-control', 'options' => array('non','oui'), 'label' => 'Conserver les réglages actuellement présents ?', 'id' => 'as', 'onchange' => 'if ($("#as").val() == 1) {
+																								document.getElementById("name").disabled = true;
+																								document.getElementById("name").value = "";
+																							} else {
+																								document.getElementById("name").disabled = false;
+																							};')); ?>
 					</div><!-- .form-group -->
 					
 					<div class="form-group">
-					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement("Sauvegarde du Raspberry ...");')); ?>
+					<?php echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement("Ajout en cours...");')); ?>
 
 				</fieldset>
 

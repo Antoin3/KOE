@@ -6,8 +6,10 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-desktop"></i>  
-                                <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index', $id)); ?>
+                                <i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-list-ul"></i> <?php echo $this->Html->link(__('Liste OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                             </li>
                             <li>
                                 <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings', $id)); ?>
@@ -48,7 +50,7 @@
                                                     <?php 
                                                     echo $this->Form->create($name, array('role' => 'form', 'url' => './form/'.$id.'/'.$fileinfo['Setting']['name']));
                                                     echo $this->Form->input($fileinfo['Setting']['name'], array('class' => 'form-control', 'type' => 'textarea','placeholder' => 'Entrer votre fichier'));
-                                                    echo '<br><p>'.$this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div' => false));
+                                                    echo '<br><p>'.$this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div' => false, 'onclick' => 'chargement("Veuillez patienter...");'));
                                                     echo '&nbsp'.$this->Form->button('Tout effacer',array('type' => 'reset', 'class' => 'btn btn-default')).'</p>';
                                                     echo $this->Form->end();
                                         }?>

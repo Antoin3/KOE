@@ -1,11 +1,11 @@
 <?php
-App::uses('Raspberry', 'Model');
+App::uses('Plugin', 'Model');
 
 /**
- * Raspberry Test Case
+ * Plugin Test Case
  *
  */
-class RaspberryTest extends CakeTestCase {
+class PluginTest extends CakeTestCase {
 
 /**
  * Fixtures
@@ -13,10 +13,8 @@ class RaspberryTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.raspberry',
-		'app.setting',
-		'app.raspberries',
-		'app.plugin'
+		'app.plugin',
+		'app.raspberries'
 	);
 
 /**
@@ -26,7 +24,7 @@ class RaspberryTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->Raspberry = ClassRegistry::init('Raspberry');
+		$this->Plugin = ClassRegistry::init('Plugin');
 	}
 
 /**
@@ -35,7 +33,7 @@ class RaspberryTest extends CakeTestCase {
  * @return void
  */
 	public function tearDown() {
-		unset($this->Raspberry);
+		unset($this->Plugin);
 
 		parent::tearDown();
 	}
