@@ -1,0 +1,45 @@
+﻿Merge branch 'master' into pitou
+
+Conflicts:
+	app/Controller/AppController.php
+	app/Controller/RaspberriesController.php
+	app/View/Raspberries/add.ctp
+	app/View/Raspberries/settings.ctp
+	app/View/Raspberries/view.ctp
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch pitou
+# Your branch is up-to-date with 'origin/pitou'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   app/Controller/AppController.php
+#	modified:   app/Controller/RaspberriesController.php
+#	modified:   app/View/Helper/XmlHelper.php
+#	modified:   app/View/Raspberries/add.ctp
+#	new file:   "app/View/Raspberries/decot\303\251"
+#	modified:   app/View/Raspberries/form.ctp
+#	modified:   app/View/Raspberries/settings.ctp
+#	modified:   app/View/Raspberries/view.ctp
+#	new file:   app/webroot/files/Pi1/Userdata/addon_data/service.openelec.settings/oe_settings.xml
+#	new file:   app/webroot/files/Pi1/Userdata/advancedsettings.xml
+#	new file:   app/webroot/files/Pi1/Userdata/guisettings.xml
+#	new file:   app/webroot/files/Pi1/Userdata/mediasources.xml
+#	new file:   app/webroot/files/Pi1/Userdata/passwords.xml
+#	new file:   app/webroot/files/Pi1/Userdata/sources.xml
+#	new file:   app/webroot/files/synchro/advancedsettings.xml
+#	new file:   app/webroot/files/synchro/autoexec.py
+#	new file:   app/webroot/files/synchro/mediasources.xml
+#	new file:   app/webroot/files/synchro/passwords.xml
+#	new file:   app/webroot/files/synchro/script.sh
+#	new file:   app/webroot/files/synchro/sources.xml
+#
+

@@ -232,10 +232,49 @@ class AppController extends Controller {
 						$this->Session->setFlash(__('Error when saving '.$file), 'flash/error');
 						exit;
 					}
+<<<<<<< HEAD
 
 					$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
 					$this->redirect(array('action' => 'settings', $id,$file));
 				}
+=======
+
+					$this->Session->setFlash(__('The new '.$file.' has been saved'), 'flash/success');
+					$this->redirect(array('action' => 'settings', $id,$file));
+				}
+		}
+
+		public function synchronisation($connection)
+		{
+				$etape1 = ssh2_exec($connection, 'mkdir -p partageS');
+		        $etape1 = ssh2_exec($connection, 'mkdir -p partageF');
+		        $etape1 = ssh2_exec($connection, 'mkdir -p partageM');
+			    stream_set_blocking($etape1, 1);
+
+			    ssh2_scp_send($connection, "./files/synchro/autoexec.py", "./.kodi/userdata/autoexec.py",0644);
+		        ssh2_scp_send($connection, "./files/synchro/script.sh", "./scripts/script.sh",0644);
+		        ssh2_exec($connection, 'chmod +x ./scripts/script.sh');
+		        
+				$mdiasrc = ssh2_scp_send($connection, "./files/synchro/mediasources.xml", "./.kodi/userdata/mediasources.xml",0644);
+				$src = ssh2_scp_send($connection,"./files/synchro/sources.xml","./.kodi/userdata/sources.xml", 0644);
+				$psswd = ssh2_scp_send($connection, "./files/synchro/passwords.xml", "./.kodi/userdata/passwords.xml",0644);
+				$clean = ssh2_exec($connection, 'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Clean", "id": "2"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($clean, 1);
+				$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan, 1);
+				$scan1 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan1, 1);
+				$export = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($export, 1);
+				$export2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($export2, 1);
+				$as = ssh2_scp_send($connection, "./files/synchro/advancedsettings.xml", "./.kodi/userdata/advancedsettings.xml",0644);
+				
+				$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan, 1);
+				$scan2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
+				stream_set_blocking($scan2, 1);
+>>>>>>> master
 		}
 }
 
