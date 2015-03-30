@@ -44,7 +44,7 @@
 											}
 									}
 									else {
-										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'type' => 'submit', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
+										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
 									} 
 									echo $this->Form->end();
 								?>
@@ -147,8 +147,8 @@
 									<fieldset>
 										<?php if ($raspberry['Raspberry']['role'] == 'master')
 										{ ?>
-											<div class="form-group">';
-											echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
+											<div class="form-group">;
+											<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
 											</div>
 											<div class="form-group">
 												<?php echo $this->Form->input('musics', array('class' => 'form-control','label' => 'Chemin musiques')); ?>

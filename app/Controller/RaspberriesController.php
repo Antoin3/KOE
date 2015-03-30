@@ -340,7 +340,7 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 		foreach ($default as $defaultname => &$def) {
 				$def['Setting']['raspberries_id'] = $id;
-				$def['Setting']['path'] = ($id == 'all') ? './files/default/'.$def['Setting']['path'] : $def['Setting']['path'];
+				$def['Setting']['path'] = ($id == 'all') ? './files/default'.$def['Setting']['path'] : $def['Setting']['path'];
 		}
 
 		if ($this->Raspberry->exists($id)) {
@@ -364,7 +364,6 @@ public $uses = array('Raspberry','Setting','Plugin');
 			$id = 'all';
 			$files = $default;
 		}
-
 		$this->set('files',$files);
 		$this->set('name',$name);
 		$this->set('id',$id);
@@ -378,6 +377,7 @@ public $uses = array('Raspberry','Setting','Plugin');
 				foreach ($allrasps as $rasps => $rasp) {
 					$source = './files/default';
 					$destination = '\\\\'.$rasp['Raspberry']['address'];
+					$connection = $this->connexionSSH($rasp['Raspberry']['address'],'root','openelec');
 					$this->execSSH($connection,'systemctl stop kodi');
 					sleep(2);
 
