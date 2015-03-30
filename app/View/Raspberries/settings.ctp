@@ -44,14 +44,16 @@
 											}
 									}
 									else {
-										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
+										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-default btn-lg', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
 									} 
 									echo $this->Form->end();
 								?>
 							</th>				
 							<?php if (isset($raspberry)) {
 									echo '<th class="text-center">'.$this->Form->button('Overclock', array ('class' => "btn btn-info btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#overclock')).'</th>';
+									echo '<th class="text-center">'.$this->Form->button('Codec', array ('class' => "btn btn-danger btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#codec')).'</th>';
 									echo '<th class="text-center">'.$this->Form->button('Synchronisation', array ('class' => "btn btn-warning btn-lg", 'type' => 'button', 'data-toggle' => "modal",'data-target' => '#synchro')).'</th>'; } ?>
+
 						</tr>
 					</thead>
 				</table>
@@ -151,6 +153,12 @@
 											<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
 											</div>
 											<div class="form-group">
+												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+											</div>
+											<div class="form-group">
 												<?php echo $this->Form->input('musics', array('class' => 'form-control','label' => 'Chemin musiques')); ?>
 											</div>
 											<div class="form-group">
@@ -163,10 +171,10 @@
 												<?php echo $this->Form->input('DBaddress', array('class' => 'form-control','label' => 'Adresse de la BDD')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant')); ?>
+												<?php echo $this->Form->input('DBlogin', array('class' => 'form-control','label' => 'Identifiant')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+												<?php echo $this->Form->input('DBpassword', array('class' => 'form-control','label' => 'Mot de passe')); ?>
 											</div>
 										<?php } ?>
 											<div class="form-group">
@@ -188,6 +196,48 @@
 
 			</div>
 			
+			<div class="modal fade" id="codec" tabindex="-1" role="dialog" aria-hidden="true">
+
+				<div class="modal-dialog">
+
+					<div class="modal-content">
+
+						<div class="modal-header">
+
+							<?php echo $this->Form->button('<span aria-hidden="true">&times;</span>', array ('class' => "close", 'data-dismiss' => "modal",'aria-label' => 'Close')); ?>
+							<h4 class="modal-title text-center">Gestion des codecs
+						</div>
+
+							        	
+						<div class="modal-body">
+			        		<?php 
+								$options = array('MPG2' =>'MPG2','WVC1' => 'WVC1','2' => 'les deux'); 
+								echo $this->Form->create('Codec'); ?>
+								<fieldset>
+									<div class="form-group">
+										<?php echo $this->Form->input('CodecChoix', array('class' => 'form-control', 'style' => 'select','label' => 'Mode désiré', 'options' => $options, 'id' => 'Codec'));
+											echo $this->Form->input('CodecMPG2', array('class' => 'form-control','label' => 'Votre codec MPG2'));
+											echo $this->Form->input('CodecWVC1', array('class' => 'form-control','label' => 'Votre codec WVC1'));
+										
+										?>
+									</div>
+									<div class="modal-footer">
+										<?php echo $this->Form->submit('Ajout Codec',array('class' => 'btn btn-large btn-success','div'=>false, 'onclick' => 'chargement("Ajout du codec en cours");$("#codec").modal("hide");'));
+											echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal")); ?>
+									</div>
+
+								</fieldset>
+									
+							<?php echo $this->Form->end();	?>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
 		</div><!-- /#page-content .col-lg-12 -->
 
 	</div><!-- /#page-container .row-fluid -->

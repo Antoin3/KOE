@@ -502,15 +502,15 @@ public $uses = array('Raspberry','Setting','Plugin');
 											<type>mysql</type>
 											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
 											<port>3306</port>
-											<user>'.$this->request->data['Synchronisation']['login'].'</user>
-											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
+											<user>'.$this->request->data['Synchronisation']['DBlogin'].'</user>
+											<pass>'.$this->request->data['Synchronisation']['DBpassword'].'</pass>
 											</videodatabase>
 											<musicdatabase>
 											<type>mysql</type>
 											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
 											<port>3306</port>
-											<user>'.$this->request->data['Synchronisation']['login'].'</user>
-											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
+											<user>'.$this->request->data['Synchronisation']['DBlogin'].'</user>
+											<pass>'.$this->request->data['Synchronisation']['DBpassword'].'</pass>
 											</musicdatabase>
 											<videolibrary>
 											<importwatchedstate>true</importwatchedstate>
@@ -534,6 +534,49 @@ public $uses = array('Raspberry','Setting','Plugin');
 						$as->save('./files/synchro/advancedsettings.xml');
 					}
 					$this->synchronisation($connection);
+				} elseif (array_key_exists('Codec', $this->request->data)) {
+					$indic = $this->request->data['Codec']['CodecChoix'];
+					ssh2_scp_send($connection, './files/scripts/scriptCodec.sh', './scripts/scriptCodec.sh');
+					ssh2_exec($connection, 'chmod +x ./scripts/scriptCodec.sh');
+					switch ($indic) {
+								    case "MPG2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Codec']['CodecChoix'] . ' ' . $this->request->data['Codec']['CodecMPG2']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        if ($stateMPG=="MPG2=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "WVC1":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Codec']['CodecChoix'] . ' ' . $this->request->data['Codec']['CodecWVC1']);
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if ($stateWVC=="WVC1=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Codec']['CodecChoix'] . ' ' . $this->request->data['Codec']['CodecMPG2'] . ' ' . $this->request->data['Codec']['CodecWVC1']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if (($stateWVC=="WVC1=enabled")&&($stateMPG=="MPG2=enabled")) {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								}
+					if ($state == true) {
+						$this->Session->setFlash(__('Changement effectué'), 'flash/success');
+					}
+					else{
+						$this->Session->setFlash(__('Codec non valide'), 'flash/error');
+					}
 				} else {
 
 						//Si on veut sauvegarder ou restaurer les parametres de configuration pour 1 seul Pi
