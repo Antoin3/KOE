@@ -44,7 +44,7 @@
 											}
 									}
 									else {
-										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'type' => 'submit', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
+										echo $this->Form->button('Appliquer a tous',array('class' => 'btn btn-error btn-lg', 'name' => 'apply', 'onclick' => 'chargement("Chargement des fichiers...");'));
 									} 
 									echo $this->Form->end();
 								?>
@@ -144,6 +144,7 @@
 								echo $this->Form->create(); ?>
 
 									<fieldset>
+<<<<<<< HEAD
 										<div class="form-group">
 											<?php echo $this->Form->input('Codec', array('class' => 'form-control', 'style' => 'select','label' => 'Mode désiré', 'options' => $options, 'id' => 'Codec'));
 												echo $this->Form->input('CodecMPG2', array('class' => 'form-control','label' => 'Votre codec MPG2'));
@@ -155,6 +156,39 @@
 											<?php echo $this->Form->submit('Ajout Codec',array('class' => 'btn btn-large btn-success','div'=>false, 'onclick' => 'chargement("Ajout du codec en cours");$("#Codec").modal("hide");'));
 												echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal")); ?>
 										</div>
+=======
+										<?php if ($raspberry['Raspberry']['role'] == 'master')
+										{ ?>
+											<div class="form-group">;
+											<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('musics', array('class' => 'form-control','label' => 'Chemin musiques')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('videos', array('class' => 'form-control','label' => 'Chemin vidéos')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('tvshows', array('class' => 'form-control','label' => 'Chemin séries')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('DBaddress', array('class' => 'form-control','label' => 'Adresse de la BDD')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant')); ?>
+											</div>
+											<div class="form-group">
+												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+											</div>
+										<?php } ?>
+											<div class="form-group">
+												<?php echo $this->Form->input('slave', array('class' => 'form-control','type' => 'hidden')); ?>
+											</div>
+											<div class="modal-footer">
+											<?php echo $this->Form->submit('Synchroniser',array('class' => 'btn btn-large btn-success','div'=>false, 'onclick' => 'chargement("Synchronisation en cours");$("#synchro").modal("hide");'));
+													echo $this->Form->button('Close', array ('class' => "btn btn-default", 'data-dismiss' => "modal")); ?>
+											</div>
+>>>>>>> master
 									</fieldset>
 									
 							<?php echo $this->Form->end();	?>
