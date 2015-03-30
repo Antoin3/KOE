@@ -153,10 +153,10 @@
 											<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant')); ?>
+												<?php echo $this->Form->input('login', array('class' => 'form-control','label' => 'Identifiant du serveur')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+												<?php echo $this->Form->input('password', array('class' => 'form-control','label' => 'Mot de passe du serveur')); ?>
 											</div>
 											<div class="form-group">
 												<?php echo $this->Form->input('musics', array('class' => 'form-control','label' => 'Chemin musiques')); ?>
@@ -171,10 +171,10 @@
 												<?php echo $this->Form->input('DBaddress', array('class' => 'form-control','label' => 'Adresse de la BDD')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('DBlogin', array('class' => 'form-control','label' => 'Identifiant')); ?>
+												<?php echo $this->Form->input('DBlogin', array('class' => 'form-control','label' => 'Identifiant de la DB')); ?>
 											</div>
 											<div class="form-group">
-												<?php echo $this->Form->input('DBpassword', array('class' => 'form-control','label' => 'Mot de passe')); ?>
+												<?php echo $this->Form->input('DBpassword', array('class' => 'form-control','label' => 'Mot de passe de la DB')); ?>
 											</div>
 										<?php } ?>
 											<div class="form-group">
