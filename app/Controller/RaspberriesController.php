@@ -100,13 +100,13 @@ public $uses = array('Raspberry','Setting','Plugin');
  */
 	public function add() {
 
-		if (!is_null($result = exec('ipconfig | find "Adresse IPv4"'))) {
+		if (strstr(php_uname(PHP_OS), "Windows")) {
+			$result = exec('ipconfig |find "Adresse IPv4"');
 			$host = substr($result, 44);
 		}
 		else{
 			$host = exec('ip addr show dev eth0 | grep inet | awk \'{print $2}\' | cut -d '/' -f 1');
 		}
-
 		$options = array('conditions' => array('Raspberry.role' => 'master'));
 		$this->set('role', empty($this->Raspberry->find('all',$options)) ? 'master' : 'slave');
 		$this->set('host', $host);
@@ -235,96 +235,6 @@ public $uses = array('Raspberry','Setting','Plugin');
 				$this->redirect(array('action' => 'index'));
 	}
 
-/**
- * admin_index method
- *
- * @return void
- */
-	public function admin_index() {
-		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->paginate());
-	}
-
-/**
- * admin_view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function admin_view($id = null) {
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-		$this->set('raspberry', $this->Raspberry->find('first', $options));
-	}
-
-/**
- * admin_add method
- *
- * @return void
- */
-	public function admin_add() {
-		if ($this->request->is('post')) {
-			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-			}
-		}
-	}
-
-/**
- * admin_edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function admin_edit($id = null) {
-        $this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-			}
-		} else {
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->request->data = $this->Raspberry->find('first', $options);
-		}
-	}
-
-/**
- * admin_delete method
- *
- * @throws NotFoundException
- * @throws MethodNotAllowedException
- * @param string $id
- * @return void
- */
-	public function admin_delete($id = null) {
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
-		$this->Raspberry->id = $id;
-		if (!$this->Raspberry->exists()) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		if ($this->Raspberry->delete()) {
-			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
-			$this->redirect(array('action' => 'index'));
-		}
-		$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
-		$this->redirect(array('action' => 'index'));
-	}
 
 /**
  *settings method
@@ -348,6 +258,8 @@ public $uses = array('Raspberry','Setting','Plugin');
 			//Si on cible un OE en particulier, 
 			$this->Raspberry->id = $id;
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
 			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
 
 			$files = $this->Setting->find('all', $optionsfiles);
@@ -359,6 +271,8 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			$this->set('raspberry', $raspberry);
 			$this->set('currentmode', $currentmode);
+
+
 		} else {
 			$name = 'Parametres généraux';
 			$id = 'all';
@@ -414,126 +328,65 @@ public $uses = array('Raspberry','Setting','Plugin');
 
 			} else {
 				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
-				if (array_key_exists('Raspberry', $this->request->data)) {		
-						//Si on veut changer le mode d'overclocking
-						if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclock'])) {
-							$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
-							$this->redirect(array('action' => 'settings', $id));
-						} else {
-							$this->execSSH($connection,'reboot');
-							if (!$this->Raspberry->save($this->request->data)) {
-								$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
-								$this->redirect(array('action' => 'settings', $id));
-							}
-							sleep(3);
-						}
-				} elseif (array_key_exists('Synchronisation', $this->request->data)) {
-					if ($raspberry['Raspberry']['role'] == 'master') {
-						$mediasources = '<mediasources>
-									<network>
-									<location id="1">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</location>
-									</network>
-									<network>
-									<location id="2">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</location>
-									</network>
-									<network>
-									<location id="3">smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</location>
-									</network>
-									</mediasources>';
-
-						$passwords = '<passwords>
-										<path id="0">
-										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</from>
-										<to>smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'/</to>
-										</path>
-										<path id="1">
-										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</from>
-										<to>smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'/</to>
-										</path>
-										<path id="2">
-										<from>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</from>
-										<to>
-										smb://'.$this->request->data['Synchronisation']['login'].':'.$this->request->data['Synchronisation']['login'].'@'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'/</to>
-										</path>
-										</passwords>';
-
-						$sources = '<sources>
-									<programs>
-									<default pathversion="1"/>
-									</programs>
-									<video>
-									<default pathversion="1"/>
-									<source id="0">
-									<name>Videos</name>
-									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['videos'].'</path>
-									<allowsharing>true</allowsharing>
-									<scrapers>metadata.themoviedb.org</scrapers>
-									</source>
-									<source id="1">
-									<name>TV Shows</name>
-									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['tvshows'].'</path>
-									<allowsharing>true</allowsharing>
-									<scrapers>metadata.tvdb.com</scrapers>
-									</source>
-									</video>
-									<music>
-									<default pathversion="1"/>
-									<source>
-									<name>Music</name>
-									<path>smb://'.$this->request->data['Synchronisation']['address'].'/'.$this->request->data['Synchronisation']['musics'].'</path>
-									<allowsharing>true</allowsharing>
-									</source>
-									</music>
-									<pictures>
-									<default pathversion="1"/>
-									<source>
-									<name>Pictures</name>
-									<path pathversion="1">/storage/pictures/</path>
-									<allowsharing>true</allowsharing>
-									</source>
-									</pictures>
-									<files>
-									<default pathversion="1"/>
-									</files>
-									</sources>';
-
-						$advancedsettings = '<advancedsettings>
-											<videodatabase>
-											<type>mysql</type>
-											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
-											<port>3306</port>
-											<user>'.$this->request->data['Synchronisation']['login'].'</user>
-											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
-											</videodatabase>
-											<musicdatabase>
-											<type>mysql</type>
-											<host>'.$this->request->data['Synchronisation']['DBaddress'].'</host>
-											<port>3306</port>
-											<user>'.$this->request->data['Synchronisation']['login'].'</user>
-											<pass>'.$this->request->data['Synchronisation']['password'].'</pass>
-											</musicdatabase>
-											<videolibrary>
-											<importwatchedstate>true</importwatchedstate>
-											</videolibrary>
-											</advancedsettings>';
-
-						$ms = new DOMDocument();
-						$ms->loadXML($mediasources);
-						$ms->save('./files/synchro/mediasources.xml');
-
-						$src = new DOMDocument();
-						$src->loadXML($sources);
-						$src->save('./files/synchro/sources.xml');
-
-						$psswd = new DOMDocument();
-						$psswd->loadXML($passwords);
-						$psswd->save('./files/synchro/passwords.xml');
-
-						$as = new DOMDocument();
-						$as->loadXML($advancedsettings);
-						$as->save('./files/synchro/advancedsettings.xml');
+				if (isset($this->request->data['Raspberry']['Codec'])) {
+					$indic = $this->request->data['Raspberry']['Codec'];
+					ssh2_scp_send($connection, '../webroot/files/scripts/scriptCodec.sh', './scripts/scriptCodec.sh');
+					ssh2_exec($connection, 'chmod +x ./scripts/scriptCodec.sh');
+					switch ($indic) {
+								    case "MPG2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecMPG2']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        if ($stateMPG=="MPG2=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "WVC1":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecWVC1']);
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if ($stateWVC=="WVC1=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecMPG2'] . ' ' . $this->request->data['Raspberry']['CodecWVC1']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if (($stateWVC=="WVC1=enabled")&&($stateMPG=="MPG2=enabled")) {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								}
+					if ($state == true) {
+						$this->Raspberry->save($this->request->data);
+						$this->Session->setFlash(__('Changement effectué'), 'flash/success');
 					}
-					$this->synchronisation($connection);
+					else{
+						$this->Session->setFlash(__('Codec non valide'), 'flash/error');
+					}
+				}
+				else{
+				if (array_key_exists('Raspberry', $this->request->data)) {
+					//Si on veut changer le mode d'overclocking
+					if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclocking'])) {
+						$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
+						$this->redirect(array('action' => 'settings', $id));
+					} else {
+						$this->execSSH($connection,'reboot');
+						if (!$this->Raspberry->save($this->request->data)) {
+							$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
+							$this->redirect(array('action' => 'settings', $id));
+						}
+						sleep(3);
+					}
 				} else {
 
 						//Si on veut sauvegarder ou restaurer les parametres de configuration pour 1 seul Pi
@@ -564,9 +417,9 @@ public $uses = array('Raspberry','Setting','Plugin');
 						$this->execSSH($connection,'systemctl restart kodi');
 						sleep(1);
 					}
-			}
+				}
+				}
 
-			$this->Session->setFlash(__('Changes done'), 'flash/success');
 			$this->redirect(array('action' => 'settings', $id));
 		}
 	}

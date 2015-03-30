@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-md-5">
                     <h3><strong>Role :</strong> <?php echo h($raspberry['Raspberry']['role']); ?></h3>
-                    <h3><strong>Mode d'overclocking :</strong> <?php echo h($raspberry['Raspberry']['overclock']); ?></h3>
+                    <h3><strong>Mode d'overclocking :</strong> <?php echo h($raspberry['Raspberry']['overclocking']); ?></h3>
                     <p class="lead section-lead"><strong>Adresse IP :</strong> <?php echo h($raspberry['Raspberry']['address']); ?></p>
                     <p class="section-paragraph"><?php echo $raspberry['Raspberry']['description']; ?></p>
                     <h4>Création le : <?php echo h($raspberry['Raspberry']['created']); ?></h4>
