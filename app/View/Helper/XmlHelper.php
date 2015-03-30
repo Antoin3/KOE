@@ -14,7 +14,6 @@ public $helpers = array('Form');
 
 	public function inputXML($dom,$inputval = null, $hval = 1) {
 		$hval += 1;
-		$nbsibling = 1;
 	    foreach ($dom->childNodes as $node)
 	    {
 	        if($node->hasChildNodes()) {
@@ -31,8 +30,8 @@ public $helpers = array('Form');
 					 $nodeattributes .= ')';
 				}
 	        	$datatarget = is_null($inputval) ? $node->nodeName : str_replace('.','-',$inputval).$node->nodeName.'-'.str_replace('.','-',$datatargetattr);
-	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$datatarget.$nbsibling.'"><p><button type="button" class="btn btn-xxs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'<i class="fa fa-fw fa-caret-down"></i></h'.$hval.'></button></p>';
-	        	echo '<ul id="'.$datatarget.$nbsibling.'" class="collapse">';
+	        	echo '<a href="javascript:;" data-toggle="collapse" data-target="#'.$datatarget.'"><p><button type="button" class="btn btn-xxs btn-default"><h'.$hval.'>'.$node->nodeName.' '.$nodeattributes.'<i class="fa fa-fw fa-caret-down"></i></h'.$hval.'></button></p>';
+	        	echo '<ul id="'.$datatarget.'" class="collapse">';
 	            $this->inputXML($node,$inputval.$node->nodeName.'.',$hval);
 	            echo '</ul>';
 	        }
@@ -42,7 +41,6 @@ public $helpers = array('Form');
 	        		echo '</a><div class="form-group">'.$this->Form->input($inputval, array('class' => 'form-control','value' => $node->nodeValue)).'</div>';
 	        	}
 	       	}
-	       	$nbsibling ++;
 	    }
 	}
 }

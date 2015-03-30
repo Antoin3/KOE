@@ -6,10 +6,8 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-list-ul"></i> <?php echo $this->Html->link(__('Liste OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                                <i class="fa fa-fw fa-desktop"></i>  
+                                <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index', $id)); ?>
                             </li>
                             <li>
                                 <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings', $id)); ?>
