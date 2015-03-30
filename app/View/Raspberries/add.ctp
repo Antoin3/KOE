@@ -6,7 +6,10 @@
                         </h1>
                         <ol class="breadcrumb">
                             <li>
-                                <i class="fa fa-fw fa-desktop"></i>  <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
+                                <i class="fa fa-fw fa-dashboard"></i>  <?php echo $this->Html->link(__('Accueil'), array('controller' => 'pages','action' => 'home')); ?>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-list-ul"></i> <?php echo $this->Html->link(__('Liste OpenELECs'), array('controller' => 'raspberries','action' => 'index')); ?>
                             </li>
                             <li class="active">
                                 <i class="fa fa-plus"></i> Ajouter un OpenELEC
@@ -32,7 +35,11 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
+<<<<<<< HEAD
 						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresses possibles', 'id' => 'address')).'</br>'; ?>
+=======
+						<?php echo $this->Form->input('Raspberry.address', array('class' => 'form-control', 'label' => 'Adresses possibles', 'id' => 'address', 'disabled' => 'disabled')).'</br>'; ?>
+>>>>>>> master
 						<?php echo $this->Form->button('Scan du réseau', array('class' => 'btn btn-large btn-warning', 'type' => 'button' ,'onclick' => "scan('".$host."');chargement('Scan en cours ...');")); ?>
 					</div><!-- .form-group -->
 
@@ -41,7 +48,11 @@
 					</div><!-- .form-group -->
 
 					<div class="form-group">
+<<<<<<< HEAD
 						<?php echo $this->Form->input('Raspberry.role', array('class' => 'form-control','value' => $role, 'readonly' => 'readonly')); ?>
+=======
+						<?php echo $this->Form->input('Raspberry.role', array('class' => 'form-control','value' => $role)); ?>
+>>>>>>> master
 					</div><!-- .form-group -->
 
 					<div class="form-group">
