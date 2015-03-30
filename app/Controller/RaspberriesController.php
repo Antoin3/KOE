@@ -8,22 +8,75 @@ App::uses('AppController', 'Controller');
  */
 class RaspberriesController extends AppController {
 
+public $uses = array('Raspberry','Setting','Plugin');
+
 /**
  * Components
  *
  * @var array
  */
-public $components = array('Paginator');
+	public $components = array('Paginator');
+
+	private $default = array(
+				 0 => array(
+						'Setting' => array(
+							'name' => 'guisettings',
+							'description' => 'description guisettings',
+							'path' => '/Userdata/',
+							'extension' => 'xml',
+							'raspberries_id' => ''
+				)),
+				 1 => array(
+					'Setting' => array(
+						'name' => 'advancedsettings',
+						'description' => 'description advancedsettings',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 2 => array(
+					'Setting' => array(
+						'name' => 'mediasources',
+						'description' => 'description mediasources',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 3 => array(
+					'Setting' => array(
+						'name' => 'sources',
+						'description' => 'description sources',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 4 => array(
+					'Setting' => array(
+						'name' => 'passwords',
+						'description' => 'description passwords',
+						'path' => '/Userdata/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				)),
+				 5 => array(
+					'Setting' => array(
+						'name' => 'oe_settings',
+						'description' => 'description oe_settings',
+						'path' => '/Userdata/addon_data/service.openelec.settings/',
+						'extension' => 'xml',
+						'raspberries_id' => ''
+				))
+			);
 
 /**
  * index method
  *
  * @return void
  */
-public function index() {
+	public function index() {
 		$this->Raspberry->recursive = 0;
 		$this->set('raspberries', $this->paginate());
-}
+	}
 
 /**
  * view method
@@ -32,143 +85,99 @@ public function index() {
  * @param string $id
  * @return void
  */
-public function synchroniser($id = null, $address) {
-		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->paginate());
-		$role = false;
-		$bdd = null;
-		$loginBDD = null;
-		$mdpBDD = null;
-		$NAS = null;
-		$loginNas = null;
-		$mdpNAS = null;
-		//debug($addressM['Raspberry']['address']);
+	public function view($id = null) {
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		$this->Raspberry->id = $id;
-
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Raspberry->findByRole('master', array('Raspberry.address'))!=null) {
-				$bdd = $this->request->data['Raspberry']['BDD'];
-				$loginBDD = $this->request->data['Raspberry']['loginBDD'];
-				$mdpBDD = $this->request->data['Raspberry']['mdpBDD'];
-				$NAS = $this->request->data['Raspberry']['NAS'];
-				$loginNAS = $this->request->data['Raspberry']['loginNAS'];
-				$mdpNAS = $this->request->data['Raspberry']['mdpNAS'];
-				$cheminMusic1 = $this->request->data['Raspberry']['cheminMusic'];
-				$cheminVideo1 = $this->request->data['Raspberry']['cheminVideo'];
-				$cheminTVShow1 = $this->request->data['Raspberry']['cheminTVShow'];
-				$this->setSlave($address);
-				$this->redirect(array('action' => 'index'));
-				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
-			}
-			else{
-				$this->setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1);
-				$this->redirect(array('action' => 'index'));
-				$this->Session->setFlash(__('Synchronisation réussi, le rapsberry redémarre'), 'flash/success');
-			}
-
-		}
-		else{
 		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 		$this->set('raspberry', $this->Raspberry->find('first', $options));
-		}
-}
+	}
 
 /**
  * add method
  *
  * @return void
  */
-public function add() {
+	public function add() {
+
+		if (strstr(php_uname(PHP_OS), "Windows")) {
+			$result = exec('ipconfig |find "Adresse IPv4"');
+			$host = substr($result, 44);
+		}
+		else{
+			$host = exec('ip addr show dev eth0 | grep inet | awk \'{print $2}\' | cut -d '/' -f 1');
+		}
+		$options = array('conditions' => array('Raspberry.role' => 'master'));
+		$this->set('role', empty($this->Raspberry->find('all',$options)) ? 'master' : 'slave');
+		$this->set('host', $host);
+
+		$default = $this->default;
+
 		if ($this->request->is('post')) {
+			$address = $this->request->data['Raspberry']['address'];
+			$connection = $this->connexionSSH($address,'root','openelec');
 
-			$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
-			$this->dossierScript($connection);
-			$Overclock = $this->getOverclock($connection);
-			$this->request->data['Raspberry']['overclocking'] = $Overclock;
-			
-			$file = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
-			if(file_exists($file)) {
-				//Create new DomDocuemnt
-			    $dom = new DomDocument();
-			    $dom->load($file);
-
-			    // Find the parent node 
-				$xpath = new DomXPath($dom); 
-
-				//Create the new element to insert/replace
-			    $newhostname = $dom->createElement("hostname",$this->request->data['Raspberry']['name']); 
-
-				//Test if node already exists
-			    $node = $dom->getElementsByTagName('hostname');
-
-			    if ($node->length==0) {
-			    	// new node will be inserted before this node 
-					$next = $xpath->query("//settings/system/wizard_completed");
-			    	// Insert the new element 
-					$next->item(0)->parentNode->insertBefore($newhostname, $next->nextSibling); 
-			    }
-			    else
-			    {
-			    	//Parent node
-		    		$oldhostname = $xpath->query("//settings/system/hostname");
-			    	//Replace
-			    	$oldhostname->item(0)->parentNode->replaceChild($newhostname, $oldhostname->item(0));
-			    }
+			//Cas (notamment) ou on garde les settings par defaut
+			if ($this->request->data['Raspberry']['actualsettings']) $this->request->data['Raspberry']['name'] = trim($this->execSSH($connection,'cat /etc/hostname'));
 
 			$this->Raspberry->create();
 			if ($this->Raspberry->save($this->request->data)) {
-                $filepath = '\\\\'.$this->request->data['Raspberry']['address'].'\Userdata\addon_data\service.openelec.settings\oe_settings.xml';
+				$id = $this->Raspberry->id;
 
-                $oesettings = '<openelec>
-									<addon_config/>
-									<settings>
-										<system>
-											<wizard_completed>True</wizard_completed>
-										<hostname>'.$this->request->data['Raspberry']['name'].'</hostname></system>
-										<connman>
-											<wizard_completed>True</wizard_completed>
-										</connman>
-										<services>
-											<wizard_completed>True</wizard_completed>
-										</services>
-										<about>
-											<wizard_completed>True</wizard_completed>
-										</about>
-										<openelec>
-											<wizard_completed>True</wizard_completed>
-										</openelec>
-									</settings>
-								</openelec>';
-                //Génération du futur XML en DOMDocument
-				$dom = new XmlDOM();
-            	$dom->preserveWhiteSpace = false;
-				$dom->loadXML($oesettings);
+			foreach ($default as $defaultname => &$def) {
+				$def['Setting']['raspberries_id'] = $id;
+			}
 
-				$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
-				$this->execSSH($connection,'systemctl stop kodi');
-				sleep(2);
-				if ($dom->save($filepath))
-				{
-					$this->execSSH($connection,'systemctl start kodi');
-					sleep(1);
-					$this->execSSH($connection,'systemctl restart kodi');
-					sleep(1);
+				//Tableau qui servira a créer les informations des fichiers de configurations dans la base
+				$settings = array();
 
+				//Cas ou on veut garder les configurations actuelles de l'OE
+				if ($this->request->data['Raspberry']['actualsettings']) {
+					foreach ($default as $filename => $file) {
+						$pathfile = '\\\\'.$address.$file['Setting']['path'].$file['Setting']['name'].'.'.$file['Setting']['extension'];
+						if(file_exists($pathfile)) {
+							$settings[] = $file;
+						}
+					}
 
-					$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
-					$this->redirect(array('action' => 'index'));
 				} else {
-					$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+
+					//Cas ou on veut parametrer les configurations par défaut a l'OE
+					$this->execSSH($connection,'systemctl stop kodi');
+					sleep(2);
+
+					//On charge tout les fichiers par défaut dans l'OE
+					foreach ($default as $filename => $file) {
+						$file['Setting']['path'] = './files/default'.$file['Setting']['path'];
+						if (!$this->movefiles('./files/default','\\\\'.$address,$file['Setting'])) {
+								$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+						}
+					}
+
+						$this->execSSH($connection,'systemctl start kodi');
+						sleep(1);
+						$this->execSSH($connection,'systemctl restart kodi');
+						$settings = $default;
 				}
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
+				
+				//On enregistre les données dans la base
+				foreach ($settings as $setting => $set) {
+
+					$set['Setting']['path'] = '\\\\'.$address.str_replace('/','\\',$set['Setting']['path']);
+
+					$this->Setting->create();
+					if (!$this->Setting->save($set)) {
+						$this->Session->setFlash(__('The settings '.$setting.' could not be saved. Please, try again.'), 'flash/error');
+						exit();
+					}
+				}
+
+				sleep(2);
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			}
 		}
 	}
-}
 
 /**
  * edit method
@@ -177,40 +186,23 @@ public function add() {
  * @param string $id
  * @return void
  */
-public function edit($id = null) {
-
-        $this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->paginate());
+	public function edit($id = null) {
+        $this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists($id)) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		$this->Raspberry->id = $id;
 		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->Session->setFlash(__('Configuration en cours'), 'flash/success');
-			$overclock = $this->request->data['Raspberry']['overclocking'];
-			$connection = $this->connexionSSH($this->request->data['Raspberry']['address'],'root','openelec');
-	        
-	        $over = $this->overclock($connection,$overclock);
-
 			if ($this->Raspberry->save($this->request->data)) {
-				if (!$over) {
-					$this->Session->setFlash(__('Erreur lors du changement de configuration'), 'flash/error');
-					$this->redirect(array('action' => 'index'));
-				}
-				else{
-					$this->Session->setFlash(__('Configuration réussi, openElec va redémarrer'), 'flash/success');
-					$this->reboot($connection);
-					$this->redirect(array('action' => 'index'));
-				}
+				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
-				$this->redirect(array('action' => 'index'));
 			}
 		} else {
 			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
 			$this->request->data = $this->Raspberry->find('first', $options);
 		}
-}
+	}
 
 /**
  * delete method
@@ -220,90 +212,28 @@ public function edit($id = null) {
  * @param string $id
  * @return void
  */
-public function delete($id = null) {
-		
+	public function delete($id = null, $cascade = true) {
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
+
 		$this->Raspberry->id = $id;
 		if (!$this->Raspberry->exists()) {
 			throw new NotFoundException(__('Invalid raspberry'));
 		}
-		if ($this->Raspberry->delete()) {
-			$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
-			$this->redirect(array('action' => 'index'));
-		}
-		else{
-			$this->Session->setFlash(__('Raspberry was not deleted'), 'flash/error');
-			$this->redirect(array('action' => 'index'));
-		}
-}
 
-/**
- * admin_view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-public function admin_view($id = null) {
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
 		$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-		$this->set('raspberry', $this->Raspberry->find('first', $options));
-}
+		$raspberry = $this->Raspberry->find('first', $options);
 
-/**
- * admin_add method
- *
- * @return void
- */
-public function admin_add() {
-		if ($this->request->is('post')) {
-			$this->Raspberry->create();
-			if ($this->Raspberry->save($this->request->data)) {
-				$this->Session->setFlash(__('The raspberry has been saved'), 'flash/success');
+			if ($this->Raspberry->delete()) {
+				//Si un dossier de sauvegarde des parametres de configuration de l'OE existe, il sera supprimé
+				if (is_dir('./files/'.$raspberry['Raspberry']['name'])) $this->rrmdir('./files/'.$raspberry['Raspberry']['name']);
+				$this->Session->setFlash(__('Raspberry deleted'), 'flash/success');
 				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The raspberry could not be saved. Please, try again.'), 'flash/error');
 			}
-		}
-
-}
-
-public function add_plugin($id = null, $address) {
-		$this->Raspberry->recursive = 0;
-		$this->set('raspberries', $this->paginate());
-		
-		if (!$this->Raspberry->exists($id)) {
-			throw new NotFoundException(__('Invalid raspberry'));
-		}
-		
-		$this->Raspberry->id = $id;
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->Session->setFlash(__('Ajout du plugin...'), 'flash/success');
-			$filename = $this->request->data['Raspberry']['plugin']['name'];
-			$filetmp = $this->request->data['Raspberry']['plugin']['tmp_name'];
-			if (!empty($filetmp)) {
-				$result1 = move_uploaded_file($filetmp, IMAGES . 'plugins' . DS . $filename);
-				$file = "../webroot/img/plugins/" . $filename;
-				$connection = $this->connexionSSH($address,'root','openelec');
-				$result = $this->uploadPlugin($connection, $file, $filename);
-			}
-			
-			if (!$result) {
-				$this->Session->setFlash(__('erreur'), 'flash/error');
-			}
-			else{
-				$this->Session->setFlash(__('plugin ajouté'), 'flash/success');
-			}
-
-		} else {
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->request->data = $this->Raspberry->find('first', $options);
-		}
-}
+				$this->Session->setFlash(__('Raspberry was not deleted (Raspberry)'), 'flash/error');
+				$this->redirect(array('action' => 'index'));
+	}
 
 
 /**
@@ -313,193 +243,262 @@ public function add_plugin($id = null, $address) {
  * @param string $id
  * @return void
  */
-public function settings($id = null) {
-		if ($this->Raspberry->exists($id)) {
-			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
-			$this->set('raspberry', $this->Raspberry->find('first', $options));
+
+	public function settings($id = null) {
+		
+		$default = $this->default;
+
+		foreach ($default as $defaultname => &$def) {
+				$def['Setting']['raspberries_id'] = $id;
+				$def['Setting']['path'] = ($id == 'all') ? './files/default/'.$def['Setting']['path'] : $def['Setting']['path'];
 		}
-}
+
+		if ($this->Raspberry->exists($id)) {
+
+			//Si on cible un OE en particulier, 
+			$this->Raspberry->id = $id;
+			$options = array('conditions' => array('Raspberry.' . $this->Raspberry->primaryKey => $id));
+			$raspberry = $this->Raspberry->find('first', $options);
+
+			$optionsfiles = array('conditions' => array('Setting.raspberries_id' => $id));
+
+			$files = $this->Setting->find('all', $optionsfiles);
+			$raspberry = $this->Raspberry->find('first', $options);
+			$currentmode = $this->getOverclock($this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec'));
+
+			$id = $raspberry['Raspberry']['id'];
+			$name = $raspberry['Raspberry']['name'];
+
+			$this->set('raspberry', $raspberry);
+			$this->set('currentmode', $currentmode);
+
+
+		} else {
+			$name = 'Parametres généraux';
+			$id = 'all';
+			$files = $default;
+		}
+
+		$this->set('files',$files);
+		$this->set('name',$name);
+		$this->set('id',$id);
+
+		if ($this->request->is('post')) {
+			$this->Raspberry->id = $id;
+			if (array_key_exists('apply', $this->request->data))
+			{
+				//Si on veut sauvegarder des parametres de configuration pour tout les Pi
+				$allrasps = $this->Raspberry->find('all');
+				foreach ($allrasps as $rasps => $rasp) {
+					$source = './files/default';
+					$destination = '\\\\'.$rasp['Raspberry']['address'];
+					$this->execSSH($connection,'systemctl stop kodi');
+					sleep(2);
+
+					foreach ($files as $filename => $file) {
+						if (!$this->movefiles($source,$destination,$file['Setting'])) {
+							$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
+							break;
+						}
+						$newpathfile = str_replace($source,"",$file['Setting']['path']);
+						$newpathfile = (substr($destination,0,2) == '\\\\') ? str_replace('/','\\',$newpathfile) : str_replace('\\','/',$newpathfile);
+
+						$file['Setting']['path'] = '\\\\'.$rasp['Raspberry']['address'].$newpathfile;
+						$file['Setting']['raspberries_id'] = $rasp['Raspberry']['id'];
+
+						$this->Setting->create();
+						$deleteconditions = array('Setting.raspberries_id' => $rasp['Raspberry']['id'], 'Setting.name' => $file['Setting']['name']);
+						if ($this->Setting->deleteAll($deleteconditions)) {
+							if (!$this->Setting->save($file)) {
+								$this->Session->setFlash(__('The settings '.$file['Setting']['name'].' could not be saved. Please, try again.'), 'flash/error');
+								exit();
+							}
+						} else {
+							$this->Session->setFlash(__('The settings '.$file['Setting']['name'].' could not be saved. Please, try again.'), 'flash/error');
+							exit();
+						}
+						
+					}
+
+					$this->execSSH($connection,'systemctl start kodi');
+					sleep(1);
+					$this->execSSH($connection,'systemctl restart kodi');
+					sleep(1);
+				}
+
+			} else {
+				$connection = $this->connexionSSH($raspberry['Raspberry']['address'],'root','openelec');
+				if (isset($this->request->data['Raspberry']['Codec'])) {
+					$indic = $this->request->data['Raspberry']['Codec'];
+					ssh2_scp_send($connection, '../webroot/files/scripts/scriptCodec.sh', './scripts/scriptCodec.sh');
+					ssh2_exec($connection, 'chmod +x ./scripts/scriptCodec.sh');
+					switch ($indic) {
+								    case "MPG2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecMPG2']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        if ($stateMPG=="MPG2=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "WVC1":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecWVC1']);
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if ($stateWVC=="WVC1=enabled") {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								    case "2":
+								        $result = ssh2_exec($connection, './scripts/scriptCodec.sh ' . $this->request->data['Raspberry']['Codec'] . ' ' . $this->request->data['Raspberry']['CodecMPG2'] . ' ' . $this->request->data['Raspberry']['CodecWVC1']);
+								        $stateMPG = ssh2_exec($connection, 'vcgencmd codec_enabled MPG2');
+								        $stateWVC = ssh2_exec($connection, 'vcgencmd codec_enabled WVC1');
+								        if (($stateWVC=="WVC1=enabled")&&($stateMPG=="MPG2=enabled")) {
+								        	$state = true;
+								        }
+								        else{
+								        	$state = false;
+								        }
+								        break;
+								}
+					if ($state == true) {
+						$this->Raspberry->save($this->request->data);
+						$this->Session->setFlash(__('Changement effectué'), 'flash/success');
+					}
+					else{
+						$this->Session->setFlash(__('Codec non valide'), 'flash/error');
+					}
+				}
+				else{
+				if (array_key_exists('Raspberry', $this->request->data)) {
+					//Si on veut changer le mode d'overclocking
+					if (!$this->setOverclock($connection,$this->request->data['Raspberry']['overclocking'])) {
+						$this->Session->setFlash(__('Erreur lors du changement du mode d\'overcloking'), 'flash/error');
+						$this->redirect(array('action' => 'settings', $id));
+					} else {
+						$this->execSSH($connection,'reboot');
+						if (!$this->Raspberry->save($this->request->data)) {
+							$this->Session->setFlash(__('Erreur lors de l\'enregistrement du mode d\'overcloking'), 'flash/error');
+							$this->redirect(array('action' => 'settings', $id));
+						}
+						sleep(3);
+					}
+				} else {
+
+						//Si on veut sauvegarder ou restaurer les parametres de configuration pour 1 seul Pi
+						$this->execSSH($connection,'systemctl stop kodi');
+						sleep(2);
+						if (array_key_exists('backup', $this->request->data)){
+							$source = '\\\\'.$raspberry['Raspberry']['address'];
+							$destination = './files/'.$raspberry['Raspberry']['name'];
+						}
+						elseif (array_key_exists('restore', $this->request->data)) {
+							$source = './files/'.$raspberry['Raspberry']['name'];
+							$destination = '\\\\'.$raspberry['Raspberry']['address'];
+
+							foreach ($files as $filename => &$file) {
+								$file['Setting']['path'] = $source.str_replace($destination,"",$file['Setting']['path']);
+							}
+						}
+
+						foreach ($files as $filename => $file) {
+							if (!$this->movefiles($source,$destination,$file['Setting'])) {
+								$this->Session->setFlash(__('Error when saving file(s)'), 'flash/error');
+								break;
+							}
+						}
+
+						$this->execSSH($connection,'systemctl start kodi');
+						sleep(1);
+						$this->execSSH($connection,'systemctl restart kodi');
+						sleep(1);
+					}
+				}
+				}
+
+			$this->redirect(array('action' => 'settings', $id));
+		}
+	}
 
 /**
- * connexion SSH method
+ *settings method : upload files and save them
  *
- * @throws BadRequestException
- * @param string $connection
- * @param string $cmd
- * @return string
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
  */
-public function execSSH($connection,$cmd)
-	{
-		$query = ssh2_exec($connection,$cmd);
-		if (!$query) {
-		    throw new BadRequestException();
+
+	public function movefiles($source,$destination,$file) {
+
+			$pathfile = $file['path'].$file['name'].'.'.$file['extension'];
+			$newpathfile = str_replace($source,"",$file['path']);
+			$newpathfile = (substr($destination,0,2) == '\\\\') ? str_replace('/','\\',$newpathfile) : str_replace('\\','/',$newpathfile);
+			if(file_exists($pathfile)) {
+
+            	$movingfile = file_get_contents($pathfile);
+
+				if ($file['name'] == 'oe_settings')
+				{
+					$dom = new DOMDocument();
+            		$dom->preserveWhiteSpace = false;
+					$dom->load($pathfile);
+					if (isset($this->request->data['Raspberry']['name']) && $dom->getElementsByTagName("hostname")->item(0)->nodeValue == 'default') {
+						$dom->getElementsByTagName("hostname")->item(0)->nodeValue = $this->request->data['Raspberry']['name'];
+					}
+					$movingfile = $dom->saveXML();
+				}
+
+				if (!file_exists($destination.$newpathfile)) {
+					if (!mkdir($destination.$newpathfile,0777,true)) {
+						$this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
+						exit(0);
+					}
+				}
+
+				if (!file_put_contents($destination.$newpathfile.$file['name'].'.'.$file['extension'],$movingfile)) {
+					$this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
+					exit(0);
+				}
+
+			} else $this->Session->setFlash(__('Error when saving '.$file['name'].'. Please, try again.'), 'flash/error');
+			return 1;
+	}
+
+	public function setOverclock($connection,$overclock)
+		{
+			ssh2_exec($connection, 'mkdir -p scripts && chmod 777 scripts');
+			ssh2_scp_send($connection,"./files/scripts/setOverclock.sh","./scripts/setOverclock.sh", 0644);  
+		    ssh2_exec($connection, "chmod +x ./scripts/setOverclock.sh");
+		    $result = ssh2_exec($connection, "./scripts/setOverclock.sh " . $overclock);
+		    if(!$result)
+		    {
+		    	return false;
+		    }
+		    else {
+		    	return true;
+		    }
 		}
-		stream_set_blocking($query, true);
-		$result = stream_get_contents($query);
-		return $result;
-}
-public function overclock($connection,$overclock)
-	{
-		ssh2_scp_send($connection,"../View/Layouts/script/scriptBon.sh","./scripts/scriptBon.sh", 0644);  
-	    ssh2_exec($connection, "chmod +x ./scripts/scriptBon.sh");
-	    $result = ssh2_exec($connection, "./scripts/scriptBon.sh " . $overclock);
-	    if(!$result)
-	    {
-	    	return false;
-	    }
-	    else{
-	    	return true;
-	    }
-}
 	
-public function getOverclock($connection)
-	{
-        ssh2_scp_send($connection,"../View/Layouts/script/scriptParam.sh","./scripts/scriptParam.sh", 0644);
-        ssh2_exec($connection, "chmod +x ./scripts/scriptParam.sh");
-        
-        $result=ssh2_exec($connection, "./scripts/scriptParam.sh");
-        stream_set_blocking($result, true);
-        $res = stream_get_contents($result);
-        if(strstr($res, "arm_freq=700")){$overClock = "default";}
-        elseif(strstr($res, "arm_freq=800")){$overClock = "modest";}
-        elseif(strstr($res, "arm_freq=900")){$overClock = "medium";}
-        elseif(strstr($res, "arm_freq=950")){$overClock = "high";}
-        elseif(strstr($res, "arm_freq=1000")){$overClock = "turbo";}
+	public function getOverclock($connection)
+		{
+			ssh2_exec($connection, 'mkdir -p scripts && chmod 777 scripts');
+	        ssh2_scp_send($connection,"./files/scripts/getOverclock.sh","./scripts/getOverclock.sh", 0644);
+	        ssh2_exec($connection, "chmod +x ./scripts/getOverclock.sh");
+	        
+	        $result=ssh2_exec($connection, "./scripts/getOverclock.sh");
+	        stream_set_blocking($result, true);
+	        $res = stream_get_contents($result);
+	        if(strstr($res, "arm_freq=700")){$overClock = "default";}
+	        elseif(strstr($res, "arm_freq=800")){$overClock = "modest";}
+	        elseif(strstr($res, "arm_freq=900")){$overClock = "medium";}
+	        elseif(strstr($res, "arm_freq=950")){$overClock = "high";}
+	        elseif(strstr($res, "arm_freq=1000")){$overClock = "turbo";}
 
-        return $overClock;
-}
-public function reboot($connection)
-	{
-		$reboot = ssh2_exec($connection, "reboot");
-		        if (!$reboot) {
-		            die("Failed to execute command reboot");
-		        }
-}
-public function dossierScript($connection)
-	{
-		ssh2_exec($connection, "mkdir scripts");
-		ssh2_exec($connection, "chmod 777 scripts");
-}
-public function uploadPlugin($connection, $file, $filename)
-	{
-                $result = ssh2_scp_send($connection, $file,"/storage/.kodi/addons/" . $filename, 0644);
-                
-                if (!$result) {
-                   die("Failed to execute command scp send");
-                }
-                else {  
-                		$result = ssh2_exec($connection,"cd /storage/.kodi/addons/ && unzip /storage/.kodi/addons/" . $filename . " && rm " . $filename);
-                		stream_set_blocking($result, true);
-                		$unzip = stream_get_contents($result);
-                		if (!$unzip) {
-                   			die("Failed to execute command unzip");
-                		}
-                		else{
-                			return true;
-                		}
-                }
-}
-public function synchronisation($connection, $master)
-	{
-		if ($master == false) {
-			$etape1 = ssh2_exec($connection, 'mkdir partageS');
-	        $etape1 = ssh2_exec($connection, 'mkdir partageF');
-	        $etape1 = ssh2_exec($connection, 'mkdir partageM');
-		    stream_set_blocking($etape1, 1);
+	        return $overClock;
+	}
 
-		    ssh2_scp_send($connection, "../View/Layouts/script/autoexec.py", "./.kodi/userdata/autoexec.py",0644);
-	        ssh2_scp_send($connection, "../View/Layouts/script/script.sh", "./scripts/script.sh",0644);
-	        ssh2_exec($connection, 'chmod +x ./scripts/script.sh');
-		}
-        
-		$mdiasrc = ssh2_scp_send($connection, "../View/Layouts/script/mediasources.xml", "./.kodi/userdata/mediasources.xml",0644);
-		$src = ssh2_scp_send($connection,"../View/Layouts/script/sources.xml","./.kodi/userdata/sources.xml", 0644);
-		$psswd = ssh2_scp_send($connection, "../View/Layouts/script/passwords.xml", "./.kodi/userdata/passwords.xml",0644);
-		$clean = ssh2_exec($connection, 'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Clean", "id": "2"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($clean, 1);
-		$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($scan, 1);
-		$scan1 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($scan1, 1);
-		$export = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($export, 1);
-		$export2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Export", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($export2, 1);
-		 $as = ssh2_scp_send($connection, "../View/Layouts/script/advancedsettings.xml", "./.kodi/userdata/advancedsettings.xml",0644);
-		
-		$scan = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "AudioLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($scan, 1);
-		$scan2 = ssh2_exec($connection,'curl -i -X POST -H "Content-Type: application/json" -d \'{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "1"}\' http://127.0.0.1/jsonrpc');
-		stream_set_blocking($scan2, 1);
-}
-public function replaceXML($file, $element, $newElement, $chemin, $ID)
-	{
-		$xml = new DOMDocument;
-		$xml->load($file);
-		$xpath = new DomXPath($xml);
-		$place = $xpath->query($chemin);
-		$new = $xml->createElement($element,$newElement);
-		if ($ID != null) {
-			$new->setAttribute('id', $ID);
-		}
-		$place->item(0)->parentNode->replaceChild($new, $place->item(0));
-		$xml->save($file);
-}
-public function setMaster($address, $bdd, $loginBDD, $mdpBDD, $NAS, $loginNAS, $mdpNAS, $cheminMusic1, $cheminVideo1, $cheminTVShow1)
-	{
-			$master = false;
-
-			$chemin = "smb://" . $NAS . "/";
-			$cheminPwd = "smb://" . $loginNAS . ":" . $mdpNAS . "@" . $NAS . "/";
-
-			$cheminMusic = $chemin . $cheminMusic1;
-			$cheminMusicPwd = $cheminPwd . $cheminMusic1;
-			$cheminVideo = $chemin . $cheminVideo1;
-			$cheminVideoPwd = $cheminPwd . $cheminVideo1;
-			$cheminTVShow = $chemin . $cheminTVShow1;
-			$cheminTVShowPwd = $cheminPwd . $cheminTVShow1;
-
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/videodatabase/host', null);
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/videodatabase/user', null);
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/videodatabase/pass', null);
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'host', $bdd, '//advancedsettings/musicdatabase/host', null);
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'user', $loginBDD, '//advancedsettings/musicdatabase/user', null);
-			$this->replaceXML('../View/Layouts/script/advancedsettings.xml', 'pass', $mdpBDD, '//advancedsettings/musicdatabase/pass', null);
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminMusicPwd, '//mediasources/network/location[@id=1]', 1);
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminVideoPwd, '//mediasources/network/location[@id=2]', 2);
-			$this->replaceXML('../View/Layouts/script/mediasources.xml', 'location', $cheminTVShowPwd, '//mediasources/network/location[@id=3]', 3);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminMusicPwd . "/", '//passwords/path[@id=0]/to', null);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminVideoPwd . "/", '//passwords/path[@id=1]/to', null);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'to', $cheminTVShowPwd . "/", '//passwords/path[@id=2]/to', null);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminMusic, '//passwords/path[@id=0]/from', null);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminVideo, '//passwords/path[@id=1]/from', null);
-			$this->replaceXML('../View/Layouts/script/passwords.xml', 'from', $cheminTVShow, '//passwords/path[@id=2]/from', null);
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminMusic, '//sources/music/source/path', null);
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminVideo, '//sources/video/source[@id=0]/path', null);
-			$this->replaceXML('../View/Layouts/script/sources.xml', 'path', $cheminTVShow, '//sources/video/source[@id=1]/path', null);
-			$connection = $this->connexionSSH($address,'root','openelec');
-			$synchro = $this->synchronisation($connection, $master);
-			$this->request->data['Raspberry']['role'] = "master";
-			$this->Raspberry->save($this->request->data);
-			$this->reboot($connection);
-}
-public function setSlave($address){
-		$master = true;
-		$addressM = $this->Raspberry->findByRole('master', array('Raspberry.address'));
-		$addressM = $addressM['Raspberry']['address'];
-		$connection = $this->connexionSSH($address,'root','openelec');
-		$synchro = $this->synchronisation($connection, $master);
-		$this->request->data['Raspberry']['role'] = "slave";
-		$this->Raspberry->save($this->request->data);
-		$this->reboot($connection);
-		$connection = $this->connexionSSH($addressM,'root','openelec');
-		ssh2_scp_send($connection,"../View/Layouts/script/scriptMaster.sh","./scripts/scriptMaster.sh", 0644);
-		ssh2_exec($connection, 'chmod +x ./scripts/scriptMaster.sh');
-		ssh2_exec($connection, './scripts/scriptMaster.sh ' . $address);
-		ssh2_exec($connection, 'cd scripts && ./script.sh');
-}
-public function scanOE()
-{
-
-}
 }

@@ -6,7 +6,7 @@
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>class="navbar-brand"
+                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="home">OpenELEC</a>
             </div>
@@ -110,4 +110,4 @@
                         </li>
                     </ul>
                 </li>
-            </ul>
+            </ul> 

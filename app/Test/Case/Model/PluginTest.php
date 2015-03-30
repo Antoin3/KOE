@@ -1,11 +1,11 @@
 <?php
-App::uses('Setting', 'Model');
+App::uses('Plugin', 'Model');
 
 /**
- * Setting Test Case
+ * Plugin Test Case
  *
  */
-class SettingTest extends CakeTestCase {
+class PluginTest extends CakeTestCase {
 
 /**
  * Fixtures
@@ -13,7 +13,7 @@ class SettingTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.setting',
+		'app.plugin',
 		'app.raspberries'
 	);
 
@@ -24,7 +24,7 @@ class SettingTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->Setting = ClassRegistry::init('Setting');
+		$this->Plugin = ClassRegistry::init('Plugin');
 	}
 
 /**
@@ -33,7 +33,7 @@ class SettingTest extends CakeTestCase {
  * @return void
  */
 	public function tearDown() {
-		unset($this->Setting);
+		unset($this->Plugin);
 
 		parent::tearDown();
 	}

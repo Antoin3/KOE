@@ -62,11 +62,6 @@ class ToolbarAccessController extends DebugKitAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
-		$this->response->header('Access-Control-Allow-Origin','*');
-        $this->response->header('Access-Control-Allow-Methods','*');
-        $this->response->header('Access-Control-Allow-Headers','X-Requested-With');
-        $this->response->header('Access-Control-Allow-Headers','Content-Type, x-xsrf-token');
-        $this->response->header('Access-Control-Max-Age','172800');
 		if (isset($this->Toolbar)) {
 			$this->Components->disable('Toolbar');
 		}

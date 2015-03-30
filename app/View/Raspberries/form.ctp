@@ -1,8 +1,3 @@
-<?php
-    $filepath = isset($raspberry) ? '\\\\'.$raspberry['Raspberry']['address'].'\Userdata\\' : '/files/';
-    $id = isset($raspberry) ? $raspberry['Raspberry']['id'] : 'all';
-    $name = isset($raspberry) ? $raspberry['Raspberry']['name'] : 'Parametres généraux';
-?>
 <!-- Page Heading -->
                 <div class="row">
                     <div class="col-lg-12">
@@ -15,10 +10,10 @@
                                 <?php echo $this->Html->link(__('OpenELECs'), array('controller' => 'raspberries','action' => 'index', $id)); ?>
                             </li>
                             <li>
-                                <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings')); ?>
+                                <i class="fa fa-cogs"></i> <?php echo $this->Html->link(__('Parametres'), array('controller' => 'raspberries','action' => 'settings', $id)); ?>
                             </li>
                             <li class="active">
-                                <i class="fa fa-pencil-square-o"></i> <?php echo $file; ?>
+                                <i class="fa fa-pencil-square-o"></i> <?php echo $fileinfo['Setting']['name']; ?>
                             </li>
                         </ol>
                     </div>
@@ -29,31 +24,31 @@
 
                     <div id="page-container" class="row">
 
-                            <?php 
-                                    if(file_exists($filepath.$file.'.xml')) 
+                            <?php
+                                    if(file_exists($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])) 
                                         { 
                                             echo '<div class="col-lg-6">';
-                                            echo $this->Form->create($file, array('role' => 'form', 'url' => './form/'.$id.'/'.$file));
+                                            echo $this->Form->create($fileinfo['Setting']['name'], array('role' => 'form', 'url' => './form/'.$id.'/'.$fileinfo['Setting']['name']));
 
                                             //Create new DomDocuemnt
                                             $dom = new DomDocument();
                                             $dom->preserveWhiteSpace = FALSE;
-                                            $dom->load($filepath.$file.'.xml');
+                                            $dom->load($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension']);
                                             $this->Xml->inputXML($dom);
-                                            echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary'));
+                                            echo $this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary', 'onclick' => 'chargement();'));
                                             echo $this->Form->end();
                                             echo '</div>';
                                             ?>
                                             <div class="col-lg-6">
-                                                    <?php echo '<pre>'.htmlspecialchars(file_get_contents($filepath.$file.'.xml')).'</pre>'; ?>
+                                                    <?php echo '<pre>'.htmlspecialchars(file_get_contents($fileinfo['Setting']['path'].$fileinfo['Setting']['name'].'.'.$fileinfo['Setting']['extension'])).'</pre>'; ?>
 
                                             <?php }
                                     else {
                                             ?>
                                                     <?php 
-                                                    echo $this->Form->create($name, array('role' => 'form', 'url' => './form/'.$id.'/'.$file));
-                                                    echo $this->Form->input($file, array('class' => 'form-control', 'type' => 'textarea','placeholder' => 'Entrer votre fichier'));
-                                                    echo '<br><p>'.$this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div' => false));
+                                                    echo $this->Form->create($name, array('role' => 'form', 'url' => './form/'.$id.'/'.$fileinfo['Setting']['name']));
+                                                    echo $this->Form->input($fileinfo['Setting']['name'], array('class' => 'form-control', 'type' => 'textarea','placeholder' => 'Entrer votre fichier'));
+                                                    echo '<br><p>'.$this->Form->submit('Submit', array('class' => 'btn btn-large btn-primary','div' => false, 'onclick' => 'chargement("Veuillez patienter...");'));
                                                     echo '&nbsp'.$this->Form->button('Tout effacer',array('type' => 'reset', 'class' => 'btn btn-default')).'</p>';
                                                     echo $this->Form->end();
                                         }?>

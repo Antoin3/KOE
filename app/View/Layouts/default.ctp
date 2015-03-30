@@ -34,6 +34,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			echo $this->Html->css('sb-admin');
 			echo $this->Html->css('plugins/morris');
 			echo $this->Html->css('carousel');
+			echo $this->Html->css('full-width-pics');
 			echo $this->Html->css('../font-awesome/css/font-awesome');
 
 			echo $this->fetch('css');
@@ -41,7 +42,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 </head>
 <body>
 
-<div id="wrapper">
+	<div id="wrapper">
 				<?php echo $this->element('menu/top_menu'); ?>
 				<?php echo $this->element('menu/sidebar_menu'); ?>
         <div id="page-wrapper">
@@ -49,7 +50,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             <div class="container-fluid">
 					<?php echo $this->Session->flash(); ?>
 					<?php echo $this->fetch('content'); ?>
-				</div>
 				<div id="footer">
 				</div>
             </div>
@@ -62,22 +62,19 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <?php
 			//jQuery
 			echo $this->Html->script('jquery.js');
-			
 
 			//Bootstrap Core JavaScript
 			echo $this->Html->script('bootstrap');
-			
-
-
 
 			//Morris Charts JavaScript
 			echo $this->Html->script('plugins/morris/raphael.min');
 			echo $this->Html->script('plugins/morris/morris');
 			echo $this->Html->script('plugins/morris/morris-data');
+
+			echo $this->Html->script('loading');
+			echo $this->Html->script('scan');
 			
 			echo $this->fetch('script');
 ?>
-
-
 </body>
 </html>

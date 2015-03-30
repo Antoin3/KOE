@@ -1093,7 +1093,8 @@ class Controller extends Object implements CakeEventListener {
  * @return void
  * @link http://book.cakephp.org/2.0/en/controllers.html#request-life-cycle-callbacks
  */
-	public function beforeFilter() {}
+	public function beforeFilter() {
+	}
 
 /**
  * Called after the controller action is run, but before the view is rendered. You can use this method
