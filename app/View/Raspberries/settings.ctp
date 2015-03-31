@@ -149,7 +149,7 @@
 									<fieldset>
 										<?php if ($raspberry['Raspberry']['role'] == 'master')
 										{ ?>
-											<div class="form-group">;
+											<div class="form-group">
 											<?php echo $this->Form->input('address', array('class' => 'form-control', 'label' => 'Adresse du serveur')); ?>
 											</div>
 											<div class="form-group">
